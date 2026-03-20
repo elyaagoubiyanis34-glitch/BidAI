@@ -3,542 +3,633 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BidAI — Dashboard</title>
+<title>BidAI — Analysez vos appels d'offres en 30 secondes</title>
+<meta name="description" content="BidAI analyse automatiquement vos appels d'offres, détecte les risques et génère votre brouillon en 30 secondes grâce à l'IA.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700..900;1,9..144,700..900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#FAF9F4;--bg2:#F2EFE7;--bg3:#E9E5DB;--card:#fff;--border:#DDD9CE;--border2:#C8C3B5;
-  --text:#1A1A12;--muted:#6A6658;--muted2:#A39F93;
-  --green:#0BBF6A;--green-dark:#088A4C;--green-light:#E6F8EF;--green-glow:rgba(11,191,106,0.18);
-  --red:#D94F4F;--red-light:#FDF0F0;--amber:#C97B10;--amber-light:#FEF4E6;
-  --display:'Fraunces',Georgia,serif;--body:'Outfit',system-ui,sans-serif;
+  --bg:#FAF9F4;
+  --bg2:#F2EFE7;
+  --bg3:#E9E5DB;
+  --card:#FFFFFF;
+  --border:#DDD9CE;
+  --border2:#C8C3B5;
+  --text:#1A1A12;
+  --muted:#6A6658;
+  --muted2:#A39F93;
+  --green:#0BBF6A;
+  --green-dark:#088A4C;
+  --green-light:#E6F8EF;
+  --green-glow:rgba(11,191,106,0.18);
+  --green-glow2:rgba(11,191,106,0.08);
+  --red:#D94F4F;
+  --red-light:#FDF0F0;
+  --amber:#C97B10;
+  --amber-light:#FEF4E6;
+  --display:'Fraunces',Georgia,serif;
+  --body:'Outfit',system-ui,sans-serif;
+  --radius:12px;
+  --radius-lg:20px;
   --shadow:0 1px 4px rgba(0,0,0,.05),0 4px 20px rgba(0,0,0,.05);
   --shadow-lg:0 4px 32px rgba(0,0,0,.08),0 16px 64px rgba(0,0,0,.04);
 }
-html,body{height:100%}
-body{font-family:var(--body);background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:3px}
 
-/* ── SIDEBAR + LAYOUT ── */
-.layout{display:flex;flex:1;min-height:0}
-.sidebar{width:240px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh}
-.sidebar-logo{padding:1.5rem 1.5rem 1rem;border-bottom:1px solid var(--border)}
-.logo{font-family:var(--display);font-size:22px;font-weight:900;font-style:italic;color:var(--text);text-decoration:none;display:block}
+/* ── GRAIN OVERLAY ── */
+body::before{
+  content:'';position:fixed;inset:0;z-index:999;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity:.025;mix-blend-mode:multiply;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 4px 16px rgba(11,191,106,0.22),0 2px 8px rgba(0,0,0,.06)}50%{box-shadow:0 4px 28px rgba(11,191,106,0.38),0 2px 8px rgba(0,0,0,.06)}}
+@keyframes floatA{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(3deg)}}
+@keyframes floatB{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes dotPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.7);opacity:.5}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes countPop{0%{transform:scale(.7);opacity:0}65%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@keyframes lineSlide{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes shimmer{0%{opacity:.4}50%{opacity:.8}100%{opacity:.4}}
+
+/* Reveal */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-left{opacity:0;transform:translateX(-24px);transition:opacity .6s ease,transform .6s ease}
+.reveal-left.visible{opacity:1;transform:translateX(0)}
+.reveal-scale{opacity:0;transform:scale(.93);transition:opacity .55s ease,transform .55s ease}
+.reveal-scale.visible{opacity:1;transform:scale(1)}
+.d1{transition-delay:.05s}.d2{transition-delay:.13s}.d3{transition-delay:.21s}.d4{transition-delay:.3s}.d5{transition-delay:.38s}.d6{transition-delay:.46s}
+
+/* Hero anim */
+.hero-anim{opacity:0}
+.hero-anim.go{animation:fadeUp .8s ease forwards}
+.h1{animation-delay:.05s}.h2{animation-delay:.2s}.h3{animation-delay:.36s}.h4{animation-delay:.52s}.h5{animation-delay:.68s}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:200;background:rgba(250,249,244,.93);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);padding:0 2.5rem;height:62px;display:flex;align-items:center;justify-content:space-between;animation:slideDown .5s ease .1s both}
+.logo{font-family:var(--display);font-size:22px;font-weight:900;font-style:italic;letter-spacing:-.5px;color:var(--text)}
 .logo em{color:var(--green);font-style:normal}
-.nav-section{padding:1rem .75rem;flex:1}
-.nav-label{font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;padding:.5rem .75rem;margin-bottom:.25rem}
-.nav-item{display:flex;align-items:center;gap:10px;padding:.65rem .75rem;border-radius:10px;font-size:14px;color:var(--muted);cursor:pointer;transition:all .2s;font-weight:500;margin-bottom:2px;text-decoration:none}
-.nav-item:hover{background:var(--bg);color:var(--text)}
-.nav-item.active{background:var(--green-light);color:var(--green-dark)}
-.nav-item .icon{width:18px;height:18px;flex-shrink:0;opacity:.7}
-.nav-item.active .icon{opacity:1}
-.sidebar-bottom{padding:1rem .75rem;border-top:1px solid var(--border)}
-.user-chip{display:flex;align-items:center;gap:10px;padding:.75rem;border-radius:10px;background:var(--bg2)}
-.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--green-light);border:1.5px solid rgba(11,191,106,0.25);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--green-dark);font-family:var(--display);flex-shrink:0}
-.user-name{font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.user-plan{font-size:11px;color:var(--muted);font-weight:400}
-.logout-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;padding:4px;margin-left:auto;transition:color .2s;flex-shrink:0}
-.logout-btn:hover{color:var(--red)}
+.nav-links{display:flex;align-items:center;gap:2rem;font-size:14px;color:var(--muted)}
+.nav-links a{transition:color .2s}.nav-links a:hover{color:var(--text)}
+.nav-cta{background:var(--green);color:#fff;border:none;border-radius:8px;padding:.5rem 1.1rem;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--body);transition:all .25s;box-shadow:0 2px 10px var(--green-glow)}
+.nav-cta:hover{background:var(--green-dark);transform:translateY(-1px);box-shadow:0 4px 18px var(--green-glow)}
+@media(max-width:620px){.nav-links{display:none}}
 
-.main-content{flex:1;overflow-y:auto;padding:2rem}
+/* ── HERO ── */
+#hero{position:relative;padding:7rem 1.5rem 0;text-align:center;overflow:hidden;background:var(--bg)}
 
-/* ── TOPBAR ── */
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
-.page-title{font-family:var(--display);font-size:26px;font-weight:900;letter-spacing:-.03em}
-.page-title em{font-style:italic;color:var(--green)}
+/* Dot grid */
+#hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(0,0,0,.07) 1px,transparent 1px);background-size:32px 32px;mask-image:radial-gradient(ellipse 90% 80% at 50% 0%,black 20%,transparent 80%);pointer-events:none;z-index:0}
 
-/* ── METRIC CARDS ── */
-.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
-.metric{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:1.5rem;box-shadow:var(--shadow);position:relative;overflow:hidden}
-.metric::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),rgba(11,191,106,0.2),transparent)}
-.metric-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
-.metric-value{font-family:var(--display);font-size:32px;font-weight:900;color:var(--text);line-height:1;letter-spacing:-.03em}
-.metric-value em{color:var(--green);font-style:normal}
-.metric-sub{font-size:12px;color:var(--muted);margin-top:.35rem;font-weight:300}
-.progress-bar{height:5px;background:var(--bg2);border-radius:3px;margin-top:.75rem;overflow:hidden}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--green),rgba(11,191,106,0.6));border-radius:3px;transition:width .8s ease}
+/* Big decorative text */
+.hero-deco{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-family:var(--display);font-size:clamp(120px,22vw,260px);font-weight:900;font-style:italic;color:transparent;-webkit-text-stroke:1.5px rgba(11,191,106,0.12);letter-spacing:-.05em;pointer-events:none;white-space:nowrap;z-index:0;user-select:none;line-height:1}
 
-/* Plan badge */
-.plan-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.04em}
-.plan-starter{background:var(--bg2);color:var(--muted);border:1px solid var(--border2)}
-.plan-pro{background:var(--green-light);color:var(--green-dark);border:1px solid rgba(11,191,106,0.25)}
-.plan-business{background:#FEF5E6;color:#7A4A08;border:1px solid rgba(201,123,16,0.25)}
-.plan-free{background:var(--red-light);color:var(--red);border:1px solid rgba(217,79,79,0.2)}
+/* Floating blobs */
+.blob{position:absolute;border-radius:50%;pointer-events:none;z-index:0}
+.blob1{top:-80px;right:-60px;width:420px;height:420px;background:radial-gradient(circle,rgba(11,191,106,0.09) 0%,transparent 70%);animation:floatA 9s ease-in-out infinite}
+.blob2{bottom:40px;left:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(11,191,106,0.06) 0%,transparent 70%);animation:floatB 11s ease-in-out infinite 1.5s}
+.blob3{top:30%;right:5%;width:180px;height:180px;background:radial-gradient(circle,rgba(201,123,16,0.06) 0%,transparent 70%);animation:floatB 7s ease-in-out infinite 3s}
+
+.hero-inner{position:relative;z-index:1;max-width:820px;margin:0 auto;padding-bottom:5rem}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:var(--green-light);border:1px solid rgba(11,191,106,0.28);color:var(--green-dark);font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;margin-bottom:1.75rem;letter-spacing:.06em;text-transform:uppercase}
+.hero-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:dotPulse 2s ease-in-out infinite}
+h1{font-family:var(--display);font-size:clamp(36px,6vw,68px);font-weight:900;line-height:1.05;letter-spacing:-.04em;margin-bottom:1.4rem;color:var(--text)}
+h1 em{font-style:italic;color:var(--green);position:relative}
+h1 em::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:3px;background:var(--green);border-radius:2px;transform-origin:left;animation:lineSlide .8s ease .9s both}
+.hero-sub{font-size:18px;color:var(--muted);max-width:540px;margin:0 auto 2.75rem;line-height:1.75;font-weight:300}
+.hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:4.5rem}
+.btn-primary{background:var(--green);color:#fff;border:none;border-radius:12px;padding:.9rem 2rem;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--body);transition:all .25s;display:inline-block;box-shadow:0 4px 20px var(--green-glow);animation:glowPulse 3s ease-in-out infinite}
+.btn-primary:hover{background:var(--green-dark);transform:translateY(-2px);box-shadow:0 8px 32px rgba(11,191,106,0.3)}
+.btn-secondary{background:var(--card);color:var(--text);border:1.5px solid var(--border2);border-radius:12px;padding:.9rem 2rem;font-size:15px;font-weight:500;cursor:pointer;font-family:var(--body);transition:all .25s;display:inline-block;box-shadow:var(--shadow)}
+.btn-secondary:hover{border-color:var(--green);color:var(--green);transform:translateY(-1px)}
+
+.hero-stats{display:flex;justify-content:center;flex-wrap:wrap;gap:0;border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;max-width:700px;margin:0 auto;background:var(--card);box-shadow:var(--shadow-lg)}
+.stat{flex:1;min-width:140px;padding:1.5rem 1rem;text-align:center;border-right:1px solid var(--border);position:relative}
+.stat:last-child{border-right:none}
+.stat-n{font-family:var(--display);font-size:30px;font-weight:900;color:var(--green);line-height:1}
+.stat-l{font-size:12px;color:var(--muted);margin-top:5px}
+.stat-anim .stat-n{opacity:0}
+.stat-anim.visible .stat-n{animation:countPop .55s ease forwards}
+
+/* ── TICKER ── */
+.ticker-wrap{background:var(--green);overflow:hidden;padding:.6rem 0;position:relative;z-index:1}
+.ticker{display:flex;white-space:nowrap;animation:marquee 28s linear infinite}
+.ticker span{font-size:12px;font-weight:700;color:#fff;padding:0 2.5rem;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.ticker span em{font-style:normal;opacity:.55;margin-right:2.5rem}
 
 /* ── SECTIONS ── */
-.section{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:1.75rem;margin-bottom:1.5rem;box-shadow:var(--shadow)}
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem}
-.section-title{font-family:var(--display);font-size:18px;font-weight:800;letter-spacing:-.02em}
-.sec-badge{font-size:11px;font-weight:700;background:var(--green-light);color:var(--green-dark);padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em}
+section{padding:6rem 1.5rem;position:relative}
+.container{max-width:920px;margin:0 auto;position:relative;z-index:1}
+.sec-tag{display:inline-block;background:var(--green-light);border:1px solid rgba(11,191,106,0.22);color:var(--green-dark);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:1rem;text-transform:uppercase;letter-spacing:.07em}
+h2{font-family:var(--display);font-size:clamp(28px,4vw,44px);font-weight:900;line-height:1.1;margin-bottom:.9rem;letter-spacing:-.03em;color:var(--text)}
+h2 em{font-style:italic;color:var(--green)}
+.sub{font-size:16px;color:var(--muted);max-width:520px;line-height:1.75;font-weight:300}
 
-/* ── ANALYZE TOOL ── */
+/* ── HOW ── */
+#how{background:var(--bg2);overflow:hidden}
+/* Diagonal top edge */
+#how::before{content:'';position:absolute;top:-2px;left:0;right:0;height:80px;background:var(--bg);clip-path:polygon(0 0,100% 0,100% 100%,0 0);z-index:0}
+/* Large background number */
+#how::after{content:'01';position:absolute;right:-20px;top:50%;transform:translateY(-50%);font-family:var(--display);font-size:280px;font-weight:900;font-style:italic;color:transparent;-webkit-text-stroke:1px rgba(11,191,106,0.07);pointer-events:none;z-index:0;line-height:1;user-select:none}
+/* Crosshatch pattern */
+.how-pattern{position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,rgba(0,0,0,.015) 0,rgba(0,0,0,.015) 1px,transparent 0,transparent 50%);background-size:20px 20px;z-index:0}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem}
+.step{padding:2.25rem 1.75rem;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);transition:all .35s;position:relative;overflow:hidden}
+.step::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(11,191,106,0.04) 0%,transparent 60%);opacity:0;transition:opacity .35s}
+.step::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),rgba(11,191,106,0.3));transform:scaleX(0);transform-origin:left;transition:transform .4s ease;border-radius:0 0 var(--radius-lg) var(--radius-lg)}
+.step:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:rgba(11,191,106,0.3)}
+.step:hover::before{opacity:1}
+.step:hover::after{transform:scaleX(1)}
+.step-num{width:46px;height:46px;background:var(--green-light);border:1.5px solid rgba(11,191,106,0.25);color:var(--green-dark);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;margin-bottom:1.25rem;font-family:var(--display)}
+.step h3{font-family:var(--display);font-size:19px;font-weight:700;margin-bottom:.5rem;letter-spacing:-.02em}
+.step p{font-size:14px;color:var(--muted);line-height:1.65;font-weight:300}
+.step-connector{display:flex;align-items:center;justify-content:center;padding-top:3rem}
+.step-connector::before,.step-connector::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border2))}
+.step-connector::after{background:linear-gradient(90deg,var(--border2),transparent)}
+@media(max-width:640px){.steps{grid-template-columns:1fr}}
+
+/* ── DEMO ── */
+#demo{background:var(--bg);overflow:hidden}
+#demo::before{content:'';position:absolute;top:0;left:0;right:0;height:80px;background:var(--bg2);clip-path:polygon(0 0,100% 0,100% 0,0 100%);z-index:0}
+/* Circle decoration */
+.demo-circle{position:absolute;right:-120px;top:50%;transform:translateY(-50%);width:500px;height:500px;border-radius:50%;border:1px solid rgba(11,191,106,0.07);pointer-events:none;z-index:0}
+.demo-circle::before{content:'';position:absolute;inset:40px;border-radius:50%;border:1px solid rgba(11,191,106,0.05)}
+.demo-circle::after{content:'';position:absolute;inset:100px;border-radius:50%;border:1px solid rgba(11,191,106,0.04)}
+
+.demo-wrap{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:2.25rem;margin-top:2.5rem;box-shadow:var(--shadow-lg);position:relative}
+.demo-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--green),rgba(11,191,106,0.3),transparent);border-radius:var(--radius-lg) var(--radius-lg) 0 0}
 .demo-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
 .demo-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}
 .demo-inp{flex:1;min-width:140px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:.65rem .85rem;font-size:14px;color:var(--text);font-family:var(--body);outline:none;transition:all .2s}
-.demo-inp:focus{border-color:var(--green);background:var(--card);box-shadow:0 0 0 3px rgba(11,191,106,0.1)}
-textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
+.demo-inp:focus{border-color:var(--green);background:var(--card);box-shadow:0 0 0 3px var(--green-glow2)}
+textarea.demo-inp{resize:vertical;min-height:130px;line-height:1.6;width:100%}
 .ex-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center}
-.ex-btn{font-size:12px;padding:4px 12px;border:1.5px solid var(--border2);border-radius:20px;cursor:pointer;background:var(--bg);color:var(--muted);font-family:var(--body);transition:all .2s}
+.ex-btn{font-size:12px;padding:5px 13px;border:1.5px solid var(--border2);border-radius:20px;cursor:pointer;background:var(--bg);color:var(--muted);font-family:var(--body);transition:all .2s}
 .ex-btn:hover{border-color:var(--green);color:var(--green);background:var(--green-light)}
-.btn-analyze{background:var(--green);color:#fff;border:none;border-radius:12px;padding:.85rem 2rem;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--body);transition:all .25s;box-shadow:0 4px 16px var(--green-glow)}
-.btn-analyze:hover{background:var(--green-dark);transform:translateY(-1px)}
-.btn-analyze:disabled{opacity:.4;cursor:not-allowed;transform:none}
-
-/* Results */
-.result-card{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem}
-.score-ring{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;font-family:var(--display);border:3px solid;flex-shrink:0}
-.badge-dec{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:6px}
+.btn-analyze{width:100%;background:var(--green);color:#fff;border:none;border-radius:12px;padding:.9rem;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--body);margin-top:.75rem;transition:all .25s;box-shadow:0 4px 20px var(--green-glow)}
+.btn-analyze:hover{background:var(--green-dark);transform:translateY(-1px);box-shadow:0 8px 28px rgba(11,191,106,0.28)}
+.btn-analyze:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.demo-status{font-size:13px;color:var(--muted);padding:.6rem 0;display:none}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid var(--border2);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+.result-card{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;animation:fadeUp .4s ease both}
+.score-ring{width:78px;height:78px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;font-family:var(--display);border:3px solid;flex-shrink:0;animation:scaleIn .5s ease .1s both}
+.badge-dec{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:6px;letter-spacing:.04em}
 .divider{border:none;border-top:1px solid var(--border);margin:.75rem 0}
-.res-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
-.res-body{font-size:13px;color:var(--muted);line-height:1.75;white-space:pre-wrap;font-weight:300}
-.crit-row{display:flex;align-items:center;gap:8px;padding:.3rem 0;font-size:13px;flex-wrap:wrap}
-.bar-bg{flex:1;min-width:80px;height:4px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.res-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem}
+.res-body{font-size:14px;color:var(--muted);line-height:1.75;white-space:pre-wrap;font-weight:300}
+.crit-row{display:flex;align-items:center;gap:8px;padding:.35rem 0;font-size:13px;flex-wrap:wrap}
+.bar-bg{flex:1;min-width:80px;height:5px;background:var(--bg2);border-radius:3px;overflow:hidden}
 .bar-fill{height:100%;border-radius:3px;transition:width 1.4s cubic-bezier(.16,1,.3,1)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
-
-/* Export button */
-.btn-export{background:var(--bg);border:1.5px solid var(--border2);color:var(--text);border-radius:8px;padding:.5rem 1rem;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--body);transition:all .2s}
-.btn-export:hover{border-color:var(--green);color:var(--green);background:var(--green-light)}
-
-/* ── HISTORY ── */
-.history-list{display:flex;flex-direction:column;gap:.75rem}
-.history-item{display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s}
-.history-item:hover{border-color:var(--border2);background:var(--bg2)}
-.history-score{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;font-family:var(--display);border:2px solid;flex-shrink:0}
-.history-info{flex:1;min-width:0}
-.history-obj{font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.history-date{font-size:12px;color:var(--muted);margin-top:2px}
-.history-dec{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.04em;flex-shrink:0}
-
-.empty-state{text-align:center;padding:3rem 1rem;color:var(--muted)}
-.empty-icon{font-size:36px;margin-bottom:1rem;opacity:.4}
-.empty-state p{font-size:14px;font-weight:300}
-
-/* ── PLAN SECTION ── */
-.plan-card{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:1.25rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
-.plan-info{flex:1}
-.plan-name-big{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:.25rem}
-.plan-renew{font-size:13px;color:var(--muted);font-weight:300}
-.btn-upgrade{background:var(--green);color:#fff;border:none;border-radius:10px;padding:.7rem 1.5rem;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--body);transition:all .2s;box-shadow:0 2px 10px var(--green-glow)}
-.btn-upgrade:hover{background:var(--green-dark)}
-.btn-portal{background:var(--bg2);color:var(--text);border:1.5px solid var(--border2);border-radius:10px;padding:.7rem 1.5rem;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--body);transition:all .2s}
-.btn-portal:hover{border-color:var(--green);color:var(--green)}
-
-/* ── TABS ── */
-.view-tabs{display:flex;gap:0;background:var(--bg2);border-radius:10px;padding:4px;margin-bottom:1.5rem;width:fit-content}
-.view-tab{padding:.5rem 1.25rem;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;font-family:var(--body);color:var(--muted);transition:all .2s}
-.view-tab.active{background:var(--card);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.08)}
-
-/* spinner */
-@keyframes spin{to{transform:rotate(360deg)}}
-.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
-.spinner-dark{border-color:var(--border2);border-top-color:var(--green)}
-
-.status-bar{font-size:13px;color:var(--muted);padding:.5rem 0;display:none}
-
-/* limit warning */
-.limit-warning{background:var(--red-light);border:1px solid rgba(217,79,79,0.2);border-radius:10px;padding:1rem 1.25rem;font-size:13px;color:var(--red);display:none;margin-bottom:1rem}
-.limit-warning.show{display:block}
-
-/* mobile */
-@media(max-width:768px){
-  .sidebar{display:none}
-  .main-content{padding:1rem}
-}
 @media(max-width:520px){.grid2{grid-template-columns:1fr}}
+
+/* ── COMPARISON ── */
+#comparison{background:var(--bg2);overflow:hidden}
+#comparison::before{content:'';position:absolute;top:-2px;left:0;right:0;height:80px;background:var(--bg);clip-path:polygon(0 0,100% 0,100% 100%);z-index:0}
+/* Large background word */
+.comp-deco{position:absolute;left:-30px;bottom:-40px;font-family:var(--display);font-size:220px;font-weight:900;font-style:italic;color:transparent;-webkit-text-stroke:1px rgba(0,0,0,.04);pointer-events:none;z-index:0;line-height:1;user-select:none;white-space:nowrap}
+/* Horizontal lines pattern */
+.comp-lines{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.015) 0,rgba(0,0,0,.015) 1px,transparent 0,transparent 40px);z-index:0}
+
+.comp-wrap{overflow-x:auto;margin-top:2.5rem;border-radius:var(--radius-lg);border:1.5px solid var(--border);box-shadow:var(--shadow-lg);overflow:hidden}
+.comp-table{width:100%;border-collapse:collapse;font-size:14px;min-width:580px;background:var(--card)}
+.comp-table th{padding:1.1rem 1.25rem;text-align:center;font-weight:700;font-size:13px;background:var(--bg);color:var(--muted);font-family:var(--body);letter-spacing:.03em;border-bottom:1.5px solid var(--border)}
+.comp-table th:first-child{text-align:left}
+.comp-table th.hi{color:var(--green-dark);background:var(--green-light)}
+.comp-table td{padding:.9rem 1.25rem;border-bottom:1px solid var(--border);color:var(--muted);text-align:center}
+.comp-table td:first-child{color:var(--text);font-weight:500;text-align:left}
+.comp-table tr:last-child td{border-bottom:none}
+.comp-table tr:hover td{background:var(--bg)}
+.check{color:var(--green);font-size:16px;font-weight:700}
+.cross{color:var(--muted2);font-size:16px}
+.price-hi{color:var(--green-dark);font-weight:700;font-family:var(--display);font-size:15px}
+
+/* ── PRICING ── */
+#pricing{background:var(--bg);overflow:hidden}
+#pricing::before{content:'';position:absolute;top:-2px;left:0;right:0;height:80px;background:var(--bg2);clip-path:polygon(0 0,100% 0,100% 100%,0 0);z-index:0}
+/* Grid pattern */
+.pricing-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,0,0,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.025) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 60% at 50% 50%,black 30%,transparent 100%);z-index:0}
+
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem}
+.plan{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:2.25rem 1.75rem;position:relative;transition:all .35s;box-shadow:var(--shadow)}
+.plan:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg)}
+.plan.popular{border-color:var(--green);box-shadow:0 0 0 1px var(--green),var(--shadow-lg)}
+.pop-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;font-size:11px;font-weight:800;padding:4px 16px;border-radius:20px;white-space:nowrap;text-transform:uppercase;letter-spacing:.06em;box-shadow:0 4px 12px var(--green-glow)}
+.plan-name{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem}
+.plan-price{font-family:var(--display);font-size:42px;font-weight:900;line-height:1;margin-bottom:.25rem;letter-spacing:-.03em;color:var(--text)}
+.plan-price span{font-size:15px;font-weight:400;color:var(--muted);font-family:var(--body)}
+.plan-desc{font-size:13px;color:var(--muted);margin-bottom:1.75rem;min-height:36px;font-weight:300}
+.plan-features{list-style:none;margin-bottom:2rem}
+.plan-features li{font-size:13px;color:var(--text);padding:.32rem 0;display:flex;align-items:flex-start;gap:10px}
+.plan-features li::before{content:"✓";color:var(--green);font-weight:700;flex-shrink:0;margin-top:1px}
+.plan-features li.off{color:var(--muted2)}
+.plan-features li.off::before{content:"–";color:var(--muted2)}
+.plan-cta{width:100%;padding:.85rem;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--body);transition:all .25s;border:1.5px solid var(--border2);background:var(--bg);color:var(--text)}
+.plan-cta:hover{border-color:var(--green);color:var(--green);background:var(--green-light)}
+.plan.popular .plan-cta{background:var(--green);color:#fff;border-color:var(--green);box-shadow:0 4px 16px var(--green-glow)}
+.plan.popular .plan-cta:hover{background:var(--green-dark)}
+@media(max-width:700px){.plans{grid-template-columns:1fr}}
+
+/* ── FAQ ── */
+#faq{background:var(--bg2);overflow:hidden}
+#faq::before{content:'';position:absolute;top:-2px;left:0;right:0;height:80px;background:var(--bg);clip-path:polygon(0 0,100% 0,100% 0,0 100%);z-index:0}
+.faq-deco{position:absolute;right:-40px;bottom:0;font-family:var(--display);font-size:200px;font-weight:900;font-style:italic;color:transparent;-webkit-text-stroke:1px rgba(0,0,0,.04);pointer-events:none;z-index:0;line-height:1;user-select:none}
+
+.faq-list{margin-top:2.5rem;max-width:700px}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{width:100%;text-align:left;background:none;border:none;padding:1.1rem 0;font-size:15px;font-weight:500;color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:var(--body);gap:1rem;transition:color .2s}
+.faq-q:hover{color:var(--green)}
+.faq-icon{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--muted);flex-shrink:0;transition:all .25s}
+.faq-a{font-size:14px;color:var(--muted);line-height:1.75;padding-bottom:1rem;display:none;font-weight:300;animation:fadeUp .3s ease}
+.faq-item.open .faq-a{display:block}
+.faq-item.open .faq-icon{transform:rotate(45deg);border-color:var(--green);color:var(--green);background:var(--green-light)}
+.faq-item.open .faq-q{color:var(--green-dark)}
+
+/* ── FOOTER ── */
+footer{background:var(--text);padding:5rem 1.5rem 2.5rem;position:relative;overflow:hidden}
+footer::before{content:'BidAI';position:absolute;bottom:-60px;right:-40px;font-family:var(--display);font-size:200px;font-weight:900;font-style:italic;color:rgba(255,255,255,.03);pointer-events:none;user-select:none;white-space:nowrap}
+footer::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),rgba(11,191,106,0.2),transparent)}
+.footer-inner{max-width:920px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:2.5rem;position:relative;z-index:1}
+.footer-brand .logo{font-size:26px;color:#fff}
+.footer-brand p{font-size:13px;color:rgba(255,255,255,.45);margin-top:.75rem;max-width:220px;line-height:1.65;font-weight:300}
+.footer-links h4{color:rgba(255,255,255,.85);font-size:12px;font-weight:700;margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.07em}
+.footer-links a{display:block;font-size:13px;color:rgba(255,255,255,.4);margin-bottom:.4rem;transition:color .2s;cursor:pointer;font-weight:300}
+.footer-links a:hover{color:var(--green)}
+.footer-bottom{max-width:920px;margin:2.5rem auto 0;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.07);font-size:12px;color:rgba(255,255,255,.25);display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;position:relative;z-index:1}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(26,26,18,.55);z-index:1000;overflow-y:auto;padding:2rem 1rem;backdrop-filter:blur(8px)}
+.modal-overlay.open{display:flex;align-items:flex-start;justify-content:center}
+.modal{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:2.75rem;max-width:700px;width:100%;position:relative;margin:auto;box-shadow:var(--shadow-lg);animation:scaleIn .3s ease}
+.modal h2{font-family:var(--display);font-size:26px;font-weight:800;margin-bottom:1.5rem;letter-spacing:-.02em}
+.modal h3{font-family:var(--display);font-size:16px;font-weight:700;margin:1.5rem 0 .5rem;color:var(--green-dark)}
+.modal p,.modal li{font-size:14px;color:var(--muted);line-height:1.75;font-weight:300}
+.modal ul{padding-left:1.5rem;margin:.5rem 0}
+.modal-close{position:absolute;top:1.25rem;right:1.25rem;background:var(--bg);border:1.5px solid var(--border);border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .2s}
+.modal-close:hover{background:var(--bg2);color:var(--text)}
 </style>
 </head>
 <body>
 
-<div class="layout">
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <a href="/" class="logo">Bid<em>AI</em></a>
+<!-- NAV -->
+<nav>
+  <div class="logo">Bid<em>AI</em></div>
+  <div class="nav-links">
+    <a href="#how">Comment ça marche</a>
+    <a href="#pricing">Tarifs</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Commencer gratuitement</button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+  <div class="hero-inner">
+    <div class="hero-tag hero-anim h1"><div class="hero-dot"></div>Nouvelle génération · Analyse IA</div>
+    <h1 class="hero-anim h2">Gagnez plus d'appels<br>d'offres. <em>Beaucoup plus.</em></h1>
+    <p class="hero-sub hero-anim h3">BidAI analyse votre appel d'offres en 30 secondes — score de pertinence, risques identifiés, brouillon généré. Sans effort.</p>
+    <div class="hero-ctas hero-anim h4">
+      <button class="btn-primary" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Essayer gratuitement →</button>
+      <button class="btn-secondary" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">Comment ça marche</button>
     </div>
-    <nav class="nav-section">
-      <div class="nav-label">Menu</div>
-      <a class="nav-item active" onclick="showView('analyze')">
-        <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M15 3l2 2-7 7-3 1 1-3 7-7z"/></svg>
-        Analyser un AO
-      </a>
-      <a class="nav-item" onclick="showView('history')">
-        <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 3"/></svg>
-        Historique
-      </a>
-      <a class="nav-item" onclick="showView('plan')">
-        <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M7 10h6M7 13h4"/></svg>
-        Mon abonnement
-      </a>
-    </nav>
-    <div class="sidebar-bottom">
-      <div class="user-chip">
-        <div class="user-avatar" id="sb-avatar">?</div>
-        <div>
-          <div class="user-name" id="sb-name">Chargement…</div>
-          <div class="user-plan" id="sb-plan">—</div>
-        </div>
-        <button class="logout-btn" onclick="logout()" title="Se déconnecter">⏻</button>
-      </div>
+    <div class="hero-stats hero-anim h5">
+      <div class="stat stat-anim d1"><div class="stat-n">30s</div><div class="stat-l">par analyse</div></div>
+      <div class="stat stat-anim d2"><div class="stat-n">–80%</div><div class="stat-l">temps de rédaction</div></div>
+      <div class="stat stat-anim d3"><div class="stat-n">+30%</div><div class="stat-l">taux de succès estimé</div></div>
+      <div class="stat stat-anim d4"><div class="stat-n">100k+</div><div class="stat-l">entreprises cibles FR</div></div>
     </div>
-  </aside>
+  </div>
+  <div class="hero-deco">BidAI</div>
+</section>
 
-  <!-- MAIN -->
-  <main class="main-content">
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>Analyse en 30 secondes <em>·</em></span>
+    <span>Score de pertinence IA <em>·</em></span>
+    <span>Brouillon généré automatiquement <em>·</em></span>
+    <span>Risques identifiés <em>·</em></span>
+    <span>Décision Go / No-Go <em>·</em></span>
+    <span>100k entreprises en France <em>·</em></span>
+    <span>30 jours gratuits <em>·</em></span>
+    <span>Sans engagement <em>·</em></span>
+    <span>Analyse en 30 secondes <em>·</em></span>
+    <span>Score de pertinence IA <em>·</em></span>
+    <span>Brouillon généré automatiquement <em>·</em></span>
+    <span>Risques identifiés <em>·</em></span>
+    <span>Décision Go / No-Go <em>·</em></span>
+    <span>100k entreprises en France <em>·</em></span>
+    <span>30 jours gratuits <em>·</em></span>
+    <span>Sans engagement <em>·</em></span>
+  </div>
+</div>
 
-    <!-- TOPBAR -->
-    <div class="topbar">
-      <div class="page-title" id="page-title">Analyser un <em>appel d'offres</em></div>
-      <div id="plan-badge-top"></div>
-    </div>
-
-    <!-- METRICS -->
-    <div class="metrics">
-      <div class="metric">
-        <div class="metric-label">Analyses ce mois</div>
-        <div class="metric-value"><em id="m-used">—</em> <span style="font-size:18px;color:var(--muted)">/ <span id="m-limit">—</span></span></div>
-        <div class="metric-sub" id="m-sub">Chargement…</div>
-        <div class="progress-bar"><div class="progress-fill" id="m-progress" style="width:0%"></div></div>
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="how-pattern"></div>
+  <div class="container">
+    <div class="sec-tag reveal">Simple &amp; rapide</div>
+    <h2 class="reveal d1">3 étapes pour répondre <em>mieux et plus vite</em></h2>
+    <p class="sub reveal d2">Pas de formation, pas d'intégration complexe. Vous collez votre AO, l'IA fait le reste.</p>
+    <div class="steps">
+      <div class="step reveal d2">
+        <div class="step-num">1</div>
+        <h3>Collez votre AO</h3>
+        <p>Copiez le texte depuis BOAMP, PLACE ou toute autre source. Renseignez votre profil entreprise une seule fois.</p>
       </div>
-      <div class="metric">
-        <div class="metric-label">Analyses totales</div>
-        <div class="metric-value" id="m-total">—</div>
-        <div class="metric-sub">Depuis votre inscription</div>
+      <div class="step reveal d3">
+        <div class="step-num">2</div>
+        <h3>L'IA analyse en 30s</h3>
+        <p>BidAI lit l'AO, score sa pertinence, identifie les risques et évalue votre adéquation sur chaque critère.</p>
       </div>
-      <div class="metric">
-        <div class="metric-label">Dernier AO analysé</div>
-        <div class="metric-value" style="font-size:18px;font-weight:600" id="m-last">—</div>
-        <div class="metric-sub" id="m-last-score"></div>
-      </div>
-    </div>
-
-    <!-- ═══ VIEW: ANALYZE ═══ -->
-    <div id="view-analyze">
-      <div class="limit-warning" id="limit-warning">
-        Vous avez atteint la limite d'analyses de votre plan.
-        <a href="#" onclick="showView('plan')" style="color:var(--red);font-weight:700;margin-left:.5rem">Upgrader mon plan →</a>
-      </div>
-
-      <div class="section">
-        <div class="section-header">
-          <div class="section-title">Nouvelle analyse</div>
-          <span class="sec-badge">Live</span>
-        </div>
-
-        <div style="margin-bottom:1.25rem">
-          <div class="demo-lbl">Profil de votre entreprise</div>
-          <div class="demo-row">
-            <input class="demo-inp" id="d-secteur" placeholder="Secteur d'activité">
-            <input class="demo-inp" id="d-effectif" placeholder="Effectif" style="max-width:180px">
-          </div>
-          <input class="demo-inp" id="d-refs" placeholder="Références clés (ex : 3 projets ERP, ISO 27001...)" style="width:100%">
-        </div>
-
-        <div>
-          <div class="demo-lbl">Appel d'offres à analyser</div>
-          <div class="ex-btns">
-            <span style="font-size:12px;color:var(--muted2)">Exemples :</span>
-            <button class="ex-btn" onclick="loadEx('esn')">ESN · Refonte SI RH</button>
-            <button class="ex-btn" onclick="loadEx('maintenance')">Maintenance</button>
-            <button class="ex-btn" onclick="loadEx('securite')">Sécurité</button>
-          </div>
-          <textarea class="demo-inp" id="d-ao" placeholder="Collez ici le texte de votre appel d'offres..."></textarea>
-        </div>
-
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.75rem;flex-wrap:wrap;gap:.75rem">
-          <p style="font-size:11px;color:var(--muted2)">Données non stockées · Analyse confidentielle</p>
-          <button class="btn-analyze" id="d-btn" onclick="analyze()">Analyser cet AO →</button>
-        </div>
-        <div class="status-bar" id="d-status"></div>
-        <div id="d-err" style="color:var(--red);font-size:13px;padding:.5rem 0"></div>
-        <div id="d-result"></div>
+      <div class="step reveal d4">
+        <div class="step-num">3</div>
+        <h3>Récupérez le brouillon</h3>
+        <p>Décision go/no-go claire et brouillon complet — introduction, méthodologie, équipe — prêt à personnaliser.</p>
       </div>
     </div>
+  </div>
+</section>
 
-    <!-- ═══ VIEW: HISTORY ═══ -->
-    <div id="view-history" style="display:none">
-      <div class="section">
-        <div class="section-header">
-          <div class="section-title">Historique des analyses</div>
-          <span class="sec-badge" id="h-count">0 analyses</span>
+<!-- DEMO -->
+<section id="demo">
+  <div class="demo-circle"></div>
+  <div class="container">
+    <div class="sec-tag reveal">Démo live</div>
+    <h2 class="reveal d1">Testez avec un <em>vrai appel d'offres</em></h2>
+    <p class="sub reveal d2">Entrez vos informations et collez un AO. Le résultat apparaît en 30 secondes.</p>
+    <div class="demo-wrap reveal d3">
+      <div style="margin-bottom:1.25rem">
+        <div class="demo-lbl">Profil de votre entreprise</div>
+        <div class="demo-row">
+          <input class="demo-inp" id="d-secteur" value="ESN — développement logiciel et intégration" placeholder="Secteur d'activité">
+          <input class="demo-inp" id="d-effectif" value="45 collaborateurs" placeholder="Effectif" style="max-width:180px">
         </div>
-        <div class="history-list" id="history-list">
-          <div class="empty-state">
-            <div class="empty-icon">📋</div>
-            <p>Aucune analyse pour l'instant.<br>Lancez votre première analyse !</p>
-          </div>
+        <input class="demo-inp" id="d-refs" value="3 projets ERP SAP, certifié ISO 27001, clients secteur public" placeholder="Références clés" style="width:100%">
+      </div>
+      <div>
+        <div class="demo-lbl">Appel d'offres à analyser</div>
+        <div class="ex-btns">
+          <span style="font-size:12px;color:var(--muted2)">Exemples :</span>
+          <button class="ex-btn" onclick="loadEx('esn')">ESN · Refonte SI RH</button>
+          <button class="ex-btn" onclick="loadEx('maintenance')">Maintenance industrielle</button>
+          <button class="ex-btn" onclick="loadEx('securite')">Sécurité informatique</button>
         </div>
+        <textarea class="demo-inp" id="d-ao" placeholder="Collez ici le texte de votre appel d'offres..."></textarea>
+        <p style="font-size:11px;color:var(--muted2);margin-top:.5rem">Vos données ne sont pas stockées. Analyse confidentielle.</p>
+      </div>
+      <button class="btn-analyze" id="d-btn" onclick="analyze()">Analyser cet appel d'offres →</button>
+      <div class="demo-status" id="d-status"></div>
+      <div id="d-err" style="color:var(--red);font-size:13px;padding:.5rem 0"></div>
+      <div id="d-result"></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section id="comparison">
+  <div class="comp-lines"></div>
+  <div class="comp-deco">vs</div>
+  <div class="container">
+    <div class="sec-tag reveal">Pourquoi BidAI ?</div>
+    <h2 class="reveal d1">BidAI vs les <em>alternatives</em></h2>
+    <p class="sub reveal d2">Ce que vous obtenez avec BidAI face à une réponse manuelle ou une agence spécialisée.</p>
+    <div class="comp-wrap reveal d3">
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>Fonctionnalité</th>
+            <th class="hi">BidAI</th>
+            <th>En manuel</th>
+            <th>Agence AO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Analyse go/no-go instantanée</td><td><span class="check">✓</span></td><td><span class="cross">—</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Résultat en moins d'1 minute</td><td><span class="check">✓</span></td><td><span class="cross">—</span></td><td><span class="cross">—</span></td></tr>
+          <tr><td>Brouillon de réponse généré</td><td><span class="check">✓</span></td><td><span class="cross">—</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Identification des risques</td><td><span class="check">✓</span></td><td><span class="cross">—</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Disponible 24h/24</td><td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="cross">—</span></td></tr>
+          <tr><td>Sans compétence requise</td><td><span class="check">✓</span></td><td><span class="cross">—</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Coût mensuel</td><td class="price-hi">Dès 299 €/mois</td><td style="color:var(--muted)">5–15k €/an (RH)</td><td style="color:var(--muted)">3–10k €/AO</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="pricing-grid"></div>
+  <div class="container">
+    <div class="sec-tag reveal">Tarifs</div>
+    <h2 class="reveal d1">Simple, prévisible, <em>sans engagement</em></h2>
+    <p class="sub reveal d2">30 jours gratuits sur tous les plans. Résiliez à tout moment en un clic.</p>
+    <div class="plans">
+      <div class="plan reveal d2">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">299 <span>€/mois</span></div>
+        <div class="plan-desc">Pour les PME qui débutent avec les AOs</div>
+        <ul class="plan-features">
+          <li>20 analyses d'AO par mois</li>
+          <li>Score de pertinence go/no-go</li>
+          <li>Brouillon de réponse généré</li>
+          <li>Identification des risques</li>
+          <li class="off">Analyses illimitées</li>
+          <li class="off">Export Word/PDF</li>
+        </ul>
+        <button class="plan-cta" onclick="window.location.href='VOTRE_LIEN_STRIPE_STARTER'">Commencer — 30j gratuits</button>
+      </div>
+      <div class="plan popular reveal d3">
+        <div class="pop-badge">Le plus populaire</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">599 <span>€/mois</span></div>
+        <div class="plan-desc">Pour les équipes commerciales actives</div>
+        <ul class="plan-features">
+          <li>Analyses illimitées</li>
+          <li>Score de pertinence go/no-go</li>
+          <li>Brouillon de réponse généré</li>
+          <li>Identification des risques</li>
+          <li>Export Word/PDF</li>
+          <li>Historique de tous vos AOs</li>
+        </ul>
+        <button class="plan-cta" onclick="window.location.href='VOTRE_LIEN_STRIPE_PRO'">Commencer — 30j gratuits</button>
+      </div>
+      <div class="plan reveal d4">
+        <div class="plan-name">Business</div>
+        <div class="plan-price">1 200 <span>€/mois</span></div>
+        <div class="plan-desc">Pour les entreprises à fort volume d'AOs</div>
+        <ul class="plan-features">
+          <li>Analyses illimitées</li>
+          <li>Tout le plan Pro inclus</li>
+          <li>Veille AO automatique BOAMP</li>
+          <li>Alertes en temps réel</li>
+          <li>Intégration CRM sur demande</li>
+          <li>Support prioritaire dédié</li>
+        </ul>
+        <button class="plan-cta" onclick="window.location.href='VOTRE_LIEN_STRIPE_BUSINESS'">Nous contacter</button>
       </div>
     </div>
+    <p class="reveal" style="text-align:center;font-size:13px;color:var(--muted);margin-top:1.5rem;font-weight:300">Garantie satisfait ou remboursé 30 jours · Sans engagement · Résiliation en 1 clic</p>
+  </div>
+</section>
 
-    <!-- ═══ VIEW: PLAN ═══ -->
-    <div id="view-plan" style="display:none">
-      <div class="section">
-        <div class="section-header">
-          <div class="section-title">Mon abonnement</div>
-        </div>
-
-        <div class="plan-card" style="margin-bottom:1.5rem">
-          <div class="plan-info">
-            <div class="plan-name-big" id="pl-name">—</div>
-            <div class="plan-renew" id="pl-renew">—</div>
-          </div>
-          <div id="pl-actions"></div>
-        </div>
-
-        <div style="margin-bottom:1rem">
-          <div class="res-lbl">Ce qui est inclus dans votre plan</div>
-        </div>
-        <div id="pl-features"></div>
-      </div>
-
-      <!-- Upgrade options -->
-      <div class="section" id="upgrade-section" style="display:none">
-        <div class="section-header">
-          <div class="section-title">Changer de plan</div>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem">
-          <div style="border:1.5px solid var(--border);border-radius:12px;padding:1.5rem">
-            <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Starter</div>
-            <div style="font-family:var(--display);font-size:28px;font-weight:900;margin-bottom:.25rem">299 <span style="font-size:14px;font-weight:400;color:var(--muted);font-family:var(--body)">€/mois</span></div>
-            <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;font-weight:300">20 analyses/mois</p>
-            <button class="btn-portal" style="width:100%" onclick="window.open('VOTRE_LIEN_STRIPE_STARTER','_blank')">Choisir Starter</button>
-          </div>
-          <div style="border:1.5px solid var(--green);border-radius:12px;padding:1.5rem;position:relative">
-            <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;font-size:11px;font-weight:800;padding:3px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em">Recommandé</div>
-            <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Pro</div>
-            <div style="font-family:var(--display);font-size:28px;font-weight:900;margin-bottom:.25rem">599 <span style="font-size:14px;font-weight:400;color:var(--muted);font-family:var(--body)">€/mois</span></div>
-            <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;font-weight:300">Analyses illimitées + export</p>
-            <button class="btn-upgrade" style="width:100%" onclick="window.open('VOTRE_LIEN_STRIPE_PRO','_blank')">Choisir Pro</button>
-          </div>
-          <div style="border:1.5px solid var(--border);border-radius:12px;padding:1.5rem">
-            <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Business</div>
-            <div style="font-family:var(--display);font-size:28px;font-weight:900;margin-bottom:.25rem">1 200 <span style="font-size:14px;font-weight:400;color:var(--muted);font-family:var(--body)">€/mois</span></div>
-            <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;font-weight:300">Veille auto + CRM</p>
-            <button class="btn-portal" style="width:100%" onclick="window.open('mailto:contact@bidai.fr','_blank')">Nous contacter</button>
-          </div>
-        </div>
-      </div>
+<!-- FAQ -->
+<section id="faq">
+  <div class="faq-deco">FAQ</div>
+  <div class="container">
+    <div class="sec-tag reveal">Questions fréquentes</div>
+    <h2 class="reveal d1">Tout ce que vous <em>voulez savoir</em></h2>
+    <div class="faq-list reveal d2">
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">BidAI remplace-t-il un juriste ou un consultant AO ? <span class="faq-icon">+</span></button><div class="faq-a">Non — BidAI est un outil d'aide à la décision, pas un conseil juridique. Il vous aide à lire plus vite, mieux structurer votre réponse et identifier les points d'attention. Pour des marchés complexes, il reste conseillé de vous entourer d'experts.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Est-ce que mes données d'appel d'offres sont stockées ? <span class="faq-icon">+</span></button><div class="faq-a">Non. Chaque analyse est traitée en temps réel et n'est pas conservée sur nos serveurs. Vos données restent confidentielles et ne sont pas utilisées pour entraîner des modèles.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Quel type d'appels d'offres BidAI peut-il analyser ? <span class="faq-icon">+</span></button><div class="faq-a">BidAI fonctionne avec tous les types d'AOs : marchés publics (BOAMP, PLACE, TED), appels d'offres privés, consultations restreintes. Il s'adapte à tous les secteurs — IT, BTP, services, maintenance, sécurité, conseil.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Le brouillon généré est-il utilisable directement ? <span class="faq-icon">+</span></button><div class="faq-a">Le brouillon est une base solide à personnaliser. Il structure votre réponse avec les sections clés en s'appuyant sur votre profil. Il vous fait gagner 2 à 4 heures de rédaction par AO, sans vous dispenser de relecture.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Combien de temps prend une analyse ? <span class="faq-icon">+</span></button><div class="faq-a">Entre 20 et 45 secondes selon la longueur du document. Pour un AO standard d'une page, comptez 25 secondes. Pour un CCTP de 5 pages, environ 45 secondes.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Comment fonctionnent les 30 jours gratuits ? <span class="faq-icon">+</span></button><div class="faq-a">Vous accédez au plan choisi pendant 30 jours sans être débité. Aucune carte bancaire requise pour démarrer. À l'issue des 30 jours, vous êtes facturé automatiquement sauf résiliation avant.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Peut-on résilier à tout moment ? <span class="faq-icon">+</span></button><div class="faq-a">Oui, sans condition ni préavis. La résiliation se fait en un clic depuis votre espace client. Vous conservez l'accès jusqu'à la fin de la période en cours.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Y a-t-il une limite de taille pour les AOs ? <span class="faq-icon">+</span></button><div class="faq-a">BidAI analyse efficacement les AOs jusqu'à environ 6 000 mots. Pour les dossiers très volumineux, nous recommandons de coller les sections clés : objet du marché, critères de notation, budget et délais.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Le score de pertinence est-il fiable ? <span class="faq-icon">+</span></button><div class="faq-a">Le score est un indicateur basé sur l'analyse de votre profil et des critères de l'AO. Il est fiable pour filtrer les AOs mal ciblés (score &lt; 40) et identifier les opportunités fortes (score &gt; 70). Il ne remplace pas votre jugement stratégique.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">BidAI fonctionne-t-il pour les AOs en langue étrangère ? <span class="faq-icon">+</span></button><div class="faq-a">BidAI est optimisé pour le français et les marchés publics français. Il peut analyser des documents en anglais, mais les résultats sont moins précis. La prise en charge multilingue est prévue dans une prochaine version.</div></div>
     </div>
+  </div>
+</section>
 
-  </main>
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo">Bid<em>AI</em></div>
+      <p>L'IA qui vous aide à gagner plus d'appels d'offres en moins de temps.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Produit</h4>
+      <a href="#how">Comment ça marche</a>
+      <a href="#pricing">Tarifs</a>
+      <a href="#faq">FAQ</a>
+      <a href="#demo">Essai gratuit</a>
+    </div>
+    <div class="footer-links">
+      <h4>Légal</h4>
+      <a onclick="openModal('cgu')">Conditions générales</a>
+      <a onclick="openModal('privacy')">Confidentialité</a>
+      <a onclick="openModal('mentions')">Mentions légales</a>
+    </div>
+    <div class="footer-links">
+      <h4>Contact</h4>
+      <a href="mailto:contact@bidai.fr">contact@bidai.fr</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 BidAI. Tous droits réservés.</span>
+    <span>Aide à la décision uniquement — Ne constitue pas un conseil juridique ou commercial.</span>
+  </div>
+</footer>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-cgu">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('cgu')">✕</button>
+    <h2>Conditions Générales d'Utilisation</h2>
+    <p><strong>Dernière mise à jour :</strong> Mars 2026</p>
+    <h3>1. Objet</h3><p>Les présentes CGU régissent l'utilisation du service BidAI, outil d'aide à l'analyse des appels d'offres par intelligence artificielle.</p>
+    <h3>2. Description du service</h3><p>BidAI est un outil d'aide à la décision. Les résultats fournis sont indicatifs et ne constituent pas un conseil juridique, commercial ou stratégique.</p>
+    <h3>3. Propriété intellectuelle</h3><p>Le service BidAI et ses composants sont protégés par le droit de la propriété intellectuelle. L'utilisateur conserve la propriété des données qu'il soumet.</p>
+    <h3>4. Données personnelles</h3><p>BidAI traite les données conformément au RGPD. Les données soumises lors des analyses ne sont pas conservées au-delà de la session en cours.</p>
+    <h3>5. Limitation de responsabilité</h3><p>BidAI ne saurait être tenu responsable des décisions prises sur la base des analyses générées.</p>
+    <h3>6. Résiliation</h3><p>L'utilisateur peut résilier son abonnement à tout moment depuis son espace client, avec effet à la fin de la période en cours.</p>
+    <h3>7. Droit applicable</h3><p>Les présentes CGU sont soumises au droit français. Tout litige relève de la compétence des tribunaux français.</p>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-privacy">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('privacy')">✕</button>
+    <h2>Politique de Confidentialité</h2>
+    <p><strong>Dernière mise à jour :</strong> Mars 2026</p>
+    <h3>1. Données collectées</h3>
+    <ul><li>Données de compte : nom, email, entreprise</li><li>Données de facturation : traitées par Stripe (non stockées par BidAI)</li><li>Données d'utilisation : nombre d'analyses, date de connexion</li></ul>
+    <h3>2. Données NON collectées</h3><p>Le contenu des AOs soumis à l'analyse n'est pas conservé. Chaque analyse est traitée en temps réel et supprimée immédiatement après.</p>
+    <h3>3. Vos droits</h3><p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement et de portabilité. Contact : contact@bidai.fr</p>
+    <h3>4. Cookies</h3><p>BidAI utilise uniquement des cookies strictement nécessaires. Aucun cookie publicitaire ou de tracking tiers.</p>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-mentions">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('mentions')">✕</button>
+    <h2>Mentions Légales</h2>
+    <h3>Éditeur du site</h3>
+    <p><strong>Raison sociale :</strong> [VOTRE NOM / ENTREPRISE]<br>
+    <strong>Forme juridique :</strong> [Auto-entrepreneur / SASU...]<br>
+    <strong>SIRET :</strong> [VOTRE SIRET]<br>
+    <strong>Adresse :</strong> [VOTRE ADRESSE]<br>
+    <strong>Email :</strong> contact@bidai.fr</p>
+    <h3>Hébergement</h3>
+    <p>Vercel Inc. — 340 Pine Street, Suite 701, San Francisco, CA 94104, USA</p>
+    <h3>Responsabilité</h3>
+    <p>BidAI est un outil d'aide à la décision. Les analyses générées ne constituent pas des conseils juridiques ou commerciaux.</p>
+  </div>
 </div>
 
 <script>
-/* ── CONFIG — REMPLACEZ CES VALEURS ── */
-const SUPABASE_URL = 'VOTRE_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'VOTRE_SUPABASE_ANON_KEY';
+/* ── SCROLL REVEAL ── */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}});
+},{threshold:.1,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.reveal,.reveal-left,.reveal-scale,.stat-anim').forEach(el=>obs.observe(el));
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-let currentUser = null;
-let userProfile = null;
-
-/* ── INIT ── */
-async function init(){
-  const {data:{session}} = await sb.auth.getSession();
-  if(!session){ window.location.href='/app/login.html'; return; }
-  currentUser = session.user;
-  await loadProfile();
-  await loadMetrics();
-  await loadHistory();
-}
-
-async function loadProfile(){
-  const {data} = await sb.from('profiles').select('*').eq('id',currentUser.id).single();
-  userProfile = data || {plan:'free', analyses_used:0, analyses_limit:3, full_name:currentUser.user_metadata?.full_name||currentUser.email};
-
-  // Sidebar
-  const initials = (userProfile.full_name||'U').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-  document.getElementById('sb-avatar').textContent = initials;
-  document.getElementById('sb-name').textContent = userProfile.full_name || currentUser.email;
-  document.getElementById('sb-plan').textContent = planLabel(userProfile.plan);
-
-  // Plan badge top
-  document.getElementById('plan-badge-top').innerHTML = `<span class="plan-badge plan-${userProfile.plan}">${planLabel(userProfile.plan)}</span>`;
-
-  // Pre-fill profile
-  if(userProfile.secteur) document.getElementById('d-secteur').value = userProfile.secteur;
-  if(userProfile.effectif) document.getElementById('d-effectif').value = userProfile.effectif;
-  if(userProfile.refs) document.getElementById('d-refs').value = userProfile.refs;
-}
-
-async function loadMetrics(){
-  const used = userProfile?.analyses_used || 0;
-  const limit = userProfile?.analyses_limit || 3;
-  const isUnlimited = limit === -1;
-
-  document.getElementById('m-used').textContent = used;
-  document.getElementById('m-limit').textContent = isUnlimited ? '∞' : limit;
-  document.getElementById('m-sub').textContent = isUnlimited ? 'Analyses illimitées' : `${Math.max(0,limit-used)} restantes ce mois`;
-  document.getElementById('m-progress').style.width = isUnlimited ? '30%' : Math.min(100,(used/limit)*100)+'%';
-
-  // Total
-  const {count} = await sb.from('analyses').select('*',{count:'exact',head:true}).eq('user_id',currentUser.id);
-  document.getElementById('m-total').textContent = count||0;
-
-  // Last
-  const {data:last} = await sb.from('analyses').select('created_at,score,decision,objet').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(1).single();
-  if(last){
-    const d=new Date(last.created_at);
-    document.getElementById('m-last').textContent = last.objet || 'AO analysé';
-    document.getElementById('m-last-score').textContent = `Score ${last.score}/100 · ${last.decision} · ${d.toLocaleDateString('fr-FR')}`;
-  } else {
-    document.getElementById('m-last').textContent = 'Aucune encore';
-  }
-
-  // Limit warning
-  if(!isUnlimited && used >= limit){
-    document.getElementById('limit-warning').classList.add('show');
-    document.getElementById('d-btn').disabled=true;
-  }
-}
-
-async function loadHistory(){
-  const {data} = await sb.from('analyses').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(50);
-  document.getElementById('h-count').textContent = `${data?.length||0} analyse${data?.length!==1?'s':''}`;
-
-  if(!data||data.length===0){return}
-
-  document.getElementById('history-list').innerHTML = data.map(a=>{
-    const sc=a.score||0;
-    const rc=bc(sc);const bgc=bgColor(sc);const tc=tcColor(sc);
-    const d=new Date(a.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
-    return `<div class="history-item" onclick="showHistoryDetail(${a.id})">
-      <div class="history-score" style="border-color:${rc};background:${bgc};color:${tc}">${sc}</div>
-      <div class="history-info">
-        <div class="history-obj">${a.objet||'Appel d\'offres'}</div>
-        <div class="history-date">${d}</div>
-      </div>
-      <span class="history-dec" style="background:${bgc};color:${tc}">${a.decision||'—'}</span>
-    </div>`;
-  }).join('');
-}
-
-function planLabel(p){
-  const labels={free:'Essai gratuit',starter:'Starter',pro:'Pro',business:'Business'};
-  return labels[p]||p;
-}
-
-/* ── VIEWS ── */
-function showView(v){
-  ['analyze','history','plan'].forEach(x=>{
-    document.getElementById('view-'+x).style.display = x===v?'block':'none';
-  });
-  document.querySelectorAll('.nav-item').forEach(el=>{
-    el.classList.toggle('active', el.getAttribute('onclick')?.includes(v));
-  });
-  const titles={analyze:'Analyser un <em>appel d\'offres</em>',history:'Historique des <em>analyses</em>',plan:'Mon <em>abonnement</em>'};
-  document.getElementById('page-title').innerHTML = titles[v];
-
-  if(v==='plan') renderPlanView();
-  if(v==='history') loadHistory();
-}
-
-function renderPlanView(){
-  const p = userProfile?.plan||'free';
-  const limits = {free:3,starter:20,pro:-1,business:-1};
-  const lim = limits[p];
-  document.getElementById('pl-name').textContent = planLabel(p);
-  document.getElementById('pl-renew').textContent = p==='free'?'Compte gratuit — 3 analyses d\'essai':'Abonnement mensuel actif';
-
-  const features = {
-    free:['3 analyses d\'essai','Score de pertinence go/no-go','Brouillon de réponse basique'],
-    starter:['20 analyses par mois','Score de pertinence go/no-go','Brouillon de réponse généré','Identification des risques'],
-    pro:['Analyses illimitées','Score de pertinence go/no-go','Brouillon de réponse généré','Identification des risques','Export Word/PDF','Historique complet'],
-    business:['Analyses illimitées','Tout le plan Pro','Veille AO automatique BOAMP','Alertes en temps réel','Intégration CRM','Support prioritaire']
-  };
-
-  document.getElementById('pl-features').innerHTML=(features[p]||[]).map(f=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:14px">
-      <span style="color:var(--green);font-weight:700">✓</span><span>${f}</span>
-    </div>`).join('');
-
-  const actions = p==='free'
-    ? `<button class="btn-upgrade" onclick="document.getElementById('upgrade-section').style.display='block';this.style.display='none'">Passer à un plan payant →</button>`
-    : `<button class="btn-portal" onclick="window.open('VOTRE_LIEN_PORTAIL_STRIPE','_blank')">Gérer mon abonnement</button>`;
-  document.getElementById('pl-actions').innerHTML = actions;
-
-  if(p!=='free') document.getElementById('upgrade-section').style.display='none';
-}
+/* ── HERO ANIM ── */
+window.addEventListener('load',()=>document.querySelectorAll('.hero-anim').forEach(el=>el.classList.add('go')));
 
 /* ── EXAMPLES ── */
 const EX={
-  esn:`Objet : Refonte du système d'information RH\nPouvoir adjudicateur : Communauté d'Agglomération du Val de Saône (12 000 agents)\nCritères : Technique 60% — Prix 40%\nBudget : 280 000 € HT — Délai : 3 semaines`,
-  maintenance:`Objet : Maintenance équipements de production\nDonneur d'ordre : Groupe agroalimentaire, Roanne\nCritères : Technique 50% — Prix 50%\nBudget : 380 000 € HT/an — Durée : 3 ans`,
-  securite:`Objet : Audit sécurité et conformité NIS2\nBénéficiaire : CHU de Lyon\nCritères : Technique 70% (PASSI) — Prix 30%\nBudget : 95 000 € HT — Délai : 10 jours`
+  esn:`Objet : Refonte du système d'information RH et déploiement d'un portail collaborateur\nPouvoir adjudicateur : Communauté d'Agglomération du Val de Saône (12 000 agents)\nDescription : Remplacement du SIRH vieillissant, intégration avec paye Sage et GED Alfresco, reprise de 10 ans de données, formation de 120 utilisateurs, maintenance 3 ans.\nCritères : Valeur technique 60% (méthodologie 30%, équipe 20%, sécurité 10%) — Prix 40%\nBudget estimé : 280 000 € HT — Délai de remise : 3 semaines`,
+  maintenance:`Objet : Maintenance préventive et corrective équipements de production\nDonneur d'ordre : Groupe agroalimentaire, Roanne\nPérimètre : 240 équipements, astreinte 7j/7 24h/24, GMAO CARL en place.\nCritères : Technique 50% — Prix 50%\nVolume : 4 500 h/an — Budget : 380 000 € HT/an — Durée : 3 ans`,
+  securite:`Objet : Audit sécurité, tests d'intrusion, conformité NIS2\nBénéficiaire : CHU de Lyon — DSI\nMission : Audit SI (500 serveurs, 8 000 postes), tests d'intrusion, plan de remédiation, NIS2.\nCritères : Technique 70% (PASSI, références santé) — Prix 30%\nBudget : 95 000 € HT — Délai : 10 jours`
 };
 function loadEx(k){document.getElementById('d-ao').value=EX[k]}
 
-/* ── COLORS ── */
 function bc(s){return s>=65?'var(--green)':s>=40?'var(--amber)':'var(--red)'}
-function bgColor(s){return s>=65?'rgba(11,191,106,0.1)':s>=40?'rgba(201,123,16,0.1)':'rgba(217,79,79,0.1)'}
-function tcColor(s){return s>=65?'var(--green-dark)':s>=40?'var(--amber)':'var(--red)'}
-function glowColor(s){return s>=65?'0 0 24px rgba(11,191,106,0.2)':s>=40?'0 0 24px rgba(201,123,16,0.15)':'0 0 24px rgba(217,79,79,0.15)'}
+function bgc(s){return s>=65?'rgba(11,191,106,0.1)':s>=40?'rgba(201,123,16,0.1)':'rgba(217,79,79,0.1)'}
+function tc(s){return s>=65?'var(--green-dark)':s>=40?'var(--amber)':'var(--red)'}
+function glow(s){return s>=65?'0 0 28px rgba(11,191,106,0.22)':s>=40?'0 0 28px rgba(201,123,16,0.18)':'0 0 28px rgba(217,79,79,0.18)'}
 
-/* ── ANALYZE ── */
 async function analyze(){
   const ao=document.getElementById('d-ao').value.trim();
-  if(!ao){document.getElementById('d-ao').style.borderColor='var(--red)';setTimeout(()=>document.getElementById('d-ao').style.borderColor='',1500);return}
-
-  // Check limit
-  const used=userProfile?.analyses_used||0;
-  const limit=userProfile?.analyses_limit||-1;
-  if(limit!==-1 && used>=limit){
-    document.getElementById('limit-warning').classList.add('show');
-    return;
-  }
-
+  if(!ao){const t=document.getElementById('d-ao');t.style.borderColor='var(--red)';setTimeout(()=>t.style.borderColor='',1500);return}
   const btn=document.getElementById('d-btn');
   const statusEl=document.getElementById('d-status');
   const errEl=document.getElementById('d-err');
   btn.disabled=true;document.getElementById('d-result').innerHTML='';errEl.textContent='';
-  const steps=["Lecture de l'AO...","Analyse des critères...","Scoring...","Génération du brouillon..."];
-  let si=0;statusEl.style.display='block';statusEl.innerHTML=`<span class="spinner spinner-dark"></span>${steps[0]}`;
-  const t=setInterval(()=>{si=Math.min(si+1,3);statusEl.innerHTML=`<span class="spinner spinner-dark"></span>${steps[si]}`;},3000);
-
-  const secteur=document.getElementById('d-secteur').value;
-  const effectif=document.getElementById('d-effectif').value;
-  const refs=document.getElementById('d-refs').value;
-
+  const steps=["Lecture de l'AO...","Analyse des critères...","Scoring de pertinence...","Génération du brouillon..."];
+  let si=0;statusEl.style.display='block';statusEl.innerHTML=`<span class="spinner"></span>${steps[0]}`;
+  const t=setInterval(()=>{si=Math.min(si+1,3);statusEl.innerHTML=`<span class="spinner"></span>${steps[si]}`;},3000);
   try{
-    // Get session token for API auth
-    const {data:{session}}=await sb.auth.getSession();
-
-    const res=await fetch('/api/analyze',{
-      method:'POST',
-      headers:{'content-type':'application/json','Authorization':'Bearer '+session.access_token},
-      body:JSON.stringify({ao,secteur,effectif,refs})
-    });
+    const res=await fetch('/api/analyze',{method:'POST',headers:{'content-type':'application/json'},
+      body:JSON.stringify({ao,secteur:document.getElementById('d-secteur').value,effectif:document.getElementById('d-effectif').value,refs:document.getElementById('d-refs').value})});
     clearInterval(t);
     const data=await res.json();
     if(!res.ok)throw new Error(data.error||'Erreur serveur');
-
-    // Save to Supabase
-    const objet=ao.split('\n')[0].replace('Objet :','').trim().slice(0,80);
-    await sb.from('analyses').insert({
-      user_id:currentUser.id,
-      objet,
-      score:data.score,
-      decision:data.decision,
-      result:data,
-      ao_text:ao.slice(0,500)
-    });
-
-    // Update usage counter
-    await sb.from('profiles').update({analyses_used:(used+1)}).eq('id',currentUser.id);
-    userProfile.analyses_used = used+1;
-
     statusEl.style.display='none';
     renderResult(data);
-    loadMetrics();
-
-  }catch(e){
-    clearInterval(t);statusEl.style.display='none';errEl.textContent='Erreur : '+e.message;
-  }
+  }catch(e){clearInterval(t);statusEl.style.display='none';errEl.textContent='Erreur : '+e.message;}
   btn.disabled=false;
 }
 
@@ -546,78 +637,50 @@ function renderResult(r){
   const sc=parseInt(r.score)||50;
   const crits=(r.criteres||[]).map(c=>`
     <div class="crit-row">
-      <span style="min-width:110px;color:var(--muted)">${c.nom}</span>
+      <span style="min-width:120px;color:var(--muted)">${c.nom}</span>
       <div class="bar-bg"><div class="bar-fill" style="width:0%;background:${bc(c.score)}" data-w="${c.score}"></div></div>
-      <span style="min-width:30px;text-align:right;font-weight:700;font-family:var(--display);color:${bc(c.score)}">${c.score}%</span>
+      <span style="min-width:34px;text-align:right;font-weight:700;font-family:var(--display);color:${bc(c.score)}">${c.score}%</span>
       <span style="font-size:12px;color:var(--muted)">${c.commentaire}</span>
     </div>`).join('');
   const pts=(r.points_forts||[]).map(p=>`<div style="display:flex;gap:8px;padding:.2rem 0"><span style="color:var(--green);font-weight:700;flex-shrink:0">+</span><span style="font-size:13px;color:var(--muted)">${p}</span></div>`).join('');
   const rsqs=(r.risques||[]).map(p=>`<div style="display:flex;gap:8px;padding:.2rem 0"><span style="color:var(--red);font-weight:700;flex-shrink:0">–</span><span style="font-size:13px;color:var(--muted)">${p}</span></div>`).join('');
-
-  const isPro = ['pro','business'].includes(userProfile?.plan);
-
   document.getElementById('d-result').innerHTML=`
-    <div style="border-top:1px solid var(--border);margin-top:1.25rem;padding-top:1.25rem">
-      <div class="result-card" style="background:var(--card)">
-        <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap">
-          <div class="score-ring" style="border-color:${bc(sc)};background:${bgColor(sc)};color:${tcColor(sc)};box-shadow:${glowColor(sc)}">${sc}</div>
-          <div><span class="badge-dec" style="background:${bgColor(sc)};color:${tcColor(sc)}">${r.decision}</span>
-          <div style="font-size:15px;color:var(--text);max-width:460px">${r.decision_raison}</div></div>
-        </div>
-        <div class="divider"></div>
-        <div class="res-lbl">Résumé de l'AO</div>
-        <div class="res-body">${r.resume_ao}</div>
+    <div class="result-card" style="margin-top:1.25rem;background:var(--card)">
+      <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap">
+        <div class="score-ring" style="border-color:${bc(sc)};background:${bgc(sc)};color:${tc(sc)};box-shadow:${glow(sc)}">${sc}</div>
+        <div><span class="badge-dec" style="background:${bgc(sc)};color:${tc(sc)}">${r.decision}</span>
+        <div style="font-size:15px;color:var(--text);max-width:460px">${r.decision_raison}</div></div>
       </div>
-      <div class="grid2">
-        <div class="result-card" style="margin-bottom:0;background:var(--card)"><div class="res-lbl">Points forts</div>${pts}</div>
-        <div class="result-card" style="margin-bottom:0;background:var(--card)"><div class="res-lbl">Risques identifiés</div>${rsqs}</div>
-      </div>
-      <div class="result-card" style="background:var(--card)"><div class="res-lbl">Adéquation par critère</div>${crits}</div>
-      <div class="result-card" style="background:var(--card)">
-        <div class="res-lbl" style="margin-bottom:.75rem">Brouillon de réponse généré</div>
-        ${[['Introduction',r.draft_intro],['Méthodologie',r.draft_methodo],['Équipe projet',r.draft_equipe],['Conseil prix',r.conseil_prix]].map(([t,v],i,a)=>`
-          <div class="res-lbl">${t}</div><div class="res-body" style="margin-bottom:.75rem">${v}</div>${i<a.length-1?'<div class="divider"></div>':''}`).join('')}
-      </div>
-      ${isPro?`<div style="text-align:right;margin-top:.5rem"><button class="btn-export" onclick="exportWord(${JSON.stringify(r).replace(/"/g,'&quot;')})">Exporter en Word →</button></div>`:`<p style="font-size:12px;color:var(--muted);text-align:center;margin-top:.5rem">Export Word disponible sur le plan Pro. <a href="#" onclick="showView('plan')" style="color:var(--green)">Upgrader →</a></p>`}
+      <div class="divider"></div>
+      <div class="res-lbl">Résumé de l'AO</div>
+      <div class="res-body">${r.resume_ao}</div>
+    </div>
+    <div class="grid2">
+      <div class="result-card" style="margin-bottom:0;background:var(--card)"><div class="res-lbl">Points forts</div>${pts}</div>
+      <div class="result-card" style="margin-bottom:0;background:var(--card)"><div class="res-lbl">Risques identifiés</div>${rsqs}</div>
+    </div>
+    <div class="result-card" style="background:var(--card)"><div class="res-lbl">Adéquation par critère</div>${crits}</div>
+    <div class="result-card" style="background:var(--card)">
+      <div class="res-lbl" style="margin-bottom:.75rem">Brouillon de réponse généré</div>
+      ${[['Introduction',r.draft_intro],['Méthodologie',r.draft_methodo],['Équipe projet',r.draft_equipe],['Conseil prix',r.conseil_prix]].map(([t,v],i,a)=>`
+        <div class="res-lbl">${t}</div><div class="res-body" style="margin-bottom:.75rem">${v}</div>${i<a.length-1?'<div class="divider"></div>':''}`).join('')}
+    </div>
+    <div style="text-align:center;padding:1.5rem 0">
+      <p style="font-size:14px;color:var(--muted);margin-bottom:1rem;font-weight:300">Analyses illimitées et export Word disponibles sur les plans payants.</p>
+      <button class="btn-primary" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Voir les offres →</button>
     </div>`;
-
   setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.dataset.w+'%'),120);
 }
 
-function exportWord(r){
-  // Simple text export (full Word export requires server-side)
-  const content=`ANALYSE BIDAI
-=============
-
-DÉCISION : ${r.decision} (Score: ${r.score}/100)
-${r.decision_raison}
-
-RÉSUMÉ DE L'AO
-${r.resume_ao}
-
-INTRODUCTION
-${r.draft_intro}
-
-MÉTHODOLOGIE PROPOSÉE
-${r.draft_methodo}
-
-ÉQUIPE PROJET
-${r.draft_equipe}
-
-CONSEIL PRIX
-${r.conseil_prix}`;
-  const blob=new Blob([content],{type:'text/plain;charset=utf-8'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='analyse-bidai.txt';a.click();
-  URL.revokeObjectURL(url);
+function toggleFaq(btn){
+  const item=btn.parentElement;
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));
+  if(!isOpen)item.classList.add('open');
 }
-
-async function logout(){
-  await sb.auth.signOut();
-  window.location.href='/app/login.html';
-}
-
-init();
+function openModal(id){document.getElementById('modal-'+id).classList.add('open');document.body.style.overflow='hidden'}
+function closeModal(id){document.getElementById('modal-'+id).classList.remove('open');document.body.style.overflow=''}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m){m.classList.remove('open');document.body.style.overflow=''}}));
 </script>
 </body>
 </html>
