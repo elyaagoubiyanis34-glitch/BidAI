@@ -3,248 +3,621 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BidAI — Analysez vos appels d'offres en 30 secondes</title>
+<title>BidAI — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700..900;1,9..144,700..900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: system-ui, -apple-system, sans-serif; background: #f5f4ef; color: #1a1a18; min-height: 100vh; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAF9F4;--bg2:#F2EFE7;--bg3:#E9E5DB;--card:#fff;--border:#DDD9CE;--border2:#C8C3B5;
+  --text:#1A1A12;--muted:#6A6658;--muted2:#A39F93;
+  --green:#0BBF6A;--green-dark:#088A4C;--green-light:#E6F8EF;--green-glow:rgba(11,191,106,0.18);
+  --red:#D94F4F;--red-light:#FDF0F0;--amber:#C97B10;--amber-light:#FEF4E6;
+  --display:'Fraunces',Georgia,serif;--body:'Outfit',system-ui,sans-serif;
+  --shadow:0 1px 4px rgba(0,0,0,.05),0 4px 20px rgba(0,0,0,.05);
+  --shadow-lg:0 4px 32px rgba(0,0,0,.08),0 16px 64px rgba(0,0,0,.04);
+}
+html,body{height:100%}
+body{font-family:var(--body);background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh}
 
-  /* Nav */
-  nav { background: #fff; border-bottom: 1px solid #e0dfd8; padding: 0 2rem; height: 56px; display: flex; align-items: center; justify-content: space-between; }
-  .logo { font-size: 18px; font-weight: 600; color: #1a1a18; }
-  .logo span { color: #1D9E75; }
-  .nav-cta { background: #1a1a18; color: #fff; border: none; border-radius: 8px; padding: .5rem 1rem; font-size: 13px; cursor: pointer; font-family: inherit; }
+/* ── SIDEBAR + LAYOUT ── */
+.layout{display:flex;flex:1;min-height:0}
+.sidebar{width:240px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh}
+.sidebar-logo{padding:1.5rem 1.5rem 1rem;border-bottom:1px solid var(--border)}
+.logo{font-family:var(--display);font-size:22px;font-weight:900;font-style:italic;color:var(--text);text-decoration:none;display:block}
+.logo em{color:var(--green);font-style:normal}
+.nav-section{padding:1rem .75rem;flex:1}
+.nav-label{font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;padding:.5rem .75rem;margin-bottom:.25rem}
+.nav-item{display:flex;align-items:center;gap:10px;padding:.65rem .75rem;border-radius:10px;font-size:14px;color:var(--muted);cursor:pointer;transition:all .2s;font-weight:500;margin-bottom:2px;text-decoration:none}
+.nav-item:hover{background:var(--bg);color:var(--text)}
+.nav-item.active{background:var(--green-light);color:var(--green-dark)}
+.nav-item .icon{width:18px;height:18px;flex-shrink:0;opacity:.7}
+.nav-item.active .icon{opacity:1}
+.sidebar-bottom{padding:1rem .75rem;border-top:1px solid var(--border)}
+.user-chip{display:flex;align-items:center;gap:10px;padding:.75rem;border-radius:10px;background:var(--bg2)}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--green-light);border:1.5px solid rgba(11,191,106,0.25);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--green-dark);font-family:var(--display);flex-shrink:0}
+.user-name{font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-plan{font-size:11px;color:var(--muted);font-weight:400}
+.logout-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;padding:4px;margin-left:auto;transition:color .2s;flex-shrink:0}
+.logout-btn:hover{color:var(--red)}
 
-  /* Hero */
-  .hero { text-align: center; padding: 4rem 1.5rem 3rem; max-width: 640px; margin: 0 auto; }
-  .hero h1 { font-size: 36px; font-weight: 600; line-height: 1.2; margin-bottom: 1rem; }
-  .hero h1 span { color: #1D9E75; }
-  .hero p { font-size: 16px; color: #666; line-height: 1.7; margin-bottom: 2rem; }
-  .badge { display: inline-block; background: #E1F5EE; color: #085041; font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 20px; margin-bottom: 1.5rem; }
+.main-content{flex:1;overflow-y:auto;padding:2rem}
 
-  /* App */
-  .app { max-width: 760px; margin: 0 auto; padding: 0 1.5rem 4rem; }
-  .card { background: #fff; border: 1px solid #e0dfd8; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
-  .lbl { font-size: 11px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
-  .row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-  input[type=text] { flex: 1; min-width: 140px; background: #f5f4ef; border: 1px solid #d8d7d0; border-radius: 8px; padding: .6rem .75rem; font-size: 14px; color: #1a1a18; font-family: inherit; outline: none; }
-  input[type=text]:focus { border-color: #888; }
-  textarea { width: 100%; background: #f5f4ef; border: 1px solid #d8d7d0; border-radius: 8px; padding: .75rem; font-size: 14px; color: #1a1a18; font-family: inherit; resize: vertical; min-height: 140px; outline: none; line-height: 1.6; }
-  textarea:focus { border-color: #888; }
-  .ex-btn { font-size: 12px; padding: 4px 12px; border: 1px solid #d8d7d0; border-radius: 20px; cursor: pointer; background: #f5f4ef; color: #555; font-family: inherit; transition: background .15s; }
-  .ex-btn:hover { background: #fff; }
-  .btn-analyze { width: 100%; background: #1a1a18; color: #fff; border: none; border-radius: 10px; padding: .9rem; font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; transition: opacity .15s; margin-bottom: 1rem; }
-  .btn-analyze:hover { opacity: .88; }
-  .btn-analyze:disabled { opacity: .4; cursor: not-allowed; }
-  .status { font-size: 13px; color: #666; padding: .5rem 0; display: none; }
-  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #ddd; border-top-color: #888; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: 6px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+.page-title{font-family:var(--display);font-size:26px;font-weight:900;letter-spacing:-.03em}
+.page-title em{font-style:italic;color:var(--green)}
 
-  /* Results */
-  .score-ring { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 600; border: 3px solid; flex-shrink: 0; }
-  .badge-dec { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
-  .divider { border: none; border-top: 1px solid #e8e7e0; margin: .75rem 0; }
-  .sec-lbl { font-size: 11px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .5rem; }
-  .sec-body { font-size: 14px; color: #444; line-height: 1.7; white-space: pre-wrap; }
-  .crit-row { display: flex; align-items: center; gap: 8px; padding: .4rem 0; font-size: 13px; flex-wrap: wrap; }
-  .bar-bg { flex: 1; min-width: 80px; height: 6px; background: #f0efe8; border-radius: 3px; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
-  .err { color: #A32D2D; font-size: 13px; padding: .5rem 0; }
+/* ── METRIC CARDS ── */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+.metric{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:1.5rem;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.metric::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),rgba(11,191,106,0.2),transparent)}
+.metric-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
+.metric-value{font-family:var(--display);font-size:32px;font-weight:900;color:var(--text);line-height:1;letter-spacing:-.03em}
+.metric-value em{color:var(--green);font-style:normal}
+.metric-sub{font-size:12px;color:var(--muted);margin-top:.35rem;font-weight:300}
+.progress-bar{height:5px;background:var(--bg2);border-radius:3px;margin-top:.75rem;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--green),rgba(11,191,106,0.6));border-radius:3px;transition:width .8s ease}
 
-  /* Footer */
-  footer { text-align: center; padding: 2rem; font-size: 12px; color: #aaa; border-top: 1px solid #e0dfd8; }
-  footer a { color: #aaa; }
+/* Plan badge */
+.plan-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.04em}
+.plan-starter{background:var(--bg2);color:var(--muted);border:1px solid var(--border2)}
+.plan-pro{background:var(--green-light);color:var(--green-dark);border:1px solid rgba(11,191,106,0.25)}
+.plan-business{background:#FEF5E6;color:#7A4A08;border:1px solid rgba(201,123,16,0.25)}
+.plan-free{background:var(--red-light);color:var(--red);border:1px solid rgba(217,79,79,0.2)}
 
-  @media(max-width: 520px) { .grid2 { grid-template-columns: 1fr; } .hero h1 { font-size: 26px; } }
+/* ── SECTIONS ── */
+.section{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:1.75rem;margin-bottom:1.5rem;box-shadow:var(--shadow)}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem}
+.section-title{font-family:var(--display);font-size:18px;font-weight:800;letter-spacing:-.02em}
+.sec-badge{font-size:11px;font-weight:700;background:var(--green-light);color:var(--green-dark);padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em}
+
+/* ── ANALYZE TOOL ── */
+.demo-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.demo-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.demo-inp{flex:1;min-width:140px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:.65rem .85rem;font-size:14px;color:var(--text);font-family:var(--body);outline:none;transition:all .2s}
+.demo-inp:focus{border-color:var(--green);background:var(--card);box-shadow:0 0 0 3px rgba(11,191,106,0.1)}
+textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
+.ex-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center}
+.ex-btn{font-size:12px;padding:4px 12px;border:1.5px solid var(--border2);border-radius:20px;cursor:pointer;background:var(--bg);color:var(--muted);font-family:var(--body);transition:all .2s}
+.ex-btn:hover{border-color:var(--green);color:var(--green);background:var(--green-light)}
+.btn-analyze{background:var(--green);color:#fff;border:none;border-radius:12px;padding:.85rem 2rem;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--body);transition:all .25s;box-shadow:0 4px 16px var(--green-glow)}
+.btn-analyze:hover{background:var(--green-dark);transform:translateY(-1px)}
+.btn-analyze:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* Results */
+.result-card{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.score-ring{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;font-family:var(--display);border:3px solid;flex-shrink:0}
+.badge-dec{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:6px}
+.divider{border:none;border-top:1px solid var(--border);margin:.75rem 0}
+.res-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
+.res-body{font-size:13px;color:var(--muted);line-height:1.75;white-space:pre-wrap;font-weight:300}
+.crit-row{display:flex;align-items:center;gap:8px;padding:.3rem 0;font-size:13px;flex-wrap:wrap}
+.bar-bg{flex:1;min-width:80px;height:4px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width 1.4s cubic-bezier(.16,1,.3,1)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+
+/* Export button */
+.btn-export{background:var(--bg);border:1.5px solid var(--border2);color:var(--text);border-radius:8px;padding:.5rem 1rem;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--body);transition:all .2s}
+.btn-export:hover{border-color:var(--green);color:var(--green);background:var(--green-light)}
+
+/* ── HISTORY ── */
+.history-list{display:flex;flex-direction:column;gap:.75rem}
+.history-item{display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--bg);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s}
+.history-item:hover{border-color:var(--border2);background:var(--bg2)}
+.history-score{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;font-family:var(--display);border:2px solid;flex-shrink:0}
+.history-info{flex:1;min-width:0}
+.history-obj{font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.history-date{font-size:12px;color:var(--muted);margin-top:2px}
+.history-dec{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.04em;flex-shrink:0}
+
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.empty-icon{font-size:36px;margin-bottom:1rem;opacity:.4}
+.empty-state p{font-size:14px;font-weight:300}
+
+/* ── PLAN SECTION ── */
+.plan-card{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:1.25rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.plan-info{flex:1}
+.plan-name-big{font-family:var(--display);font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:.25rem}
+.plan-renew{font-size:13px;color:var(--muted);font-weight:300}
+.btn-upgrade{background:var(--green);color:#fff;border:none;border-radius:10px;padding:.7rem 1.5rem;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--body);transition:all .2s;box-shadow:0 2px 10px var(--green-glow)}
+.btn-upgrade:hover{background:var(--green-dark)}
+.btn-portal{background:var(--bg2);color:var(--text);border:1.5px solid var(--border2);border-radius:10px;padding:.7rem 1.5rem;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--body);transition:all .2s}
+.btn-portal:hover{border-color:var(--green);color:var(--green)}
+
+/* ── TABS ── */
+.view-tabs{display:flex;gap:0;background:var(--bg2);border-radius:10px;padding:4px;margin-bottom:1.5rem;width:fit-content}
+.view-tab{padding:.5rem 1.25rem;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;font-family:var(--body);color:var(--muted);transition:all .2s}
+.view-tab.active{background:var(--card);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+
+/* spinner */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+.spinner-dark{border-color:var(--border2);border-top-color:var(--green)}
+
+.status-bar{font-size:13px;color:var(--muted);padding:.5rem 0;display:none}
+
+/* limit warning */
+.limit-warning{background:var(--red-light);border:1px solid rgba(217,79,79,0.2);border-radius:10px;padding:1rem 1.25rem;font-size:13px;color:var(--red);display:none;margin-bottom:1rem}
+.limit-warning.show{display:block}
+
+/* mobile */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main-content{padding:1rem}
+}
+@media(max-width:520px){.grid2{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="logo">Bid<span>AI</span></div>
-  <button class="nav-cta" onclick="document.querySelector('.app').scrollIntoView({behavior:'smooth'})">Essayer gratuitement</button>
-</nav>
-
-<div class="hero">
-  <div class="badge">Analysez votre premier AO gratuitement</div>
-  <h1>Gagnez plus d'appels d'offres <span>grâce à l'IA</span></h1>
-  <p>BidAI analyse votre appel d'offres en 30 secondes, vous dit si ça vaut le coup de répondre, et génère le brouillon de votre réponse automatiquement.</p>
-</div>
-
-<div class="app">
-
-  <div class="card">
-    <div class="lbl">Profil de votre entreprise</div>
-    <div class="row">
-      <input type="text" id="secteur" value="ESN — développement logiciel et intégration" placeholder="Secteur d'activité">
-      <input type="text" id="effectif" value="45 collaborateurs" placeholder="Effectif">
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="/" class="logo">Bid<em>AI</em></a>
     </div>
-    <input type="text" id="refs" value="3 projets ERP SAP, certifié ISO 27001, clients secteur public" placeholder="Références clés" style="width:100%">
-  </div>
-
-  <div class="card">
-    <div class="lbl">Appel d'offres à analyser</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center">
-      <span style="font-size:12px;color:#aaa">Exemples :</span>
-      <button class="ex-btn" onclick="loadEx('esn')">ESN · Refonte SI RH</button>
-      <button class="ex-btn" onclick="loadEx('maintenance')">Maintenance industrielle</button>
-      <button class="ex-btn" onclick="loadEx('securite')">Sécurité informatique</button>
-    </div>
-    <textarea id="ao" placeholder="Collez ici le texte de votre appel d'offres (objet du marché, critères de notation, budget, délais...)"></textarea>
-    <p style="font-size:11px;color:#aaa;margin-top:.5rem">Vos données ne sont pas stockées. Chaque analyse est traitée de façon confidentielle.</p>
-  </div>
-
-  <button class="btn-analyze" id="btn" onclick="analyze()">Analyser cet appel d'offres →</button>
-
-  <div class="status" id="status"></div>
-  <div class="err" id="err"></div>
-  <div id="result"></div>
-
-</div>
-
-<footer>
-  <p>BidAI — Aide à la décision pour les appels d'offres. Ne constitue pas un conseil juridique ou commercial.</p>
-  <p style="margin-top:.5rem"><a href="#">Mentions légales</a> · <a href="#">CGU</a> · <a href="#">Contact</a></p>
-</footer>
-
-<script>
-const EX = {
-  esn: `Objet : Refonte du système d'information RH et déploiement d'un portail collaborateur
-Pouvoir adjudicateur : Communauté d'Agglomération du Val de Saône (12 000 agents)
-Description : Remplacement du SIRH vieillissant, intégration avec paye Sage et GED Alfresco, reprise de 10 ans de données, formation de 120 utilisateurs, maintenance 3 ans.
-Critères : Valeur technique 60% (méthodologie 30%, équipe 20%, sécurité 10%) — Prix 40%
-Budget estimé : 280 000 € HT — Délai de remise : 3 semaines — Durée : 18 mois + 3 ans maintenance`,
-  maintenance: `Objet : Maintenance préventive et corrective équipements de production
-Donneur d'ordre : Groupe agroalimentaire, site de Roanne (Loire)
-Périmètre : 240 équipements, 40 lignes de conditionnement, astreinte 7j/7 24h/24, GMAO CARL en place.
-Critères : Technique 50% (plan de maintenance, taux de disponibilité garanti) — Prix 50%
-Volume : 4 500 h/an — Budget : 380 000 € HT/an — Durée : 3 ans renouvelable`,
-  securite: `Objet : Audit sécurité, tests d'intrusion et mise en conformité NIS2
-Bénéficiaire : CHU de Lyon — DSI
-Mission : Audit SI hospitalier (500 serveurs, 8 000 postes), tests d'intrusion, revue politique sécurité, plan de remédiation, accompagnement NIS2.
-Critères : Technique 70% (méthodologie, certifications PASSI, références secteur santé) — Prix 30%
-Budget : 95 000 € HT — Délai remise : 10 jours`
-};
-
-function loadEx(k) { document.getElementById('ao').value = EX[k]; }
-
-function bc(s) { return s>=65?'#1D9E75':s>=40?'#BA7517':'#A32D2D'; }
-function bg(s) { return s>=65?'#E1F5EE':s>=40?'#FAEEDA':'#FCEBEB'; }
-function tc(s) { return s>=65?'#085041':s>=40?'#633806':'#791F1F'; }
-
-function setStatus(msg) {
-  const el = document.getElementById('status');
-  el.style.display = msg ? 'block' : 'none';
-  el.innerHTML = msg;
-}
-
-async function analyze() {
-  const ao = document.getElementById('ao').value.trim();
-  if (!ao) { document.getElementById('ao').style.borderColor='#A32D2D'; setTimeout(()=>document.getElementById('ao').style.borderColor='',1500); return; }
-
-  const btn = document.getElementById('btn');
-  btn.disabled = true;
-  document.getElementById('result').innerHTML = '';
-  document.getElementById('err').textContent = '';
-
-  const steps = ["Lecture de l'AO...", "Analyse des critères...", "Scoring de pertinence...", "Génération du brouillon..."];
-  let si = 0;
-  setStatus(`<span class="spinner"></span>${steps[0]}`);
-  const t = setInterval(() => { si=Math.min(si+1,3); setStatus(`<span class="spinner"></span>${steps[si]}`); }, 3000);
-
-  try {
-    const res = await fetch('/api/analyze', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        ao,
-        secteur: document.getElementById('secteur').value,
-        effectif: document.getElementById('effectif').value,
-        refs: document.getElementById('refs').value
-      })
-    });
-
-    clearInterval(t);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Erreur serveur');
-
-    setStatus('');
-    renderResult(data);
-
-  } catch(e) {
-    clearInterval(t);
-    setStatus('');
-    document.getElementById('err').textContent = 'Erreur : ' + e.message;
-  }
-
-  btn.disabled = false;
-}
-
-function renderResult(r) {
-  const sc = parseInt(r.score) || 50;
-
-  const crits = (r.criteres||[]).map(c => `
-    <div class="crit-row">
-      <span style="min-width:120px;color:#555">${c.nom}</span>
-      <div class="bar-bg"><div class="bar-fill" style="width:${c.score}%;background:${bc(c.score)}"></div></div>
-      <span style="min-width:34px;text-align:right;font-weight:500;color:#555">${c.score}%</span>
-      <span style="font-size:12px;color:#888">${c.commentaire}</span>
-    </div>`).join('');
-
-  const pts = (r.points_forts||[]).map(p=>`
-    <div style="display:flex;gap:8px;padding:.25rem 0">
-      <span style="color:#1D9E75;font-weight:600;flex-shrink:0">+</span>
-      <span style="font-size:13px;color:#444">${p}</span>
-    </div>`).join('');
-
-  const rsqs = (r.risques||[]).map(p=>`
-    <div style="display:flex;gap:8px;padding:.25rem 0">
-      <span style="color:#A32D2D;font-weight:600;flex-shrink:0">–</span>
-      <span style="font-size:13px;color:#444">${p}</span>
-    </div>`).join('');
-
-  document.getElementById('result').innerHTML = `
-    <div class="card">
-      <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap">
-        <div class="score-ring" style="border-color:${bc(sc)};background:${bg(sc)};color:${bc(sc)}">${sc}</div>
+    <nav class="nav-section">
+      <div class="nav-label">Menu</div>
+      <a class="nav-item active" onclick="showView('analyze')">
+        <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M15 3l2 2-7 7-3 1 1-3 7-7z"/></svg>
+        Analyser un AO
+      </a>
+      <a class="nav-item" onclick="showView('history')">
+        <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 3"/></svg>
+        Historique
+      </a>
+      <a class="nav-item" onclick="showView('plan')">
+        <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M7 10h6M7 13h4"/></svg>
+        Mon abonnement
+      </a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="user-chip">
+        <div class="user-avatar" id="sb-avatar">?</div>
         <div>
-          <span class="badge-dec" style="background:${bg(sc)};color:${tc(sc)}">${r.decision}</span>
-          <div style="font-size:15px;color:#444;max-width:460px">${r.decision_raison}</div>
+          <div class="user-name" id="sb-name">Chargement…</div>
+          <div class="user-plan" id="sb-plan">—</div>
+        </div>
+        <button class="logout-btn" onclick="logout()" title="Se déconnecter">⏻</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="page-title" id="page-title">Analyser un <em>appel d'offres</em></div>
+      <div id="plan-badge-top"></div>
+    </div>
+
+    <!-- METRICS -->
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">Analyses ce mois</div>
+        <div class="metric-value"><em id="m-used">—</em> <span style="font-size:18px;color:var(--muted)">/ <span id="m-limit">—</span></span></div>
+        <div class="metric-sub" id="m-sub">Chargement…</div>
+        <div class="progress-bar"><div class="progress-fill" id="m-progress" style="width:0%"></div></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Analyses totales</div>
+        <div class="metric-value" id="m-total">—</div>
+        <div class="metric-sub">Depuis votre inscription</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Dernier AO analysé</div>
+        <div class="metric-value" style="font-size:18px;font-weight:600" id="m-last">—</div>
+        <div class="metric-sub" id="m-last-score"></div>
+      </div>
+    </div>
+
+    <!-- ═══ VIEW: ANALYZE ═══ -->
+    <div id="view-analyze">
+      <div class="limit-warning" id="limit-warning">
+        Vous avez atteint la limite d'analyses de votre plan.
+        <a href="#" onclick="showView('plan')" style="color:var(--red);font-weight:700;margin-left:.5rem">Upgrader mon plan →</a>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Nouvelle analyse</div>
+          <span class="sec-badge">Live</span>
+        </div>
+
+        <div style="margin-bottom:1.25rem">
+          <div class="demo-lbl">Profil de votre entreprise</div>
+          <div class="demo-row">
+            <input class="demo-inp" id="d-secteur" placeholder="Secteur d'activité">
+            <input class="demo-inp" id="d-effectif" placeholder="Effectif" style="max-width:180px">
+          </div>
+          <input class="demo-inp" id="d-refs" placeholder="Références clés (ex : 3 projets ERP, ISO 27001...)" style="width:100%">
+        </div>
+
+        <div>
+          <div class="demo-lbl">Appel d'offres à analyser</div>
+          <div class="ex-btns">
+            <span style="font-size:12px;color:var(--muted2)">Exemples :</span>
+            <button class="ex-btn" onclick="loadEx('esn')">ESN · Refonte SI RH</button>
+            <button class="ex-btn" onclick="loadEx('maintenance')">Maintenance</button>
+            <button class="ex-btn" onclick="loadEx('securite')">Sécurité</button>
+          </div>
+          <textarea class="demo-inp" id="d-ao" placeholder="Collez ici le texte de votre appel d'offres..."></textarea>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.75rem;flex-wrap:wrap;gap:.75rem">
+          <p style="font-size:11px;color:var(--muted2)">Données non stockées · Analyse confidentielle</p>
+          <button class="btn-analyze" id="d-btn" onclick="analyze()">Analyser cet AO →</button>
+        </div>
+        <div class="status-bar" id="d-status"></div>
+        <div id="d-err" style="color:var(--red);font-size:13px;padding:.5rem 0"></div>
+        <div id="d-result"></div>
+      </div>
+    </div>
+
+    <!-- ═══ VIEW: HISTORY ═══ -->
+    <div id="view-history" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Historique des analyses</div>
+          <span class="sec-badge" id="h-count">0 analyses</span>
+        </div>
+        <div class="history-list" id="history-list">
+          <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <p>Aucune analyse pour l'instant.<br>Lancez votre première analyse !</p>
+          </div>
         </div>
       </div>
-      <div class="divider"></div>
-      <div class="sec-lbl">Résumé de l'AO</div>
-      <div class="sec-body">${r.resume_ao}</div>
     </div>
 
-    <div class="grid2">
-      <div class="card" style="margin-bottom:0">
-        <div class="sec-lbl">Points forts</div>${pts}
+    <!-- ═══ VIEW: PLAN ═══ -->
+    <div id="view-plan" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Mon abonnement</div>
+        </div>
+
+        <div class="plan-card" style="margin-bottom:1.5rem">
+          <div class="plan-info">
+            <div class="plan-name-big" id="pl-name">—</div>
+            <div class="plan-renew" id="pl-renew">—</div>
+          </div>
+          <div id="pl-actions"></div>
+        </div>
+
+        <div style="margin-bottom:1rem">
+          <div class="res-lbl">Ce qui est inclus dans votre plan</div>
+        </div>
+        <div id="pl-features"></div>
       </div>
-      <div class="card" style="margin-bottom:0">
-        <div class="sec-lbl">Risques identifiés</div>${rsqs}
+
+      <!-- Upgrade options -->
+      <div class="section" id="upgrade-section" style="display:none">
+        <div class="section-header">
+          <div class="section-title">Changer de plan</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem">
+          <div style="border:1.5px solid var(--border);border-radius:12px;padding:1.5rem">
+            <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Starter</div>
+            <div style="font-family:var(--display);font-size:28px;font-weight:900;margin-bottom:.25rem">299 <span style="font-size:14px;font-weight:400;color:var(--muted);font-family:var(--body)">€/mois</span></div>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;font-weight:300">20 analyses/mois</p>
+            <button class="btn-portal" style="width:100%" onclick="window.open('VOTRE_LIEN_STRIPE_STARTER','_blank')">Choisir Starter</button>
+          </div>
+          <div style="border:1.5px solid var(--green);border-radius:12px;padding:1.5rem;position:relative">
+            <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;font-size:11px;font-weight:800;padding:3px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em">Recommandé</div>
+            <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Pro</div>
+            <div style="font-family:var(--display);font-size:28px;font-weight:900;margin-bottom:.25rem">599 <span style="font-size:14px;font-weight:400;color:var(--muted);font-family:var(--body)">€/mois</span></div>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;font-weight:300">Analyses illimitées + export</p>
+            <button class="btn-upgrade" style="width:100%" onclick="window.open('VOTRE_LIEN_STRIPE_PRO','_blank')">Choisir Pro</button>
+          </div>
+          <div style="border:1.5px solid var(--border);border-radius:12px;padding:1.5rem">
+            <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Business</div>
+            <div style="font-family:var(--display);font-size:28px;font-weight:900;margin-bottom:.25rem">1 200 <span style="font-size:14px;font-weight:400;color:var(--muted);font-family:var(--body)">€/mois</span></div>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;font-weight:300">Veille auto + CRM</p>
+            <button class="btn-portal" style="width:100%" onclick="window.open('mailto:contact@bidai.fr','_blank')">Nous contacter</button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="sec-lbl">Adéquation par critère</div>${crits}
-    </div>
+  </main>
+</div>
 
-    <div class="card">
-      <div class="sec-lbl" style="margin-bottom:.75rem">Brouillon de réponse généré</div>
-      <div class="sec-lbl">Introduction</div>
-      <div class="sec-body" style="margin-bottom:.75rem">${r.draft_intro}</div>
-      <div class="divider"></div>
-      <div class="sec-lbl">Méthodologie proposée</div>
-      <div class="sec-body" style="margin-bottom:.75rem">${r.draft_methodo}</div>
-      <div class="divider"></div>
-      <div class="sec-lbl">Équipe projet</div>
-      <div class="sec-body" style="margin-bottom:.75rem">${r.draft_equipe}</div>
-      <div class="divider"></div>
-      <div class="sec-lbl">Conseil sur le prix</div>
-      <div class="sec-body">${r.conseil_prix}</div>
-    </div>`;
+<script>
+/* ── CONFIG — REMPLACEZ CES VALEURS ── */
+const SUPABASE_URL = 'VOTRE_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'VOTRE_SUPABASE_ANON_KEY';
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let userProfile = null;
+
+/* ── INIT ── */
+async function init(){
+  const {data:{session}} = await sb.auth.getSession();
+  if(!session){ window.location.href='/app/login.html'; return; }
+  currentUser = session.user;
+  await loadProfile();
+  await loadMetrics();
+  await loadHistory();
 }
+
+async function loadProfile(){
+  const {data} = await sb.from('profiles').select('*').eq('id',currentUser.id).single();
+  userProfile = data || {plan:'free', analyses_used:0, analyses_limit:3, full_name:currentUser.user_metadata?.full_name||currentUser.email};
+
+  // Sidebar
+  const initials = (userProfile.full_name||'U').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('sb-avatar').textContent = initials;
+  document.getElementById('sb-name').textContent = userProfile.full_name || currentUser.email;
+  document.getElementById('sb-plan').textContent = planLabel(userProfile.plan);
+
+  // Plan badge top
+  document.getElementById('plan-badge-top').innerHTML = `<span class="plan-badge plan-${userProfile.plan}">${planLabel(userProfile.plan)}</span>`;
+
+  // Pre-fill profile
+  if(userProfile.secteur) document.getElementById('d-secteur').value = userProfile.secteur;
+  if(userProfile.effectif) document.getElementById('d-effectif').value = userProfile.effectif;
+  if(userProfile.refs) document.getElementById('d-refs').value = userProfile.refs;
+}
+
+async function loadMetrics(){
+  const used = userProfile?.analyses_used || 0;
+  const limit = userProfile?.analyses_limit || 3;
+  const isUnlimited = limit === -1;
+
+  document.getElementById('m-used').textContent = used;
+  document.getElementById('m-limit').textContent = isUnlimited ? '∞' : limit;
+  document.getElementById('m-sub').textContent = isUnlimited ? 'Analyses illimitées' : `${Math.max(0,limit-used)} restantes ce mois`;
+  document.getElementById('m-progress').style.width = isUnlimited ? '30%' : Math.min(100,(used/limit)*100)+'%';
+
+  // Total
+  const {count} = await sb.from('analyses').select('*',{count:'exact',head:true}).eq('user_id',currentUser.id);
+  document.getElementById('m-total').textContent = count||0;
+
+  // Last
+  const {data:last} = await sb.from('analyses').select('created_at,score,decision,objet').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(1).single();
+  if(last){
+    const d=new Date(last.created_at);
+    document.getElementById('m-last').textContent = last.objet || 'AO analysé';
+    document.getElementById('m-last-score').textContent = `Score ${last.score}/100 · ${last.decision} · ${d.toLocaleDateString('fr-FR')}`;
+  } else {
+    document.getElementById('m-last').textContent = 'Aucune encore';
+  }
+
+  // Limit warning
+  if(!isUnlimited && used >= limit){
+    document.getElementById('limit-warning').classList.add('show');
+    document.getElementById('d-btn').disabled=true;
+  }
+}
+
+async function loadHistory(){
+  const {data} = await sb.from('analyses').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(50);
+  document.getElementById('h-count').textContent = `${data?.length||0} analyse${data?.length!==1?'s':''}`;
+
+  if(!data||data.length===0){return}
+
+  document.getElementById('history-list').innerHTML = data.map(a=>{
+    const sc=a.score||0;
+    const rc=bc(sc);const bgc=bgColor(sc);const tc=tcColor(sc);
+    const d=new Date(a.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+    return `<div class="history-item" onclick="showHistoryDetail(${a.id})">
+      <div class="history-score" style="border-color:${rc};background:${bgc};color:${tc}">${sc}</div>
+      <div class="history-info">
+        <div class="history-obj">${a.objet||'Appel d\'offres'}</div>
+        <div class="history-date">${d}</div>
+      </div>
+      <span class="history-dec" style="background:${bgc};color:${tc}">${a.decision||'—'}</span>
+    </div>`;
+  }).join('');
+}
+
+function planLabel(p){
+  const labels={free:'Essai gratuit',starter:'Starter',pro:'Pro',business:'Business'};
+  return labels[p]||p;
+}
+
+/* ── VIEWS ── */
+function showView(v){
+  ['analyze','history','plan'].forEach(x=>{
+    document.getElementById('view-'+x).style.display = x===v?'block':'none';
+  });
+  document.querySelectorAll('.nav-item').forEach(el=>{
+    el.classList.toggle('active', el.getAttribute('onclick')?.includes(v));
+  });
+  const titles={analyze:'Analyser un <em>appel d\'offres</em>',history:'Historique des <em>analyses</em>',plan:'Mon <em>abonnement</em>'};
+  document.getElementById('page-title').innerHTML = titles[v];
+
+  if(v==='plan') renderPlanView();
+  if(v==='history') loadHistory();
+}
+
+function renderPlanView(){
+  const p = userProfile?.plan||'free';
+  const limits = {free:3,starter:20,pro:-1,business:-1};
+  const lim = limits[p];
+  document.getElementById('pl-name').textContent = planLabel(p);
+  document.getElementById('pl-renew').textContent = p==='free'?'Compte gratuit — 3 analyses d\'essai':'Abonnement mensuel actif';
+
+  const features = {
+    free:['3 analyses d\'essai','Score de pertinence go/no-go','Brouillon de réponse basique'],
+    starter:['20 analyses par mois','Score de pertinence go/no-go','Brouillon de réponse généré','Identification des risques'],
+    pro:['Analyses illimitées','Score de pertinence go/no-go','Brouillon de réponse généré','Identification des risques','Export Word/PDF','Historique complet'],
+    business:['Analyses illimitées','Tout le plan Pro','Veille AO automatique BOAMP','Alertes en temps réel','Intégration CRM','Support prioritaire']
+  };
+
+  document.getElementById('pl-features').innerHTML=(features[p]||[]).map(f=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:14px">
+      <span style="color:var(--green);font-weight:700">✓</span><span>${f}</span>
+    </div>`).join('');
+
+  const actions = p==='free'
+    ? `<button class="btn-upgrade" onclick="document.getElementById('upgrade-section').style.display='block';this.style.display='none'">Passer à un plan payant →</button>`
+    : `<button class="btn-portal" onclick="window.open('VOTRE_LIEN_PORTAIL_STRIPE','_blank')">Gérer mon abonnement</button>`;
+  document.getElementById('pl-actions').innerHTML = actions;
+
+  if(p!=='free') document.getElementById('upgrade-section').style.display='none';
+}
+
+/* ── EXAMPLES ── */
+const EX={
+  esn:`Objet : Refonte du système d'information RH\nPouvoir adjudicateur : Communauté d'Agglomération du Val de Saône (12 000 agents)\nCritères : Technique 60% — Prix 40%\nBudget : 280 000 € HT — Délai : 3 semaines`,
+  maintenance:`Objet : Maintenance équipements de production\nDonneur d'ordre : Groupe agroalimentaire, Roanne\nCritères : Technique 50% — Prix 50%\nBudget : 380 000 € HT/an — Durée : 3 ans`,
+  securite:`Objet : Audit sécurité et conformité NIS2\nBénéficiaire : CHU de Lyon\nCritères : Technique 70% (PASSI) — Prix 30%\nBudget : 95 000 € HT — Délai : 10 jours`
+};
+function loadEx(k){document.getElementById('d-ao').value=EX[k]}
+
+/* ── COLORS ── */
+function bc(s){return s>=65?'var(--green)':s>=40?'var(--amber)':'var(--red)'}
+function bgColor(s){return s>=65?'rgba(11,191,106,0.1)':s>=40?'rgba(201,123,16,0.1)':'rgba(217,79,79,0.1)'}
+function tcColor(s){return s>=65?'var(--green-dark)':s>=40?'var(--amber)':'var(--red)'}
+function glowColor(s){return s>=65?'0 0 24px rgba(11,191,106,0.2)':s>=40?'0 0 24px rgba(201,123,16,0.15)':'0 0 24px rgba(217,79,79,0.15)'}
+
+/* ── ANALYZE ── */
+async function analyze(){
+  const ao=document.getElementById('d-ao').value.trim();
+  if(!ao){document.getElementById('d-ao').style.borderColor='var(--red)';setTimeout(()=>document.getElementById('d-ao').style.borderColor='',1500);return}
+
+  // Check limit
+  const used=userProfile?.analyses_used||0;
+  const limit=userProfile?.analyses_limit||-1;
+  if(limit!==-1 && used>=limit){
+    document.getElementById('limit-warning').classList.add('show');
+    return;
+  }
+
+  const btn=document.getElementById('d-btn');
+  const statusEl=document.getElementById('d-status');
+  const errEl=document.getElementById('d-err');
+  btn.disabled=true;document.getElementById('d-result').innerHTML='';errEl.textContent='';
+  const steps=["Lecture de l'AO...","Analyse des critères...","Scoring...","Génération du brouillon..."];
+  let si=0;statusEl.style.display='block';statusEl.innerHTML=`<span class="spinner spinner-dark"></span>${steps[0]}`;
+  const t=setInterval(()=>{si=Math.min(si+1,3);statusEl.innerHTML=`<span class="spinner spinner-dark"></span>${steps[si]}`;},3000);
+
+  const secteur=document.getElementById('d-secteur').value;
+  const effectif=document.getElementById('d-effectif').value;
+  const refs=document.getElementById('d-refs').value;
+
+  try{
+    // Get session token for API auth
+    const {data:{session}}=await sb.auth.getSession();
+
+    const res=await fetch('/api/analyze',{
+      method:'POST',
+      headers:{'content-type':'application/json','Authorization':'Bearer '+session.access_token},
+      body:JSON.stringify({ao,secteur,effectif,refs})
+    });
+    clearInterval(t);
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.error||'Erreur serveur');
+
+    // Save to Supabase
+    const objet=ao.split('\n')[0].replace('Objet :','').trim().slice(0,80);
+    await sb.from('analyses').insert({
+      user_id:currentUser.id,
+      objet,
+      score:data.score,
+      decision:data.decision,
+      result:data,
+      ao_text:ao.slice(0,500)
+    });
+
+    // Update usage counter
+    await sb.from('profiles').update({analyses_used:(used+1)}).eq('id',currentUser.id);
+    userProfile.analyses_used = used+1;
+
+    statusEl.style.display='none';
+    renderResult(data);
+    loadMetrics();
+
+  }catch(e){
+    clearInterval(t);statusEl.style.display='none';errEl.textContent='Erreur : '+e.message;
+  }
+  btn.disabled=false;
+}
+
+function renderResult(r){
+  const sc=parseInt(r.score)||50;
+  const crits=(r.criteres||[]).map(c=>`
+    <div class="crit-row">
+      <span style="min-width:110px;color:var(--muted)">${c.nom}</span>
+      <div class="bar-bg"><div class="bar-fill" style="width:0%;background:${bc(c.score)}" data-w="${c.score}"></div></div>
+      <span style="min-width:30px;text-align:right;font-weight:700;font-family:var(--display);color:${bc(c.score)}">${c.score}%</span>
+      <span style="font-size:12px;color:var(--muted)">${c.commentaire}</span>
+    </div>`).join('');
+  const pts=(r.points_forts||[]).map(p=>`<div style="display:flex;gap:8px;padding:.2rem 0"><span style="color:var(--green);font-weight:700;flex-shrink:0">+</span><span style="font-size:13px;color:var(--muted)">${p}</span></div>`).join('');
+  const rsqs=(r.risques||[]).map(p=>`<div style="display:flex;gap:8px;padding:.2rem 0"><span style="color:var(--red);font-weight:700;flex-shrink:0">–</span><span style="font-size:13px;color:var(--muted)">${p}</span></div>`).join('');
+
+  const isPro = ['pro','business'].includes(userProfile?.plan);
+
+  document.getElementById('d-result').innerHTML=`
+    <div style="border-top:1px solid var(--border);margin-top:1.25rem;padding-top:1.25rem">
+      <div class="result-card" style="background:var(--card)">
+        <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap">
+          <div class="score-ring" style="border-color:${bc(sc)};background:${bgColor(sc)};color:${tcColor(sc)};box-shadow:${glowColor(sc)}">${sc}</div>
+          <div><span class="badge-dec" style="background:${bgColor(sc)};color:${tcColor(sc)}">${r.decision}</span>
+          <div style="font-size:15px;color:var(--text);max-width:460px">${r.decision_raison}</div></div>
+        </div>
+        <div class="divider"></div>
+        <div class="res-lbl">Résumé de l'AO</div>
+        <div class="res-body">${r.resume_ao}</div>
+      </div>
+      <div class="grid2">
+        <div class="result-card" style="margin-bottom:0;background:var(--card)"><div class="res-lbl">Points forts</div>${pts}</div>
+        <div class="result-card" style="margin-bottom:0;background:var(--card)"><div class="res-lbl">Risques identifiés</div>${rsqs}</div>
+      </div>
+      <div class="result-card" style="background:var(--card)"><div class="res-lbl">Adéquation par critère</div>${crits}</div>
+      <div class="result-card" style="background:var(--card)">
+        <div class="res-lbl" style="margin-bottom:.75rem">Brouillon de réponse généré</div>
+        ${[['Introduction',r.draft_intro],['Méthodologie',r.draft_methodo],['Équipe projet',r.draft_equipe],['Conseil prix',r.conseil_prix]].map(([t,v],i,a)=>`
+          <div class="res-lbl">${t}</div><div class="res-body" style="margin-bottom:.75rem">${v}</div>${i<a.length-1?'<div class="divider"></div>':''}`).join('')}
+      </div>
+      ${isPro?`<div style="text-align:right;margin-top:.5rem"><button class="btn-export" onclick="exportWord(${JSON.stringify(r).replace(/"/g,'&quot;')})">Exporter en Word →</button></div>`:`<p style="font-size:12px;color:var(--muted);text-align:center;margin-top:.5rem">Export Word disponible sur le plan Pro. <a href="#" onclick="showView('plan')" style="color:var(--green)">Upgrader →</a></p>`}
+    </div>`;
+
+  setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.dataset.w+'%'),120);
+}
+
+function exportWord(r){
+  // Simple text export (full Word export requires server-side)
+  const content=`ANALYSE BIDAI
+=============
+
+DÉCISION : ${r.decision} (Score: ${r.score}/100)
+${r.decision_raison}
+
+RÉSUMÉ DE L'AO
+${r.resume_ao}
+
+INTRODUCTION
+${r.draft_intro}
+
+MÉTHODOLOGIE PROPOSÉE
+${r.draft_methodo}
+
+ÉQUIPE PROJET
+${r.draft_equipe}
+
+CONSEIL PRIX
+${r.conseil_prix}`;
+  const blob=new Blob([content],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='analyse-bidai.txt';a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function logout(){
+  await sb.auth.signOut();
+  window.location.href='/app/login.html';
+}
+
+init();
 </script>
 </body>
 </html>
