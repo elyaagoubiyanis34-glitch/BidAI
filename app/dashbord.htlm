@@ -329,7 +329,7 @@ textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
 
 <script>
 /* ── CONFIG — REMPLACEZ CES VALEURS ── */
-const SUPABASE_URL = 'https://bid-ai-sand.vercel.app';
+const SUPABASE_URL = 'https://mohwccfmjolimwrhhcev.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vaHdjY2Ztam9saW13cmhoY2V2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMjA2NDUsImV4cCI6MjA4OTU5NjY0NX0.XGUcE7u9J9gu2CyxfuIrR2tBCr0VW6JxNTrvQsd65xc';
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
