@@ -5,8 +5,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
 const PLAN_LIMITS = {
-  'price_STARTER_ID': { plan: 'starter', analyses_limit: 20 },
-  'price_PRO_ID':     { plan: 'pro',     analyses_limit: -1 },
+  'price_1TD7iZHC1Gx8dtyGRwnwVoju': { plan: 'starter', analyses_limit: 20 },
+  'price_1TD7j7HC1Gx8dtyGJJCkwMN2': { plan: 'pro', analyses_limit: -1 },
   'price_BUSINESS_ID':{ plan: 'business',analyses_limit: -1 },
 };
 
