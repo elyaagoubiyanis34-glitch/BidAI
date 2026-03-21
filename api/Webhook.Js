@@ -5,7 +5,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
 const PLAN_LIMITS = {
-  'price_1TD7iZHC1Gx8dtyGRwnwVoju': { plan: 'starter', analyses_limit: 20 },
+  'price_1TD7iZHC1Gx8dtyGRwnwVoju': { plan: 'starter', analyses_limit: 5 },
   'price_1TD7j7HC1Gx8dtyGJJCkwMN2': { plan: 'pro', analyses_limit: -1 },
   'price_BUSINESS_ID':{ plan: 'business',analyses_limit: -1 },
 };
@@ -36,7 +36,7 @@ export default async function handler(req, res) {
       // Get subscription details to find the price
       const subscription = await stripe.subscriptions.retrieve(subscriptionId);
       const priceId = subscription.items.data[0]?.price?.id;
-      const planInfo = PLAN_LIMITS[priceId] || { plan: 'starter', analyses_limit: 20 };
+      const planInfo = PLAN_LIMITS[priceId] || { plan: 'starter', analyses_limit: 5 };
 
       // Find user by email in Supabase
       const { data: users } = await sb.auth.admin.listUsers();
@@ -77,7 +77,7 @@ export default async function handler(req, res) {
       if (profile) {
         await sb.from('profiles').update({
           plan: 'free',
-          analyses_limit: 3,
+          analyses_limit: 1,
           analyses_used: 0,
           stripe_subscription_id: null,
           updated_at: new Date().toISOString()
