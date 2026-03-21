@@ -148,7 +148,7 @@ h2 em{font-style:italic;color:var(--green)}
 /* Crosshatch pattern */
 .how-pattern{position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,rgba(0,0,0,.015) 0,rgba(0,0,0,.015) 1px,transparent 0,transparent 50%);background-size:20px 20px;z-index:0}
 
-.steps{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin-top:3rem}
+.steps{display:grid;grid-template-columns:repeat(1,1fr);gap:1.5rem;margin-top:3rem}
 .step{padding:2.25rem 1.75rem;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);transition:all .35s;position:relative;overflow:hidden}
 .step::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(11,191,106,0.04) 0%,transparent 60%);opacity:0;transition:opacity .35s}
 .step::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),rgba(11,191,106,0.3));transform:scaleX(0);transform-origin:left;transition:transform .4s ease;border-radius:0 0 var(--radius-lg) var(--radius-lg)}
