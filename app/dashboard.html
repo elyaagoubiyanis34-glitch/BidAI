@@ -452,40 +452,26 @@ function showView(v){
 
 function renderPlanView(){
   const p = userProfile?.plan||'free';
-  const limits = {free:3,starter:20,pro:-1,business:-1};
-  const lim = limits[p];
-  document.getElementById('pl-name').textContent = planLabel(p);
-  document.getElementById('pl-renew').textContent = p==='free'?'Compte gratuit — 3 analyses d\'essai':'Abonnement mensuel actif';
-
   const features = {
-  free: [
-    '3 analyses d\'essai',
-    'Score de pertinence go/no-go',
-    'Brouillon de réponse basique'
-  ],
-  starter: [
-    '5 analyses par mois',
-    'Score de pertinence go/no-go',
-    'Brouillon de réponse généré',
-    'Identification des risques'
-  ],
-  pro: [
-    'Analyses illimitées',
-    'Score de pertinence go/no-go',
-    'Brouillon de réponse généré',
-    'Identification des risques',
-    'Export Word professionnel',
-    'Historique complet des analyses'
-  ],
-  business: [
-    'Analyses illimitées',
-    'Tout le plan Pro inclus',
-    'Veille AO automatique BOAMP',
-    'Alertes en temps réel',
-    'Intégration CRM',
-    'Support prioritaire dédié'
-  ]
-};
+    free:['3 analyses d\'essai','Score de pertinence go/no-go','Brouillon de réponse basique'],
+    starter:['5 analyses par mois','Score de pertinence go/no-go','Brouillon de réponse généré','Identification des risques'],
+    pro:['Analyses illimitées','Score de pertinence go/no-go','Brouillon de réponse généré','Identification des risques','Export Word professionnel','Historique complet'],
+    business:['Analyses illimitées','Tout le plan Pro inclus','Veille AO automatique','Alertes temps réel','Intégration CRM','Support prioritaire']
+  };
+  const labels={free:'Essai gratuit',starter:'Starter',pro:'Pro',business:'Business'};
+  document.getElementById('pl-name').textContent=labels[p]||p;
+  document.getElementById('pl-renew').textContent=p==='free'?'Compte gratuit — 3 analyses d\'essai':'Abonnement mensuel actif';
+  const list=features[p]||[];
+  document.getElementById('pl-features').innerHTML=list.map(f=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:14px">
+      <span style="color:var(--green);font-weight:700;flex-shrink:0">✓</span><span>${f}</span>
+    </div>`).join('');
+  const actions=p==='free'
+    ?'<button class="btn-upgrade" onclick="document.getElementById(\'upgrade-section\').style.display=\'block\';this.style.display=\'none\'">Passer à un plan payant →</button>'
+    :'<button class="btn-portal" onclick="window.open(\'VOTRE_LIEN_PORTAIL_STRIPE\',\'_blank\')">Gérer mon abonnement</button>';
+  document.getElementById('pl-actions').innerHTML=actions;
+  if(p!=='free')document.getElementById('upgrade-section').style.display='none';
+}
 
   document.getElementById('pl-features').innerHTML=(features[p]||[]).map(f=>`
     <div style="display:flex;align-items:center;gap:10px;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:14px">
