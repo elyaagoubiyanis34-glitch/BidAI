@@ -1,69 +1,101 @@
-const Stripe = require('stripe');
 const { createClient } = require('@supabase/supabase-js');
 
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+const sb = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 const PLAN_LIMITS = {
   'price_1TDWSoHG45lr2heeQ5lOjBHe': { plan: 'starter', analyses_limit: 5 },
-  'price_1TDWTBHG45lr2heeoDjlc32M':     { plan: 'pro',     analyses_limit: -1 },
+  'price_1TDWTBHG45lr2heeoDjlc32M': { plan: 'pro',     analyses_limit: -1 },
 };
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
   const sig = req.headers['stripe-signature'];
+  if (!sig) return res.status(400).json({ error: 'Signature manquante' });
+
   let event;
+  let rawBody = '';
+
+  await new Promise((resolve, reject) => {
+    req.on('data', chunk => rawBody += chunk);
+    req.on('end', resolve);
+    req.on('error', reject);
+  });
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    const Stripe = require('stripe');
+    const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+    event = stripe.webhooks.constructEvent(rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
-    return res.status(400).json({ error: `Webhook Error: ${err.message}` });
+    console.error('Webhook signature error:', err.message);
+    return res.status(400).json({ error: 'Signature invalide' });
   }
 
-  const session = event.data.object;
+  const obj = event.data.object;
+  console.log('Webhook event:', event.type);
 
-  if (event.type === 'checkout.session.completed') {
-    const customerId = session.customer;
-    const customerEmail = session.customer_details?.email;
-    const subscriptionId = session.subscription;
+  try {
 
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-    const priceId = subscription.items.data[0]?.price?.id;
-    const planInfo = PLAN_LIMITS[priceId] || { plan: 'starter', analyses_limit: 5 };
+    // ── Changement ou upgrade de plan ──
+    if (event.type === 'customer.subscription.updated') {
+      const customerId = obj.customer;
+      const priceId = obj.items?.data[0]?.price?.id;
+      const planInfo = PLAN_LIMITS[priceId];
 
-    const { data: users } = await sb.auth.admin.listUsers();
-    const user = users?.users?.find(u => u.email === customerEmail);
+      if (!planInfo) {
+        console.log('Prix non reconnu:', priceId);
+        return res.status(200).json({ received: true });
+      }
 
-    if (user) {
-      await sb.from('profiles').update({
-        plan: planInfo.plan,
-        analyses_limit: planInfo.analyses_limit,
-        analyses_used: 0,
-        stripe_customer_id: customerId,
-        stripe_subscription_id: subscriptionId,
-        updated_at: new Date().toISOString()
-      }).eq('id', user.id);
+      const { data: profile } = await sb.from('profiles').select('id').eq('stripe_customer_id', customerId).maybeSingle();
+      if (profile) {
+        await sb.from('profiles').update({
+          plan: planInfo.plan,
+          analyses_limit: planInfo.analyses_limit,
+          updated_at: new Date().toISOString()
+        }).eq('id', profile.id);
+        console.log('Plan mis à jour:', planInfo.plan, 'pour customer:', customerId);
+      }
     }
-  }
 
-  if (event.type === 'invoice.payment_succeeded') {
-    const customerId = session.customer;
-    const { data: profile } = await sb.from('profiles').select('id').eq('stripe_customer_id', customerId).single();
-    if (profile) {
-      await sb.from('profiles').update({ analyses_used: 0, updated_at: new Date().toISOString() }).eq('id', profile.id);
+    // ── Résiliation ──
+    if (event.type === 'customer.subscription.deleted') {
+      const customerId = obj.customer;
+      const { data: profile } = await sb.from('profiles').select('id').eq('stripe_customer_id', customerId).maybeSingle();
+      if (profile) {
+        await sb.from('profiles').update({
+          plan: 'free',
+          analyses_limit: 1,
+          analyses_used: 0,
+          stripe_subscription_id: null,
+          updated_at: new Date().toISOString()
+        }).eq('id', profile.id);
+        console.log('Plan résilié, retour free pour customer:', customerId);
+      }
     }
-  }
 
-  if (event.type === 'customer.subscription.deleted') {
-    const customerId = session.customer;
-    const { data: profile } = await sb.from('profiles').select('id').eq('stripe_customer_id', customerId).single();
-    if (profile) {
-      await sb.from('profiles').update({ plan: 'free', analyses_limit: 3, analyses_used: 0, stripe_subscription_id: null, updated_at: new Date().toISOString() }).eq('id', profile.id);
+    // ── Reset mensuel à chaque renouvellement ──
+    if (event.type === 'invoice.payment_succeeded') {
+      const customerId = obj.customer;
+      const { data: profile } = await sb.from('profiles').select('id').eq('stripe_customer_id', customerId).maybeSingle();
+      if (profile) {
+        await sb.from('profiles').update({
+          analyses_used: 0,
+          updated_at: new Date().toISOString()
+        }).eq('id', profile.id);
+        console.log('Compteur remis à 0 pour customer:', customerId);
+      }
     }
+
+  } catch (err) {
+    console.error('Webhook processing error:', err.message);
+    return res.status(500).json({ error: err.message });
   }
 
   return res.status(200).json({ received: true });
 };
 
-module.exports.config = { api: { bodyParser: false } };
+export const config = { api: { bodyParser: false } };
