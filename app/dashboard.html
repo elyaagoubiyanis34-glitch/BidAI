@@ -358,7 +358,7 @@ async function init() {
 
 async function loadProfile() {
   const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
-  userProfile = data || { plan: 'free', analyses_used: 0, analyses_limit: 3, full_name: currentUser.email };
+  userProfile = data || { plan: 'free', analyses_used: 0, analyses_limit: 1, full_name: currentUser.email };
 
   const initials = (userProfile.full_name || 'U').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   document.getElementById('sb-avatar').textContent = initials;
@@ -439,7 +439,7 @@ async function loadHistory() {
 function renderPlanView() {
   const p = userProfile?.plan || 'free';
   const features = {
-    free: ['3 analyses d\'essai', 'Score de pertinence go/no-go', 'Brouillon de réponse basique'],
+    free: ['1 analyses d\'essai', 'Score de pertinence go/no-go', 'Brouillon de réponse basique'],
     starter: ['5 analyses par mois', 'Score de pertinence go/no-go', 'Brouillon de réponse généré', 'Identification des risques'],
     pro: ['Analyses illimitées', 'Score de pertinence go/no-go', 'Brouillon de réponse généré', 'Identification des risques', 'Export Word professionnel', 'Historique complet des analyses'],
     business: ['Analyses illimitées', 'Tout le plan Pro inclus', 'Veille AO automatique BOAMP', 'Alertes en temps réel', 'Intégration CRM', 'Support prioritaire dédié']
