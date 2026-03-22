@@ -348,7 +348,7 @@ async function init(){
 }
 
 async function loadProfile(){
- const {data, error} = await sb.from('profiles').select('*').eq('id',currentUser.id).single();
+ const {data, error} = await sb.from('profiles').select('*').eq('id',currentUser.id).maybeSingle();
 console.log('Profile data:', data, 'Error:', error);
 userProfile = data || {plan:'free', analyses_used:0, analyses_limit:3, full_name:currentUser.user_metadata?.full_name||currentUser.email};
   
