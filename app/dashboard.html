@@ -438,7 +438,7 @@ function showView(v){
   if(v==='plan') renderPlanView();
  if(v==='history'){
   if(!['pro','business'].includes(userProfile?.plan)){
-document.getElementById('pl-features').innerHTML=
+      document.getElementById('pl-features').innerHTML=
       <div class="empty-state">
         <div class="empty-icon">🔒</div>
         <p>L'historique est disponible sur le plan Pro.<br>
