@@ -596,31 +596,19 @@ function renderResult(r){
   setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.dataset.w+'%'),120);
 }
 
-function exportWord(r){
-  // Simple text export (full Word export requires server-side)
-  const content=`ANALYSE BIDAI
-=============
-
-DÉCISION : ${r.decision} (Score: ${r.score}/100)
-${r.decision_raison}
-
-RÉSUMÉ DE L'AO
-${r.resume_ao}
-
-INTRODUCTION
-${r.draft_intro}
-
-MÉTHODOLOGIE PROPOSÉE
-${r.draft_methodo}
-
-ÉQUIPE PROJET
-${r.draft_equipe}
-
-CONSEIL PRIX
-${r.conseil_prix}`;
-  const blob=new Blob([content],{type:'text/plain;charset=utf-8'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='analyse-bidai.txt';a.click();
+async function exportWord(r) {
+  const { data: { session } } = await sb.auth.getSession();
+  const objet = document.getElementById('d-ao').value.split('\n')[0].replace('Objet :','').trim().slice(0,80);
+  const res = await fetch('/api/export-word', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+    body: JSON.stringify({ result: r, objet })
+  });
+  if (!res.ok) { alert('Erreur export'); return; }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'BidAI-Analyse.docx'; a.click();
   URL.revokeObjectURL(url);
 }
 
