@@ -159,17 +159,29 @@ textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
         Mon abonnement
       </button>
     </nav>
-    <div class="sidebar-bottom">
-      <div class="user-chip">
-        <div class="user-avatar" id="sb-avatar">?</div>
-        <div>
-          <div class="user-name" id="sb-name">Chargement…</div>
-          <div class="user-plan" id="sb-plan">—</div>
-        </div>
-        <button class="logout-btn" onclick="logout()" title="Se déconnecter">⏻</button>
-      </div>
+ <div class="sidebar-bottom">
+  <div style="background:var(--green-light);border:1px solid rgba(11,191,106,0.2);border-radius:12px;padding:1rem;margin-bottom:.75rem">
+    <div style="font-size:11px;font-weight:700;color:var(--green-dark);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem">Analyses ce mois</div>
+    <div style="font-family:var(--display);font-size:24px;font-weight:900;color:var(--green-dark)" id="sb-analyses">—</div>
+    <div style="font-size:11px;color:var(--green-dark);margin-top:2px;opacity:.7" id="sb-analyses-sub">—</div>
+  </div>
+  <a href="mailto:contact@bidai.fr" style="display:flex;align-items:center;gap:8px;padding:.6rem .75rem;border-radius:10px;font-size:13px;color:var(--muted);text-decoration:none;transition:all .2s;margin-bottom:.5rem" onmouseover="this.style.background='var(--bg)';this.style.color='var(--text)'" onmouseout="this.style.background='none';this.style.color='var(--muted)'">
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l7 5 7-5M5 6h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>
+    Support
+  </a>
+  <a href="/" style="display:flex;align-items:center;gap:8px;padding:.6rem .75rem;border-radius:10px;font-size:13px;color:var(--muted);text-decoration:none;transition:all .2s;margin-bottom:.75rem" onmouseover="this.style.background='var(--bg)';this.style.color='var(--text)'" onmouseout="this.style.background='none';this.style.color='var(--muted)'">
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 3L3 9v9h5v-5h4v5h5V9l-7-6z"/></svg>
+    Retour au site
+  </a>
+  <div class="user-chip">
+    <div class="user-avatar" id="sb-avatar">?</div>
+    <div>
+      <div class="user-name" id="sb-name">Chargement…</div>
+      <div class="user-plan" id="sb-plan">—</div>
     </div>
-  </aside>
+    <button class="logout-btn" onclick="logout()" title="Se déconnecter">⏻</button>
+  </div>
+</div>
 
   <!-- MAIN -->
   <main class="main-content">
@@ -307,6 +319,8 @@ async function init() {
   currentUser = session.user;
   await loadProfile();
   await loadMetrics();
+  document.getElementById('sb-analyses').textContent = used + (unlimited ? '' : '/' + limit);
+document.getElementById('sb-analyses-sub').textContent = unlimited ? 'Illimitées' : Math.max(0, limit - used) + ' restantes';
 }
 
 async function loadProfile() {
