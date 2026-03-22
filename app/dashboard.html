@@ -468,7 +468,7 @@ function renderPlanView(){
     </div>`).join('');
   const actions=p==='free'
     ?'<button class="btn-upgrade" onclick="document.getElementById(\'upgrade-section\').style.display=\'block\';this.style.display=\'none\'">Passer à un plan payant →</button>'
-    :'<button class="btn-portal" onclick="window.open(\'window.open('https://billing.stripe.com/p/login/test_cNieVd9qS5jveQa0VIgnK00')">Gérer mon abonnement</button>';
+    :'<button class="btn-portal" onclick="window.open(\'window.open('https://billing.stripe.com/p/login/test_cNieVd9qS5jveQa0VIgnK00','_blank')">Gérer mon abonnement</button>';
   document.getElementById('pl-actions').innerHTML=actions;
   if(p!=='free')document.getElementById('upgrade-section').style.display='none';
 }
