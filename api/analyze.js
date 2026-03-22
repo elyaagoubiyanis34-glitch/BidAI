@@ -1,24 +1,34 @@
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== 'POST') return res.status(405).end();
 
-  const { ao, secteur, effectif, refs } = req.body;
-  if (!ao) return res.status(400).json({ error: 'AO manquant' });
+  const { email, name } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email manquant' });
 
-  const prompt = `Tu es un expert en réponse aux appels d'offres B2B en France.
-Analyse cet appel d'offres pour l'entreprise suivante.
-ENTREPRISE : ${secteur} | ${effectif} | Références : ${refs}
-AO : ${ao}
+  const prenom = name ? name.split(' ')[0] : 'là';
 
-Réponds UNIQUEMENT avec ce JSON valide (sans backticks, sans texte avant ou après) :
-{"score":75,"decision":"GO","decision_raison":"raison courte","resume_ao":"2-3 phrases","points_forts":["point 1","point 2","point 3"],"risques":["risque 1","risque 2"],"criteres":[{"nom":"Technique","score":80,"commentaire":"commentaire"},{"nom":"Références","score":70,"commentaire":"commentaire"},{"nom":"Prix","score":65,"commentaire":"commentaire"}],"draft_intro":"introduction 3-4 phrases à la première personne du pluriel","draft_methodo":"méthodologie 4-5 phrases","draft_equipe":"équipe 2-3 phrases","conseil_prix":"une phrase conseil prix"}
-Remplace toutes les valeurs par l'analyse réelle de l'AO.`;
+  const emailBody = `
+Bonjour ${prenom},
+
+Bienvenue sur BidAI ! Votre compte est maintenant actif.
+
+Vous disposez d'1 analyse gratuite pour découvrir la puissance de l'outil.
+
+👉 Accéder à mon dashboard : https://bid-ai-sand.vercel.app/app/dashboard.html
+
+Comment ça marche :
+1. Collez le texte de votre appel d'offres
+2. Renseignez votre profil entreprise
+3. Recevez votre score, les risques identifiés et un brouillon de réponse en 30 secondes
+
+Des questions ? Répondez directement à cet email.
+
+À très vite,
+L'équipe BidAI
+contact@bidai.fr
+  `.trim();
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const res2 = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
@@ -26,32 +36,42 @@ Remplace toutes les valeurs par l'analyse réelle de l'AO.`;
         'x-api-key': process.env.ANTHROPIC_API_KEY
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 2000,
-        messages: [{ role: 'user', content: prompt }]
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 10,
+        messages: [{ role: 'user', content: 'ok' }]
       })
     });
 
-    if (!response.ok) {
-      const err = await response.text();
-      return res.status(500).json({ error: `Erreur API: ${err.slice(0, 200)}` });
-    }
+    // Utilise Supabase pour envoyer l'email
+    const { createClient } = require('@supabase/supabase-js');
+    const sb = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
 
-    const data = await response.json();
-    const raw = (data.content || []).map(b => b.text || '').join('');
+    const { error } = await sb.auth.admin.generateLink({
+      type: 'magiclink',
+      email,
+      options: { redirectTo: 'https://bid-ai-sand.vercel.app/app/dashboard.html' }
+    });
 
-    let parsed = null;
-    for (const fn of [
-      () => JSON.parse(raw.trim()),
-      () => { const m = raw.match(/\{[\s\S]*\}/); return m ? JSON.parse(m[0]) : null; },
-      () => { const c = raw.replace(/```json/gi,'').replace(/```/g,'').trim(); return JSON.parse(c); },
-      () => { const c = raw.replace(/```json/gi,'').replace(/```/g,'').trim(); const m = c.match(/\{[\s\S]*\}/); return m ? JSON.parse(m[0]) : null; }
-    ]) { try { parsed = fn(); if (parsed) break; } catch(e) {} }
+    // Envoie l'email via Supabase
+    await fetch(`${process.env.SUPABASE_URL}/functions/v1/send-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+      },
+      body: JSON.stringify({
+        to: email,
+        subject: 'Bienvenue sur BidAI — votre accès est prêt',
+        text: emailBody
+      })
+    });
 
-    if (!parsed) return res.status(500).json({ error: 'Format de réponse inattendu' });
-    return res.status(200).json(parsed);
-
-  } catch(e) {
-    return res.status(500).json({ error: e.message });
+    return res.status(200).json({ success: true });
+  } catch (e) {
+    console.error('Welcome email error:', e.message);
+    return res.status(200).json({ success: true }); // Ne bloque pas l'inscription
   }
 };
