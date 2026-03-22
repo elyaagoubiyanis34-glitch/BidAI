@@ -438,7 +438,6 @@ function showView(v){
   if(v==='plan') renderPlanView();
  if(v==='history'){
   if(!['pro','business'].includes(userProfile?.plan)){
-    console.log('Plan actuel:', p, 'Features:', features[p]);
 document.getElementById('pl-features').innerHTML=
       <div class="empty-state">
         <div class="empty-icon">🔒</div>
