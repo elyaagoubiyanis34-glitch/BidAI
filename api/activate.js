@@ -8,7 +8,7 @@ const sb = createClient(
 );
 
 const PLAN_LIMITS = {
-  'price_1TDWTBHG45lr2heeoDjlc32M': { plan: 'starter', analyses_limit: 5 },
+  'price_1TDWSoHG45lr2heeQ5lOjBHe': { plan: 'starter', analyses_limit: 5 },
   'price_1TDWTBHG45lr2heeoDjlc32M':     { plan: 'pro',     analyses_limit: -1 },
 };
 
