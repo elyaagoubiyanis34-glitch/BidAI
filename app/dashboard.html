@@ -436,7 +436,18 @@ function showView(v){
   document.getElementById('page-title').innerHTML = titles[v];
 
   if(v==='plan') renderPlanView();
-  if(v==='history') loadHistory();
+ if(v==='history'){
+  if(!['pro','business'].includes(userProfile?.plan)){
+    document.getElementById('history-list').innerHTML=`
+      <div class="empty-state">
+        <div class="empty-icon">🔒</div>
+        <p>L'historique est disponible sur le plan Pro.<br>
+        <a href="#" onclick="showView('plan')" style="color:var(--green);font-weight:600">Upgrader mon plan →</a></p>
+      </div>`;
+    return;
+  }
+  loadHistory();
+}
 }
 
 function renderPlanView(){
