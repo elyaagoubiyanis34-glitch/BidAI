@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BidAI — Activation en cours…</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700..900;1,9..144,700..900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAF9F4;--card:#fff;--border:#DDD9CE;
+  --text:#1A1A12;--muted:#6A6658;
+  --green:#0BBF6A;--green-dark:#088A4C;--green-light:#E6F8EF;--green-glow:rgba(11,191,106,0.18);
+  --red:#D94F4F;--display:'Fraunces',Georgia,serif;--body:'Outfit',system-ui,sans-serif;
+  --shadow:0 4px 32px rgba(0,0,0,.08);
+}
+html,body{height:100%}
+body{font-family:var(--body);background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1rem}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(0,0,0,.055) 1px,transparent 1px);background-size:28px 28px;mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,black 20%,transparent 80%);pointer-events:none;z-index:0}
+
+.card{background:var(--card);border:1.5px solid var(--border);border-radius:24px;padding:3rem 2.5rem;width:100%;max-width:440px;text-align:center;box-shadow:var(--shadow);position:relative;z-index:1}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--green),rgba(11,191,106,0.2),transparent);border-radius:4px 4px 0 0}
+
+.logo{font-family:var(--display);font-size:24px;font-weight:900;font-style:italic;color:var(--text);margin-bottom:2rem;display:block}
+.logo em{color:var(--green);font-style:normal}
+
+/* Spinner */
+.spinner-wrap{margin:0 auto 1.75rem;width:64px;height:64px;position:relative}
+.spinner-ring{width:64px;height:64px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Success icon */
+.success-icon{width:64px;height:64px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.75rem;font-size:28px;display:none;border:2px solid rgba(11,191,106,0.25)}
+
+/* Error icon */
+.error-icon{width:64px;height:64px;background:#FDF0F0;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.75rem;font-size:28px;display:none;border:2px solid rgba(217,79,79,0.2)}
+
+.title{font-family:var(--display);font-size:24px;font-weight:900;letter-spacing:-.03em;margin-bottom:.5rem}
+.title em{color:var(--green);font-style:italic}
+.sub{font-size:14px;color:var(--muted);font-weight:300;line-height:1.65;margin-bottom:1.5rem}
+
+.steps{text-align:left;margin:1.5rem 0}
+.step-item{display:flex;align-items:center;gap:10px;padding:.5rem 0;font-size:13px;color:var(--muted);border-bottom:1px solid var(--border)}
+.step-item:last-child{border-bottom:none}
+.step-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .3s}
+.step-dot.done{background:var(--green);border-color:var(--green);color:#fff}
+.step-dot.active{border-color:var(--green);animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--green-glow)}50%{box-shadow:0 0 0 6px transparent}}
+
+.btn{display:inline-block;background:var(--green);color:#fff;border:none;border-radius:12px;padding:.9rem 2rem;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--body);transition:all .25s;text-decoration:none;margin-top:.5rem;box-shadow:0 4px 16px var(--green-glow)}
+.btn:hover{background:var(--green-dark);transform:translateY(-1px)}
+.btn-err{background:#D94F4F}
+.btn-err:hover{background:#B83E3E}
+
+.countdown{font-size:13px;color:var(--muted);margin-top:1rem;font-weight:300}
+</style>
+</head>
+<body>
+<div class="card">
+  <a href="/" class="logo">Bid<em>AI</em></a>
+
+  <!-- État : chargement -->
+  <div id="state-loading">
+    <div class="spinner-wrap"><div class="spinner-ring"></div></div>
+    <div class="title">Activation en cours…</div>
+    <div class="sub">Nous activons votre abonnement et préparons votre espace.</div>
+    <div class="steps">
+      <div class="step-item"><div class="step-dot done" id="s1">✓</div><span>Paiement confirmé</span></div>
+      <div class="step-item"><div class="step-dot active" id="s2"></div><span>Activation du plan</span></div>
+      <div class="step-item"><div class="step-dot" id="s3"></div><span>Accès au dashboard</span></div>
+    </div>
+  </div>
+
+  <!-- État : succès -->
+  <div id="state-success" style="display:none">
+    <div class="success-icon" id="success-icon" style="display:flex">✓</div>
+    <div class="title">Bienvenue sur <em>BidAI</em> !</div>
+    <div class="sub" id="success-msg">Votre plan est activé. Vous allez être redirigé vers votre dashboard.</div>
+    <a href="/app/dashboard.html" class="btn">Accéder au dashboard →</a>
+    <div class="countdown" id="countdown">Redirection dans 3 secondes…</div>
+  </div>
+
+  <!-- État : erreur -->
+  <div id="state-error" style="display:none">
+    <div class="error-icon" id="error-icon" style="display:flex">!</div>
+    <div class="title">Une erreur est survenue</div>
+    <div class="sub" id="error-msg">Votre paiement a bien été enregistré mais l'activation a échoué. Contactez-nous à contact@bidai.fr</div>
+    <a href="mailto:contact@bidai.fr" class="btn btn-err">Contacter le support</a>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'sb_publishable_llhX-QSZI5oom-4y-4DgSQ_W3-8wF3t';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vaHdjY2Ztam9saW13cmhoY2V2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMjA2NDUsImV4cCI6MjA4OTU5NjY0NX0.XGUcE7u9J9gu2CyxfuIrR2tBCr0VW6JxNTrvQsd65xc';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function activate() {
+  // Récupère session_id depuis l'URL Stripe
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get('session_id');
+
+  if (!sessionId) {
+    showError('Lien d\'activation invalide. Vérifiez votre email ou contactez-nous.');
+    return;
+  }
+
+  // Vérifie que l'utilisateur est connecté
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    // Pas connecté — redirige vers login avec retour
+    window.location.href = '/app/login.html?redirect=' + encodeURIComponent(window.location.href);
+    return;
+  }
+
+  try {
+    // Appelle l'API d'activation
+    const res = await fetch('/api/activate', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'Authorization': 'Bearer ' + session.access_token
+      },
+      body: JSON.stringify({
+        session_id: sessionId,
+        user_id: session.user.id
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Activation échouée');
+    }
+
+    // Succès
+    document.getElementById('s2').textContent = '✓';
+    document.getElementById('s2').classList.remove('active');
+    document.getElementById('s2').classList.add('done');
+    document.getElementById('s3').textContent = '✓';
+    document.getElementById('s3').classList.add('done');
+
+    const planLabels = { starter: 'Starter', pro: 'Pro', business: 'Business' };
+    const planLabel = planLabels[data.plan] || data.plan;
+
+    document.getElementById('state-loading').style.display = 'none';
+    document.getElementById('state-success').style.display = 'block';
+    document.getElementById('success-msg').textContent = `Votre plan ${planLabel} est activé ! Vous allez être redirigé vers votre dashboard.`;
+
+    // Compte à rebours
+    let count = 3;
+    const interval = setInterval(() => {
+      count--;
+      document.getElementById('countdown').textContent = `Redirection dans ${count} seconde${count > 1 ? 's' : ''}…`;
+      if (count <= 0) {
+        clearInterval(interval);
+        window.location.href = '/app/dashboard.html';
+      }
+    }, 1000);
+
+  } catch (err) {
+    showError(err.message);
+  }
+}
+
+function showError(msg) {
+  document.getElementById('state-loading').style.display = 'none';
+  document.getElementById('state-error').style.display = 'block';
+  document.getElementById('error-msg').textContent = msg + ' — contact@bidai.fr';
+}
+
+activate();
+</script>
+</body>
+</html>
