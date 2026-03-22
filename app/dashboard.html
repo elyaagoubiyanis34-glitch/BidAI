@@ -348,9 +348,10 @@ async function init(){
 }
 
 async function loadProfile(){
-  const {data} = await sb.from('profiles').select('*').eq('id',currentUser.id).single();
-  userProfile = data || {plan:'free', analyses_used:0, analyses_limit:3, full_name:currentUser.user_metadata?.full_name||currentUser.email};
-
+ const {data, error} = await sb.from('profiles').select('*').eq('id',currentUser.id).single();
+console.log('Profile data:', data, 'Error:', error);
+userProfile = data || {plan:'free', analyses_used:0, analyses_limit:3, full_name:currentUser.user_metadata?.full_name||currentUser.email};
+  
   // Sidebar
   const initials = (userProfile.full_name||'U').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
   document.getElementById('sb-avatar').textContent = initials;
