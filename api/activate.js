@@ -9,7 +9,7 @@ const sb = createClient(
 
 const PLAN_LIMITS = {
   'price_1TDWSoHG45lr2heeQ5lOjBHe': { plan: 'starter', analyses_limit: 5 },
-  'price_1TDWTBHG45lr2heeoDjlc32M':     { plan: 'pro',     analyses_limit: -1 },
+  'price_1TFGL7HC1Gx8dtyGB92yQFqL':     { plan: 'pro',     analyses_limit: -1 },
 };
 
 module.exports = async function handler(req, res) {
