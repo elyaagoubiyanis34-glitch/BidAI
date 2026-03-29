@@ -445,7 +445,7 @@ function renderPlanView() {
     business: ['Analyses illimitées', 'Tout le plan Pro inclus', 'Veille AO automatique BOAMP', 'Alertes en temps réel', 'Intégration CRM', 'Support prioritaire dédié']
   };
   document.getElementById('pl-name').textContent = planLabel(p);
-  document.getElementById('pl-renew').textContent = p === 'free' ? 'Compte gratuit — 3 analyses d\'essai' : 'Abonnement mensuel actif';
+  document.getElementById('pl-renew').textContent = p === 'free' ? 'Compte gratuit — 1 analyses d\'essai' : 'Abonnement mensuel actif';
   document.getElementById('pl-features').innerHTML = (features[p] || []).map(f =>
     `<div class="plan-feature-item"><span style="color:var(--green);font-weight:700;flex-shrink:0">✓</span><span>${f}</span></div>`
   ).join('');
