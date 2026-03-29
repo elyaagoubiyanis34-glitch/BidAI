@@ -52,7 +52,7 @@ contact@bidai.fr
     const { error } = await sb.auth.admin.generateLink({
       type: 'magiclink',
       email,
-      options: { redirectTo: 'https://bid-ai-sand.vercel.app/app/dashboard.html' }
+      options: { redirectTo: 'https://bidai.cloud/app/dashboard.html' }
     });
 
     // Envoie l'email via Supabase
