@@ -122,7 +122,7 @@
                 Vous recevez cet email car vous venez de créer un compte BidAI.
               </p>
               <p style="margin:0;font-size:12px;color:#A39F93">
-                © 2026 BidAI · <a href="mailto:contact@bidai.fr" style="color:#A39F93">contact@bidai.fr</a>
+                © 2026 BidAI · <a href="mailto:contact@bidai.cloud" style="color:#A39F93">contact@bidai.cloud</a>
               </p>
             </td>
           </tr>
