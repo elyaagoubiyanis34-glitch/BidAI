@@ -91,7 +91,7 @@
                     <table cellpadding="0" cellspacing="0" style="margin-bottom:32px">
                       <tr>
                         <td style="background:#0BBF6A;border-radius:12px">
-                          <a href="https://bid-ai-sand.vercel.app/app/dashboard.html" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none">
+                          <a href="https://bidai.cloud/app/dashboard.html" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none">
                             Accéder à mon dashboard →
                           </a>
                         </td>
