@@ -87,8 +87,8 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
   <div id="state-error" style="display:none">
     <div class="error-icon" id="error-icon" style="display:flex">!</div>
     <div class="title">Une erreur est survenue</div>
-    <div class="sub" id="error-msg">Votre paiement a bien été enregistré mais l'activation a échoué. Contactez-nous à contact@bidai.fr</div>
-    <a href="mailto:contact@bidai.fr" class="btn btn-err">Contacter le support</a>
+    <div class="sub" id="error-msg">Votre paiement a bien été enregistré mais l'activation a échoué. Contactez-nous à contact@bidai.cloud</div>
+    <a href="mailto:contact@bidai.cloud" class="btn btn-err">Contacter le support</a>
   </div>
 </div>
 
@@ -168,7 +168,7 @@ async function activate() {
 function showError(msg) {
   document.getElementById('state-loading').style.display = 'none';
   document.getElementById('state-error').style.display = 'block';
-  document.getElementById('error-msg').textContent = msg + ' — contact@bidai.fr';
+  document.getElementById('error-msg').textContent = msg + ' — contact@bidai.cloud';
 }
 
 activate();
