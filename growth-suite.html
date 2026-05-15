@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BidAI — Growth Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAF9F4;--bg2:#F2EFE7;--card:#fff;--border:#DDD9CE;--border2:#C8C3B5;
+  --text:#1A1A12;--muted:#6A6658;--muted2:#A39F93;
+  --green:#0BBF6A;--green-dark:#088A4C;--green-light:#E6F8EF;
+  --green-glow:rgba(11,191,106,0.15);
+  --red:#D94F4F;--amber:#C97B10;
+  --display:'Fraunces',Georgia,serif;--body:'Outfit',system-ui,sans-serif;
+  --shadow:0 1px 4px rgba(0,0,0,.05),0 4px 20px rgba(0,0,0,.05);
+  --shadow-lg:0 8px 40px rgba(0,0,0,.1);
+  --radius:12px;--radius-lg:16px;
+}
+body{font-family:var(--body);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(0,0,0,.05) 1px,transparent 1px);background-size:28px 28px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%);pointer-events:none;z-index:0}
+
+.header{background:var(--card);border-bottom:1px solid var(--border);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.logo{font-family:var(--display);font-size:20px;font-weight:900;font-style:italic;color:var(--text)}
+.logo em{color:var(--green);font-style:normal}
+.header-badge{font-size:11px;font-weight:700;background:var(--green-light);color:var(--green-dark);padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em}
+
+.tabs{display:flex;gap:0;padding:1.25rem 1.5rem 0;background:var(--bg);position:relative;z-index:1}
+.tab{padding:.75rem 1.5rem;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;font-family:var(--body);color:var(--muted);border-bottom:2px solid transparent;transition:all .2s;display:flex;align-items:center;gap:8px}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--green-dark);border-bottom-color:var(--green)}
+
+.content{padding:1.5rem;position:relative;z-index:1;max-width:900px;margin:0 auto}
+
+.card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1rem;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),rgba(11,191,106,0.2),transparent)}
+.card-title{font-family:var(--display);font-size:17px;font-weight:800;letter-spacing:-.02em;margin-bottom:.25rem}
+.card-sub{font-size:13px;color:var(--muted);font-weight:300;margin-bottom:1.25rem}
+
+.sub-tabs{display:flex;gap:6px;margin-bottom:1.25rem;background:var(--bg2);padding:4px;border-radius:10px;width:fit-content}
+.sub-tab{padding:.45rem 1rem;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;font-family:var(--body);color:var(--muted);transition:all .2s}
+.sub-tab.active{background:var(--card);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+
+.inp-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem}
+.inp-group{display:flex;flex-direction:column;gap:5px}
+.inp-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+input,textarea,select{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:.6rem .85rem;font-size:13px;color:var(--text);font-family:var(--body);outline:none;transition:all .2s}
+input:focus,textarea:focus,select:focus{border-color:var(--green);background:var(--card);box-shadow:0 0 0 3px var(--green-glow)}
+textarea{resize:vertical;min-height:100px;line-height:1.6}
+
+.btn{display:inline-flex;align-items:center;gap:8px;padding:.75rem 1.5rem;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--body);transition:all .25s;border:none}
+.btn-primary{background:var(--green);color:#fff;box-shadow:0 4px 16px var(--green-glow)}
+.btn-primary:hover{background:var(--green-dark);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-copy{background:var(--green-light);color:var(--green-dark);border:1px solid rgba(11,191,106,0.25);padding:.5rem 1rem;font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;font-family:var(--body);transition:all .2s}
+.btn-copy:hover{background:var(--green);color:#fff}
+
+.output{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-top:1rem;display:none}
+.output.show{display:block;animation:fadeUp .4s ease}
+.output-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.output-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.output-text{font-size:14px;color:var(--text);line-height:1.75;white-space:pre-wrap;font-weight:300}
+
+.score-wrap{display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap}
+.score-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700}
+.score-hot{background:rgba(11,191,106,0.12);color:var(--green-dark)}
+.score-warm{background:rgba(201,123,16,0.1);color:var(--amber)}
+.score-cold{background:rgba(217,79,79,0.1);color:var(--red)}
+
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:.5rem;margin-bottom:1rem}
+.cal-day{border:1.5px solid var(--border);border-radius:8px;padding:.6rem .5rem;cursor:pointer;transition:all .2s;text-align:center;font-size:11px;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.cal-day:hover{border-color:var(--green);background:var(--green-light)}
+.cal-day.selected{border-color:var(--green);background:var(--green-light)}
+.cal-day.visibility{border-top:3px solid var(--green)}
+.cal-day.credibility{border-top:3px solid var(--amber)}
+.cal-day.conversion{border-top:3px solid #7C3AED}
+.cal-day-n{font-family:var(--display);font-size:18px;font-weight:900;color:var(--text)}
+.cal-day-type{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.cal-day-format{font-size:10px;color:var(--muted)}
+
+.legend{display:flex;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.legend-dot{width:8px;height:8px;border-radius:2px}
+
+.week-labels{display:grid;grid-template-columns:repeat(7,1fr);gap:.5rem;margin-bottom:.25rem}
+.week-label{text-align:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.company-list{display:flex;flex-direction:column;gap:.5rem;max-height:300px;overflow-y:auto}
+.company-item{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;transition:all .2s}
+.company-item:hover{border-color:var(--border2)}
+.company-name{font-size:13px;font-weight:600;color:var(--text)}
+.company-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.company-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--green-light);color:var(--green-dark);white-space:nowrap}
+
+.divider{border:none;border-top:1px solid var(--border);margin:1rem 0}
+.info-box{background:var(--green-light);border:1px solid rgba(11,191,106,0.2);border-radius:10px;padding:.85rem 1rem;font-size:13px;color:var(--green-dark);margin-bottom:1rem}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">Bid<em>AI</em> <span style="font-size:13px;font-weight:400;font-style:normal;color:var(--muted);font-family:var(--body)">— Growth Suite</span></div>
+  <div class="header-badge">3 Agents actifs</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('prospect')"><span>🎯</span> Agent Prospection</button>
+  <button class="tab" onclick="showTab('email')"><span>📧</span> Agent Email</button>
+  <button class="tab" onclick="showTab('content')"><span>✨</span> Agent Contenu</button>
+</div>
+
+<!-- PROSPECTION -->
+<div class="content" id="tab-prospect">
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="showSubTab('chasseur')">🔍 Chasseur</button>
+    <button class="sub-tab" onclick="showSubTab('coach')">💬 Coach</button>
+    <button class="sub-tab" onclick="showSubTab('closer')">🤝 Closer</button>
+  </div>
+
+  <div id="sub-chasseur">
+    <div class="card">
+      <div class="card-title">Générer un premier message LinkedIn</div>
+      <div class="card-sub">Entre les infos du prospect — l'agent crée le message parfait en 3 secondes.</div>
+      <div class="inp-grid">
+        <div class="inp-group"><div class="inp-label">Prénom</div><input id="c-prenom" placeholder="Jean"></div>
+        <div class="inp-group"><div class="inp-label">Nom</div><input id="c-nom" placeholder="Dupont"></div>
+        <div class="inp-group"><div class="inp-label">Entreprise</div><input id="c-entreprise" placeholder="Tech Solutions SAS"></div>
+        <div class="inp-group"><div class="inp-label">Poste</div><input id="c-poste" placeholder="Directeur commercial"></div>
+        <div class="inp-group"><div class="inp-label">Secteur</div>
+          <select id="c-secteur"><option>ESN / IT</option><option>BTP / Construction</option><option>Maintenance industrielle</option><option>Sécurité / Gardiennage</option></select>
+        </div>
+        <div class="inp-group"><div class="inp-label">Taille entreprise</div>
+          <select id="c-taille"><option>10-30 salariés</option><option>30-80 salariés</option><option>80-200 salariés</option></select>
+        </div>
+      </div>
+      <div class="inp-group" style="margin-bottom:.75rem">
+        <div class="inp-label">Info personnelle vue sur son profil LinkedIn</div>
+        <input id="c-info" placeholder="Ex: vient de remporter un marché avec la Mairie de Lyon...">
+      </div>
+      <button class="btn btn-primary" id="btn-chasseur" onclick="genererMessage()">⚡ Générer le message parfait</button>
+      <div class="output" id="out-chasseur">
+        <div class="output-header"><div class="output-label">Message LinkedIn généré</div><button class="btn-copy" onclick="copyText('msg-chasseur')">Copier</button></div>
+        <div class="output-text" id="msg-chasseur"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sub-coach" style="display:none">
+    <div class="card">
+      <div class="card-title">Répondre au message du prospect</div>
+      <div class="card-sub">Colle le message du prospect — l'agent analyse et te donne la réponse parfaite.</div>
+      <div class="inp-group" style="margin-bottom:.75rem">
+        <div class="inp-label">Message reçu du prospect</div>
+        <textarea id="coach-msg" placeholder="Colle ici le message LinkedIn ou email que tu viens de recevoir..."></textarea>
+      </div>
+      <div class="inp-group" style="margin-bottom:.75rem">
+        <div class="inp-label">Contexte (optionnel)</div>
+        <input id="coach-ctx" placeholder="Ex: 1er contact, il a demandé le prix, il hésite...">
+      </div>
+      <button class="btn btn-primary" id="btn-coach" onclick="coachReponse()">💬 Analyser et générer la réponse</button>
+      <div class="output" id="out-coach">
+        <div class="score-wrap" id="coach-scores"></div>
+        <div class="output-header"><div class="output-label">Analyse</div></div>
+        <div class="output-text" id="msg-coach-analyse" style="margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)"></div>
+        <div class="output-header"><div class="output-label">Réponse à copier-coller</div><button class="btn-copy" onclick="copyText('msg-coach-reponse')">Copier</button></div>
+        <div class="output-text" id="msg-coach-reponse"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sub-closer" style="display:none">
+    <div class="card">
+      <div class="card-title">Préparer la démo et le closing</div>
+      <div class="card-sub">Entre les infos du prospect avant la démo — l'agent te prépare le brief parfait.</div>
+      <div class="inp-grid">
+        <div class="inp-group"><div class="inp-label">Prénom prospect</div><input id="cl-prenom" placeholder="Jean"></div>
+        <div class="inp-group"><div class="inp-label">Entreprise</div><input id="cl-entreprise" placeholder="Tech Solutions SAS"></div>
+        <div class="inp-group"><div class="inp-label">Secteur</div>
+          <select id="cl-secteur"><option>ESN / IT</option><option>BTP / Construction</option><option>Maintenance industrielle</option><option>Sécurité / Gardiennage</option></select>
+        </div>
+        <div class="inp-group"><div class="inp-label">CA estimé</div>
+          <select id="cl-ca"><option>1-3M€</option><option>3-10M€</option><option>10-30M€</option><option>+30M€</option></select>
+        </div>
+      </div>
+      <div class="inp-group" style="margin-bottom:.75rem">
+        <div class="inp-label">Résumé de la conversation jusqu'ici</div>
+        <textarea id="cl-conv" placeholder="Ex: Il a dit que son équipe passe 3h par AO, il était sceptique sur l'IA..."></textarea>
+      </div>
+      <button class="btn btn-primary" id="btn-closer" onclick="genererBrief()">🎯 Générer le brief de démo</button>
+      <div class="output" id="out-closer">
+        <div class="output-header"><div class="output-label">Brief complet — Démo + Closing</div><button class="btn-copy" onclick="copyText('msg-closer')">Copier</button></div>
+        <div class="output-text" id="msg-closer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL -->
+<div class="content" id="tab-email" style="display:none">
+  <div class="card">
+    <div class="card-title">Recherche d'entreprises cibles</div>
+    <div class="card-sub">Trouve des entreprises qui répondent à des AOs et génère des séquences email personnalisées.</div>
+    <div class="inp-grid">
+      <div class="inp-group"><div class="inp-label">Secteur cible</div>
+        <select id="e-secteur"><option>ESN / IT</option><option>BTP / Construction</option><option>Maintenance industrielle</option><option>Sécurité / Gardiennage</option></select>
+      </div>
+      <div class="inp-group"><div class="inp-label">Région</div>
+        <select id="e-region"><option>Île-de-France</option><option>Auvergne-Rhône-Alpes</option><option>Occitanie</option><option>Nouvelle-Aquitaine</option><option>Provence-Alpes-Côte d'Azur</option><option>Toute la France</option></select>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="btn-boamp" onclick="rechercherBoamp()">🔍 Trouver des entreprises cibles</button>
+    <div class="output" id="out-boamp">
+      <div class="output-header"><div class="output-label">Entreprises identifiées</div></div>
+      <div class="company-list" id="company-list"></div>
+    </div>
+  </div>
+
+  <div class="card" id="email-gen-card" style="display:none">
+    <div class="card-title">Générer la séquence email</div>
+    <div class="card-sub">3 emails automatiques — J0, J+3, J+7 — prêts à envoyer.</div>
+    <div class="info-box" id="email-target-info"></div>
+    <button class="btn btn-primary" id="btn-email-gen" onclick="genererEmail()">✉️ Générer la séquence complète</button>
+    <div class="output" id="out-email"><div id="email-sequence"></div></div>
+  </div>
+</div>
+
+<!-- CONTENU -->
+<div class="content" id="tab-content" style="display:none">
+  <div class="card">
+    <div class="card-title">Calendrier éditorial — 21 jours</div>
+    <div class="card-sub">Clique sur un jour pour générer le post complet avec description LinkedIn.</div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Semaine Visibilité</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Semaine Crédibilité</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#7C3AED"></div>Semaine Conversion</div>
+    </div>
+    <div class="week-labels">
+      <div class="week-label">Lun</div><div class="week-label">Mar</div><div class="week-label">Mer</div>
+      <div class="week-label">Jeu</div><div class="week-label">Ven</div><div class="week-label">Sam</div><div class="week-label">Dim</div>
+    </div>
+    <div class="calendar" id="calendar"></div>
+  </div>
+
+  <div class="card" id="post-gen-card" style="display:none">
+    <div class="card-title" id="post-gen-title">Générer le post</div>
+    <div class="card-sub" id="post-gen-sub"></div>
+    <button class="btn btn-primary" id="btn-post" onclick="genererPost()">✨ Générer le post complet</button>
+    <div class="output" id="out-post">
+      <div class="output-header"><div class="output-label">Hook & Description LinkedIn</div><button class="btn-copy" onclick="copyText('msg-post-desc')">Copier description</button></div>
+      <div class="output-text" id="msg-post-desc" style="margin-bottom:1rem"></div>
+      <div class="divider"></div>
+      <div class="output-header"><div class="output-label">Instructions pour le visuel</div></div>
+      <div class="output-text" id="msg-post-visuel"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const POSTS=[
+  {s:'visibility',f:'Visuel',t:'Stat choc sur les AOs perdus'},
+  {s:'visibility',f:'Carrousel',t:'5 erreurs qui font perdre un AO'},
+  {s:'visibility',f:'Visuel',t:'Le vrai coût d\'un AO raté'},
+  {s:'visibility',f:'Carrousel',t:'Comment les grands groupes gagnent les AOs'},
+  {s:'visibility',f:'Visuel',t:'AO public vs privé — le débat'},
+  {s:'visibility',f:'Carrousel',t:'Pourquoi 70% des PME ciblent mal'},
+  {s:'visibility',f:'Visuel',t:'Mon histoire — pourquoi j\'ai créé BidAI'},
+  {s:'credibility',f:'Carrousel',t:'Comment lire un AO en 5 minutes'},
+  {s:'credibility',f:'Visuel',t:'Les 7 critères d\'un acheteur public'},
+  {s:'credibility',f:'Carrousel',t:'Rédiger un mémoire technique parfait'},
+  {s:'credibility',f:'Visuel',t:'Le taux de succès moyen des PME sur les AOs'},
+  {s:'credibility',f:'Carrousel',t:'Go/No-Go — le guide complet'},
+  {s:'credibility',f:'Visuel',t:'Les marchés publics en 2026'},
+  {s:'credibility',f:'Carrousel',t:'Décrypter un CCTP en 10 minutes'},
+  {s:'conversion',f:'Visuel',t:'BidAI analyse un AO en 30 secondes — résultat réel'},
+  {s:'conversion',f:'Carrousel',t:'Avant BidAI vs Après BidAI'},
+  {s:'conversion',f:'Visuel',t:'ROI calculé — 399€ vs contrats gagnés'},
+  {s:'conversion',f:'Carrousel',t:'Témoignage — comment un client a gagné +150k€'},
+  {s:'conversion',f:'Visuel',t:'Démo live — screenshot analyse réelle'},
+  {s:'conversion',f:'Carrousel',t:'3 raisons de tester BidAI cette semaine'},
+  {s:'conversion',f:'Visuel',t:'Offre pilote — 5 places disponibles'},
+];
+
+const COMPANIES=[
+  {n:'Actemis Groupe',s:'ESN / IT',r:'Île-de-France',ao:12,e:'contact@actemis.fr'},
+  {n:'Eiffage Construction',s:'BTP / Construction',r:'Auvergne-Rhône-Alpes',ao:28,e:'appels-offres@eiffage.com'},
+  {n:'Spie Facilities',s:'Maintenance industrielle',r:'Île-de-France',ao:19,e:'info@spie.com'},
+  {n:'Securitas France',s:'Sécurité / Gardiennage',r:'Île-de-France',ao:34,e:'contact@securitas.fr'},
+  {n:'Altran Technologies',s:'ESN / IT',r:'Occitanie',ao:8,e:'info@altran.com'},
+  {n:'GTM Bâtiment',s:'BTP / Construction',r:'Nouvelle-Aquitaine',ao:15,e:'contact@gtm.fr'},
+  {n:'Dalkia',s:'Maintenance industrielle',r:'PACA',ao:22,e:'info@dalkia.fr'},
+  {n:'Prosegur',s:'Sécurité / Gardiennage',r:'Occitanie',ao:11,e:'france@prosegur.com'},
+];
+
+let selectedDay=null;
+let selectedCompany=null;
+
+function buildCalendar(){
+  const cal=document.getElementById('calendar');
+  POSTS.forEach((p,i)=>{
+    const d=document.createElement('div');
+    d.className=`cal-day ${p.s}`;
+    d.innerHTML=`<div class="cal-day-n">${i+1}</div><div class="cal-day-type" style="color:${p.s==='visibility'?'var(--green-dark)':p.s==='credibility'?'var(--amber)':'#7C3AED'}">${p.s==='visibility'?'Visib.':p.s==='credibility'?'Créd.':'Conv.'}</div><div class="cal-day-format">${p.f}</div>`;
+    d.onclick=()=>selectDay(i,d);
+    cal.appendChild(d);
+  });
+}
+
+function selectDay(i,el){
+  document.querySelectorAll('.cal-day').forEach(d=>d.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedDay=i;
+  const p=POSTS[i];
+  document.getElementById('post-gen-card').style.display='block';
+  document.getElementById('post-gen-title').textContent=`Jour ${i+1} — ${p.t}`;
+  document.getElementById('post-gen-sub').textContent=`Format : ${p.f} · Semaine : ${p.s==='visibility'?'Visibilité':p.s==='credibility'?'Crédibilité':'Conversion'}`;
+  document.getElementById('out-post').classList.remove('show');
+}
+
+function showTab(t){
+  ['prospect','email','content'].forEach(x=>{
+    document.getElementById('tab-'+x).style.display=x===t?'block':'none';
+  });
+  document.querySelectorAll('.tab').forEach((b,i)=>{
+    b.classList.toggle('active',['prospect','email','content'][i]===t);
+  });
+}
+
+function showSubTab(t){
+  ['chasseur','coach','closer'].forEach(x=>{
+    document.getElementById('sub-'+x).style.display=x===t?'block':'none';
+  });
+  document.querySelectorAll('.sub-tab').forEach((b,i)=>{
+    b.classList.toggle('active',['chasseur','coach','closer'][i]===t);
+  });
+}
+
+function copyText(id){
+  const el=document.getElementById(id);
+  navigator.clipboard.writeText(el.textContent).then(()=>{
+    const btn=event.target;
+    btn.textContent='Copié ✓';
+    setTimeout(()=>btn.textContent='Copier',2000);
+  });
+}
+
+async function callClaude(prompt){
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'content-type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})
+  });
+  const d=await r.json();
+  return d.content?.[0]?.text||'';
+}
+
+function setLoading(btnId,loading,icon,text){
+  const btn=document.getElementById(btnId);
+  btn.disabled=loading;
+  btn.innerHTML=loading?`<span class="spinner"></span> Génération en cours...`:`${icon} ${text}`;
+}
+
+async function genererMessage(){
+  const prenom=document.getElementById('c-prenom').value||'[Prénom]';
+  const entreprise=document.getElementById('c-entreprise').value||'[Entreprise]';
+  const poste=document.getElementById('c-poste').value||'[Poste]';
+  const secteur=document.getElementById('c-secteur').value;
+  const taille=document.getElementById('c-taille').value;
+  const info=document.getElementById('c-info').value;
+  setLoading('btn-chasseur',true,'','');
+  const prompt=`Tu es un expert en vente B2B SaaS. Génère un message LinkedIn de prospection PARFAIT pour BidAI (outil IA analyse AOs en 30s, 399€/mois).
+
+PROSPECT : ${prenom} — ${entreprise} (${taille}) — ${poste} — ${secteur}
+INFO PROFIL : ${info||'aucune info spécifique'}
+
+RÈGLES :
+1. Commence par une accroche personnalisée basée sur l'info du profil si disponible
+2. Une seule question sur leur douleur — pas de pitch produit
+3. Maximum 4-5 lignes, ton naturel et direct
+4. NE mentionne PAS BidAI dans ce premier message
+5. Termine par une question ouverte
+6. Génère UNIQUEMENT le message`;
+  const res=await callClaude(prompt);
+  document.getElementById('msg-chasseur').textContent=res;
+  document.getElementById('out-chasseur').classList.add('show');
+  setLoading('btn-chasseur',false,'⚡','Générer le message parfait');
+}
+
+async function coachReponse(){
+  const msg=document.getElementById('coach-msg').value;
+  const ctx=document.getElementById('coach-ctx').value;
+  if(!msg){document.getElementById('coach-msg').style.borderColor='var(--red)';setTimeout(()=>document.getElementById('coach-msg').style.borderColor='',1500);return;}
+  setLoading('btn-coach',true,'','');
+  const prompt=`Tu es un expert en vente B2B SaaS spécialisé BidAI (outil IA analyse AOs, 399€/mois Pro).
+
+MESSAGE REÇU : "${msg}"
+CONTEXTE : ${ctx||'premier échange LinkedIn'}
+
+Réponds en JSON UNIQUEMENT :
+{"niveau_interet":"chaud|tiede|froid","score":75,"analyse":"2-3 phrases sur ce que révèle ce message et les objections cachées","prochaine_etape":"qualifier|proposer_demo|closer|relancer","reponse":"La réponse parfaite à copier-coller, maximum 5 lignes, ton naturel"}`;
+  const res=await callClaude(prompt);
+  try{
+    const clean=res.replace(/```json/gi,'').replace(/```/g,'').trim();
+    const json=JSON.parse(clean.match(/\{[\s\S]*\}/)?.[0]||clean);
+    const colors={chaud:'score-hot',tiede:'score-warm',froid:'score-cold'};
+    const icons={chaud:'🔥',tiede:'🌡️',froid:'❄️'};
+    document.getElementById('coach-scores').innerHTML=`
+      <span class="score-badge ${colors[json.niveau_interet]}">${icons[json.niveau_interet]} ${json.niveau_interet}</span>
+      <span class="score-badge" style="background:var(--bg2);color:var(--text)">Score ${json.score}/100</span>
+      <span class="score-badge" style="background:var(--bg2);color:var(--muted)">→ ${json.prochaine_etape}</span>`;
+    document.getElementById('msg-coach-analyse').textContent=json.analyse;
+    document.getElementById('msg-coach-reponse').textContent=json.reponse;
+    document.getElementById('out-coach').classList.add('show');
+  }catch(e){
+    document.getElementById('msg-coach-analyse').textContent=res;
+    document.getElementById('out-coach').classList.add('show');
+  }
+  setLoading('btn-coach',false,'💬','Analyser et générer la réponse');
+}
+
+async function genererBrief(){
+  const prenom=document.getElementById('cl-prenom').value||'le prospect';
+  const entreprise=document.getElementById('cl-entreprise').value||'son entreprise';
+  const secteur=document.getElementById('cl-secteur').value;
+  const ca=document.getElementById('cl-ca').value;
+  const conv=document.getElementById('cl-conv').value||'premier contact';
+  setLoading('btn-closer',true,'','');
+  const prompt=`Tu es un expert closer B2B SaaS. Prépare un brief complet pour une démo BidAI (outil IA analyse AOs en 30s, 399€/mois Pro).
+
+PROSPECT : ${prenom} — ${entreprise} — ${secteur} — CA ${ca}
+CONVERSATION : ${conv}
+
+Génère un brief structuré avec :
+1. PROFIL RAPIDE (2-3 lignes)
+2. LEURS DOULEURS PROBABLES (3 points)
+3. OBJECTIONS À ANTICIPER (3 objections avec réponse flash)
+4. SCRIPT DÉMO (5 étapes pour la démo de 10 min)
+5. PHRASE DE CLOSING (la phrase exacte pour closer)
+6. PRIX À PROPOSER (Starter 299€ ou Pro 399€ selon le profil + justification)`;
+  const res=await callClaude(prompt);
+  document.getElementById('msg-closer').textContent=res;
+  document.getElementById('out-closer').classList.add('show');
+  setLoading('btn-closer',false,'🎯','Générer le brief de démo');
+}
+
+async function rechercherBoamp(){
+  const secteur=document.getElementById('e-secteur').value;
+  const region=document.getElementById('e-region').value;
+  setLoading('btn-boamp',true,'','');
+  await new Promise(r=>setTimeout(r,1500));
+  let filtered=COMPANIES.filter(c=>region==='Toute la France'||c.r===region||c.s===secteur);
+  if(filtered.length===0)filtered=COMPANIES.slice(0,4);
+  document.getElementById('company-list').innerHTML=filtered.map(c=>`
+    <div class="company-item">
+      <div>
+        <div class="company-name">${c.n}</div>
+        <div class="company-meta">${c.r} · ${c.e}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.75rem">
+        <span class="company-badge">${c.ao} AOs/mois</span>
+        <button class="btn-copy" onclick='selectCompany(${JSON.stringify(c)})'>Sélectionner</button>
+      </div>
+    </div>`).join('');
+  document.getElementById('out-boamp').classList.add('show');
+  setLoading('btn-boamp',false,'🔍','Trouver des entreprises cibles');
+}
+
+function selectCompany(c){
+  selectedCompany=c;
+  document.getElementById('email-target-info').textContent=`Cible : ${c.n} — ${c.r} — ${c.ao} AOs/mois — ${c.e}`;
+  document.getElementById('email-gen-card').style.display='block';
+  document.getElementById('out-email').classList.remove('show');
+}
+
+async function genererEmail(){
+  if(!selectedCompany)return;
+  const c=selectedCompany;
+  setLoading('btn-email-gen',true,'','');
+  const prompt=`Tu es un expert en cold email B2B SaaS. Génère une séquence de 3 emails pour prospecter ${c.n} (${c.s}, ${c.r}, ~${c.ao} AOs/mois).
+
+BidAI = outil IA analyse AOs en 30s, score go/no-go, risques, brouillon réponse. 399€/mois Pro.
+
+EMAIL 1 (J0) — Accroche douleur, pas de pitch
+Objet : ...
+Corps : ...
+
+---
+
+EMAIL 2 (J+3) — Relance avec valeur
+Objet : ...
+Corps : ...
+
+---
+
+EMAIL 3 (J+7) — Dernière tentative + offre irrésistible
+Objet : ...
+Corps : ...
+
+Règles : emails courts (max 5 lignes), ton humain, chaque email se termine par une question simple.`;
+  const res=await callClaude(prompt);
+  document.getElementById('email-sequence').innerHTML=`
+    <div class="output-header"><div class="output-label">Séquence 3 emails — ${c.n}</div><button class="btn-copy" onclick="copyText('email-seq-text')">Copier tout</button></div>
+    <div class="output-text" id="email-seq-text">${res.replace(/</g,'&lt;')}</div>`;
+  document.getElementById('out-email').classList.add('show');
+  setLoading('btn-email-gen',false,'✉️','Générer la séquence complète');
+}
+
+async function genererPost(){
+  if(selectedDay===null)return;
+  const p=POSTS[selectedDay];
+  setLoading('btn-post',true,'','');
+  const prompt=`Tu es un expert en personal branding LinkedIn B2B. Génère un post LinkedIn complet pour BidAI.
+
+POST : Jour ${selectedDay+1} — ${p.t}
+Format : ${p.f}
+Objectif : ${p.s==='visibility'?'Visibilité — maximum de reach, émotion, partage':p.s==='credibility'?'Crédibilité — montrer l\'expertise sur les AOs':'Conversion — montrer la valeur de BidAI et convertir'}
+${p.s!=='conversion'?'NE PAS mentionner BidAI directement':'BidAI peut être mentionné'}
+
+Génère :
+
+DESCRIPTION LINKEDIN (hook puissant première ligne, corps structuré, CTA, 5 hashtags) :
+[description complète]
+
+---
+
+INSTRUCTIONS VISUEL (description précise pour créer ${p.f==='Carrousel'?'un carrousel 5-7 slides 1080x1350px':'un visuel unique 1080x1080px'}) :
+[instructions visuelles]`;
+  const res=await callClaude(prompt);
+  const parts=res.split('---');
+  document.getElementById('msg-post-desc').textContent=(parts[0]||res).replace('DESCRIPTION LINKEDIN :','').trim();
+  document.getElementById('msg-post-visuel').textContent=(parts[1]||'').replace('INSTRUCTIONS VISUEL :','').trim();
+  document.getElementById('out-post').classList.add('show');
+  setLoading('btn-post',false,'✨','Générer le post complet');
+}
+
+buildCalendar();
+</script>
+</body>
+</html>
