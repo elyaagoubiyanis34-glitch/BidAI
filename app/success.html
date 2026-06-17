@@ -5,7 +5,7 @@
  <link rel="icon" type="image/x-icon" href="/Bidai (2).png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BidAI — Activation en cours…</title>
+<title>BidFlow — Activation en cours…</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700..900;1,9..144,700..900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -79,7 +79,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
   <!-- État : succès -->
   <div id="state-success" style="display:none">
     <div class="success-icon" id="success-icon" style="display:flex">✓</div>
-    <div class="title">Bienvenue sur <em>BidAI</em> !</div>
+    <div class="title">Bienvenue sur <em>BidFlow</em> !</div>
     <div class="sub" id="success-msg">Votre plan est activé. Vous allez être redirigé vers votre dashboard.</div>
     <a href="/app/dashboard.html" class="btn">Accéder au dashboard →</a>
     <div class="countdown" id="countdown">Redirection dans 3 secondes…</div>
@@ -89,8 +89,8 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
   <div id="state-error" style="display:none">
     <div class="error-icon" id="error-icon" style="display:flex">!</div>
     <div class="title">Une erreur est survenue</div>
-    <div class="sub" id="error-msg">Votre paiement a bien été enregistré mais l'activation a échoué. Contactez-nous à contact@bidai.cloud</div>
-    <a href="mailto:contact@bidai.cloud" class="btn btn-err">Contacter le support</a>
+    <div class="sub" id="error-msg">Votre paiement a bien été enregistré mais l'activation a échoué. Contactez-nous à contact@bidflow.fr</div>
+    <a href="mailto:contact@bidflow.fr" class="btn btn-err">Contacter le support</a>
   </div>
 </div>
 
@@ -170,7 +170,7 @@ async function activate() {
 function showError(msg) {
   document.getElementById('state-loading').style.display = 'none';
   document.getElementById('state-error').style.display = 'block';
-  document.getElementById('error-msg').textContent = msg + ' — contact@bidai.cloud';
+  document.getElementById('error-msg').textContent = msg + ' — contact@bidflow.fr';
 }
 
 activate();
