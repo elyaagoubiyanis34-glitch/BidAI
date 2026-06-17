@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bienvenue sur BidAI</title>
+<title>Bienvenue sur BidFlow</title>
 </head>
 <body style="margin:0;padding:0;background:#F2EFE7;font-family:'Helvetica Neue',Arial,sans-serif">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#F2EFE7;padding:40px 20px">
@@ -14,7 +14,7 @@
           <!-- LOGO -->
           <tr>
             <td align="center" style="padding-bottom:28px">
-              <span style="font-size:28px;font-weight:900;font-style:italic;color:#1A1A12;letter-spacing:-.5px">Bid<span style="color:#0BBF6A">AI</span></span>
+              <span style="font-size:28px;font-weight:900;font-style:italic;color:#1A1A12;letter-spacing:-.5px">Bid<span style="color:#0BBF6A">Flow</span></span>
             </td>
           </tr>
 
@@ -31,7 +31,7 @@
                   Votre compte est actif 🎉
                 </h1>
                 <p style="margin:0;font-size:15px;color:#088A4C;font-weight:400">
-                  Bienvenue sur BidAI — l'IA qui analyse vos appels d'offres en 30 secondes.
+                  Bienvenue sur BidFlow — l'IA qui analyse vos appels d'offres en 30 secondes.
                 </p>
               </div>
 
@@ -91,7 +91,7 @@
                     <table cellpadding="0" cellspacing="0" style="margin-bottom:32px">
                       <tr>
                         <td style="background:#0BBF6A;border-radius:12px">
-                          <a href="https://bidai.cloud/app/dashboard.html" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none">
+                          <a href="https://bidflow.fr/app/dashboard.html" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none">
                             Accéder à mon dashboard →
                           </a>
                         </td>
@@ -106,7 +106,7 @@
                     </p>
                     <p style="margin:12px 0 0;font-size:14px;color:#1A1A12;font-weight:500">
                       À très vite,<br>
-                      <span style="color:#0BBF6A">L'équipe BidAI</span>
+                      <span style="color:#0BBF6A">L'équipe BidFlow</span>
                     </p>
 
                   </td>
@@ -119,10 +119,10 @@
           <tr>
             <td align="center" style="padding-top:24px">
               <p style="margin:0 0 6px;font-size:12px;color:#A39F93">
-                Vous recevez cet email car vous venez de créer un compte BidAI.
+                Vous recevez cet email car vous venez de créer un compte BidFlow.
               </p>
               <p style="margin:0;font-size:12px;color:#A39F93">
-                © 2026 BidAI · <a href="mailto:contact@bidai.cloud" style="color:#A39F93">contact@bidai.cloud</a>
+                © 2026 BidFlow · <a href="mailto:contact@bidflow.fr" style="color:#A39F93">contact@bidflow.fr</a>
               </p>
             </td>
           </tr>
