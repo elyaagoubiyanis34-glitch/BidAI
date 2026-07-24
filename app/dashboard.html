@@ -2,10 +2,9 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
- <link rel="icon" type="image/x-icon" href="/Bidai (2).png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BidFlow — Dashboard</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700..900;1,9..144,700..900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,29 +15,19 @@
   --bg:#FAF9F4;--bg2:#F2EFE7;--card:#fff;--border:#DDD9CE;--border2:#C8C3B5;
   --text:#1A1A12;--muted:#6A6658;--muted2:#A39F93;
   --green:#0BBF6A;--green-dark:#088A4C;--green-light:#E6F8EF;--green-glow:rgba(11,191,106,0.18);
-  --red:#D94F4F;--red-light:#FDF0F0;--amber:#C97B10;
+  --red:#D94F4F;--red-light:#FDF0F0;--amber:#C97B10;--amber-light:#FBF3E4;
   --display:'Fraunces',Georgia,serif;--body:'Outfit',system-ui,sans-serif;
   --shadow:0 1px 4px rgba(0,0,0,.05),0 4px 20px rgba(0,0,0,.05);
-  --shadow-lg:0 4px 32px rgba(0,0,0,.08);
 }
-
 html,body{height:100%;overflow:hidden}
 body{font-family:var(--body);background:var(--bg);color:var(--text)}
-
-/* ── LAYOUT ── */
 .layout{display:flex;height:100vh;overflow:hidden}
 
-/* ── SIDEBAR ── */
-.sidebar{
-  width:240px;flex-shrink:0;
-  background:var(--card);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;
-  height:100vh;overflow-y:auto;overflow-x:hidden;
-}
+/* SIDEBAR */
+.sidebar{width:240px;flex-shrink:0;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;overflow-y:auto;overflow-x:hidden}
 .sidebar-logo{padding:1.5rem 1.25rem 1rem;border-bottom:1px solid var(--border);flex-shrink:0}
 .logo{font-family:var(--display);font-size:22px;font-weight:900;font-style:italic;color:var(--text);text-decoration:none;display:block}
 .logo em{color:var(--green);font-style:normal}
-
 .nav-section{padding:1rem .75rem;flex:1}
 .nav-label{font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;padding:.5rem .75rem;margin-bottom:.25rem}
 .nav-item{display:flex;align-items:center;gap:10px;padding:.65rem .75rem;border-radius:10px;font-size:14px;color:var(--muted);cursor:pointer;transition:all .2s;font-weight:500;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:var(--body)}
@@ -46,16 +35,13 @@ body{font-family:var(--body);background:var(--bg);color:var(--text)}
 .nav-item.active{background:var(--green-light);color:var(--green-dark)}
 .nav-icon{width:16px;height:16px;flex-shrink:0;opacity:.6}
 .nav-item.active .nav-icon{opacity:1}
-
 .sidebar-counter{margin:.75rem .75rem .5rem;background:var(--green-light);border:1px solid rgba(11,191,106,0.2);border-radius:12px;padding:.9rem 1rem}
 .counter-label{font-size:10px;font-weight:700;color:var(--green-dark);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.35rem}
 .counter-value{font-family:var(--display);font-size:22px;font-weight:900;color:var(--green-dark);line-height:1}
 .counter-sub{font-size:11px;color:var(--green-dark);opacity:.65;margin-top:3px}
-
 .sidebar-links{padding:0 .75rem .5rem}
 .sidebar-link{display:flex;align-items:center;gap:8px;padding:.55rem .75rem;border-radius:10px;font-size:13px;color:var(--muted);text-decoration:none;transition:all .2s;margin-bottom:2px}
 .sidebar-link:hover{background:var(--bg);color:var(--text)}
-
 .sidebar-bottom{padding:.75rem;border-top:1px solid var(--border);flex-shrink:0}
 .user-chip{display:flex;align-items:center;gap:8px;padding:.65rem .75rem;border-radius:10px;background:var(--bg2)}
 .user-avatar{width:30px;height:30px;border-radius:50%;background:var(--green-light);border:1.5px solid rgba(11,191,106,0.25);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--green-dark);flex-shrink:0}
@@ -65,10 +51,8 @@ body{font-family:var(--body);background:var(--bg);color:var(--text)}
 .logout-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:2px;transition:color .2s;flex-shrink:0}
 .logout-btn:hover{color:var(--red)}
 
-/* ── MAIN ── */
+/* MAIN */
 .main-content{flex:1;overflow-y:auto;overflow-x:hidden;padding:2rem;min-width:0}
-
-/* TOPBAR */
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
 .page-title{font-family:var(--display);font-size:26px;font-weight:900;letter-spacing:-.03em}
 .page-title em{font-style:italic;color:var(--green)}
@@ -95,7 +79,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--text)}
 .demo-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}
 .demo-inp{flex:1;min-width:140px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:.65rem .85rem;font-size:14px;color:var(--text);font-family:var(--body);outline:none;transition:all .2s}
 .demo-inp:focus{border-color:var(--green);background:var(--card);box-shadow:0 0 0 3px rgba(11,191,106,0.08)}
-textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
+textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
 .ex-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center}
 .ex-btn{font-size:12px;padding:4px 12px;border:1.5px solid var(--border2);border-radius:20px;cursor:pointer;background:var(--bg);color:var(--muted);font-family:var(--body);transition:all .2s}
 .ex-btn:hover{border-color:var(--green);color:var(--green);background:var(--green-light)}
@@ -111,17 +95,80 @@ textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
 .btn-export{background:var(--bg);border:1.5px solid var(--border2);color:var(--text);border-radius:8px;padding:.5rem 1rem;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--body);transition:all .2s}
 .btn-export:hover{border-color:var(--green);color:var(--green);background:var(--green-light)}
 
-/* RESULTS */
-.result-card{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem}
-.score-ring{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;font-family:var(--display);border:3px solid;flex-shrink:0}
-.badge-dec{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:6px}
-.divider{border:none;border-top:1px solid var(--border);margin:.75rem 0}
-.res-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
-.res-body{font-size:13px;color:var(--muted);line-height:1.75;white-space:pre-wrap;font-weight:300}
-.crit-row{display:flex;align-items:center;gap:8px;padding:.3rem 0;font-size:13px;flex-wrap:wrap}
-.bar-bg{flex:1;min-width:80px;height:4px;background:var(--bg2);border-radius:3px;overflow:hidden}
-.bar-fill{height:100%;border-radius:3px;transition:width 1.4s cubic-bezier(.16,1,.3,1)}
+/* ═══ RESULT — EXPERT LAYOUT ═══ */
+.result-wrap{border-top:1px solid var(--border);margin-top:1.25rem;padding-top:1.5rem}
+.r-card{background:var(--bg);border:1.5px solid var(--border);border-radius:14px;padding:1.4rem;margin-bottom:1rem}
+.r-card.white{background:var(--card)}
+.r-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.75rem;display:flex;align-items:center;gap:8px}
+.r-lbl .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.r-body{font-size:13px;color:var(--muted);line-height:1.75;white-space:pre-wrap;font-weight:300}
+
+/* Score header */
+.score-header{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.score-range{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.score-range-val{font-family:var(--display);font-size:38px;font-weight:900;line-height:1;letter-spacing:-.03em}
+.score-range-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+.badge-dec{display:inline-block;padding:4px 14px;border-radius:20px;font-size:13px;font-weight:800;margin-bottom:8px;letter-spacing:.02em}
+.resume-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+.resume-item .k{font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em}
+.resume-item .v{font-size:13px;color:var(--text);font-weight:500;margin-top:2px}
+
+/* Dates */
+.dates-row{display:flex;gap:.75rem;flex-wrap:wrap}
+.date-chip{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:.6rem .9rem;font-size:12px}
+.date-chip.critical{border-color:rgba(217,79,79,.35);background:var(--red-light)}
+.date-chip .dl{font-weight:700;color:var(--text)}
+.date-chip .dv{color:var(--muted);margin-top:1px}
+.date-chip.critical .dl{color:var(--red)}
+
+/* Criteres */
+.crit-item{padding:.85rem 0;border-bottom:1px solid var(--border)}
+.crit-item:last-child{border-bottom:none}
+.crit-top{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin-bottom:.4rem}
+.crit-name{font-size:14px;font-weight:600;color:var(--text)}
+.crit-pond{font-size:11px;font-weight:700;background:var(--bg2);color:var(--muted);padding:2px 9px;border-radius:12px}
+.crit-note{font-family:var(--display);font-size:16px;font-weight:900}
+.crit-note span{font-size:11px;color:var(--muted2);font-family:var(--body);font-weight:400}
+.crit-bar{height:5px;background:var(--bg2);border-radius:3px;overflow:hidden;position:relative;margin:.4rem 0}
+.crit-bar-fill{position:absolute;top:0;bottom:0;border-radius:3px;opacity:.85}
+.crit-comment{font-size:12px;color:var(--muted);font-weight:300;line-height:1.6}
+
+/* Priorites */
+.prio-item{display:flex;gap:12px;padding:.6rem 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.prio-item:last-child{border-bottom:none}
+.prio-num{width:24px;height:24px;border-radius:7px;background:var(--text);color:var(--green);font-family:var(--display);font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.prio-txt{font-size:13px;color:var(--text);line-height:1.6;padding-top:2px}
+
+/* Implicites */
+.imp-item{padding:.75rem 0;border-bottom:1px solid var(--border)}
+.imp-item:last-child{border-bottom:none}
+.imp-signal{font-size:13px;font-weight:700;color:var(--amber);display:flex;align-items:center;gap:7px}
+.imp-attente{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.6;font-weight:300}
+
+/* Clauses */
+.clause-item{display:flex;gap:10px;padding:.7rem 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.clause-item:last-child{border-bottom:none}
+.grav{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:3px 8px;border-radius:10px;flex-shrink:0;margin-top:2px}
+.grav.haute{background:var(--red-light);color:var(--red)}
+.grav.moyenne{background:var(--amber-light);color:var(--amber)}
+.grav.faible{background:var(--bg2);color:var(--muted)}
+.clause-txt{font-size:13px;color:var(--text);font-weight:600}
+.clause-risk{font-size:12px;color:var(--muted);margin-top:2px;font-weight:300;line-height:1.55}
+
+/* Checklist */
+.check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.5rem}
+.check-item{display:flex;gap:9px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:.6rem .8rem}
+.check-item .cb{width:16px;height:16px;border:1.5px solid var(--green);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--green);margin-top:1px}
+.check-item .cp{font-size:12.5px;font-weight:600;color:var(--text)}
+.check-item .cn{font-size:11px;color:var(--muted2);margin-top:1px}
+
+/* Questions */
+.q-item{display:flex;gap:9px;padding:.45rem 0;font-size:13px;color:var(--muted);line-height:1.6}
+.q-item::before{content:'?';font-family:var(--display);font-weight:900;color:var(--green);flex-shrink:0}
+
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.pt-item{display:flex;gap:8px;padding:.25rem 0;font-size:13px;color:var(--muted);line-height:1.6}
+.divider{border:none;border-top:1px solid var(--border);margin:.85rem 0}
 
 /* STATUS */
 .status-bar{font-size:13px;color:var(--muted);padding:.5rem 0;display:none}
@@ -151,7 +198,6 @@ textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
 .upgrade-price{font-family:var(--display);font-size:28px;font-weight:900;margin-bottom:.25rem;letter-spacing:-.02em}
 .upgrade-price span{font-size:14px;font-weight:400;color:var(--muted);font-family:var(--body)}
 
-/* SPINNER */
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner{display:inline-block;width:13px;height:13px;border:2px solid var(--border2);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
 
@@ -159,7 +205,7 @@ textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
   .sidebar{display:none}
   html,body{height:auto;overflow:auto}
   .layout{height:auto}
-  .main-content{overflow:visible}
+  .main-content{overflow:visible;padding:1.25rem}
 }
 @media(max-width:520px){.grid2{grid-template-columns:1fr}}
 </style>
@@ -167,12 +213,8 @@ textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
 <body>
 <div class="layout">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar-logo">
-      <a href="/" class="logo">Bid<em>AI</em></a>
-    </div>
-
+    <div class="sidebar-logo"><a href="/" class="logo">Bid<em>Flow</em></a></div>
     <nav class="nav-section">
       <div class="nav-label">Menu</div>
       <button class="nav-item active" id="nav-analyze" onclick="showView('analyze')">
@@ -188,17 +230,13 @@ textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
         Mon abonnement
       </button>
     </nav>
-
-    <!-- Compteur analyses -->
     <div class="sidebar-counter">
       <div class="counter-label">Analyses ce mois</div>
       <div class="counter-value" id="sb-analyses">—</div>
       <div class="counter-sub" id="sb-analyses-sub">—</div>
     </div>
-
-    <!-- Liens utiles -->
     <div class="sidebar-links">
-      <a href="mailto:contact@bidflox.fr" class="sidebar-link">
+      <a href="mailto:contact@bidflow.fr" class="sidebar-link">
         <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l7 5 7-5M5 6h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>
         Support
       </a>
@@ -207,7 +245,6 @@ textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
         Retour au site
       </a>
     </div>
-
     <div class="sidebar-bottom">
       <div class="user-chip">
         <div class="user-avatar" id="sb-avatar">?</div>
@@ -220,14 +257,12 @@ textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
     </div>
   </aside>
 
-  <!-- MAIN CONTENT -->
   <main class="main-content">
     <div class="topbar">
       <div class="page-title" id="page-title">Analyser un <em>appel d'offres</em></div>
       <div id="plan-badge-top"></div>
     </div>
 
-    <!-- METRICS -->
     <div class="metrics">
       <div class="metric">
         <div class="metric-label">Analyses ce mois</div>
@@ -256,7 +291,7 @@ textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
       <div class="section">
         <div class="section-header">
           <div class="section-title">Nouvelle analyse</div>
-          <span class="sec-badge">Live</span>
+          <span class="sec-badge">Brief DCE complet</span>
         </div>
         <div style="margin-bottom:1.25rem">
           <div class="demo-lbl">Profil de votre entreprise</div>
@@ -264,17 +299,17 @@ textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
             <input class="demo-inp" id="d-secteur" placeholder="Secteur d'activité">
             <input class="demo-inp" id="d-effectif" placeholder="Effectif" style="max-width:180px">
           </div>
-          <input class="demo-inp" id="d-refs" placeholder="Références clés" style="width:100%">
+          <input class="demo-inp" id="d-refs" placeholder="Références clés (chantiers, certifications, clients notables...)" style="width:100%">
         </div>
         <div>
-          <div class="demo-lbl">Appel d'offres à analyser</div>
+          <div class="demo-lbl">Appel d'offres à analyser (RC, CCTP, extrait du DCE...)</div>
           <div class="ex-btns">
             <span style="font-size:12px;color:var(--muted2)">Exemples :</span>
             <button class="ex-btn" onclick="loadEx('esn')">ESN · SI RH</button>
             <button class="ex-btn" onclick="loadEx('maintenance')">Maintenance</button>
             <button class="ex-btn" onclick="loadEx('securite')">Sécurité</button>
           </div>
-          <textarea class="demo-inp" id="d-ao" placeholder="Collez ici le texte de votre appel d'offres..."></textarea>
+          <textarea class="demo-inp" id="d-ao" placeholder="Collez ici le texte de votre appel d'offres — plus vous fournissez d'éléments (RC, critères, CCTP, CCAP), plus le brief est précis..."></textarea>
           <p style="font-size:11px;color:var(--muted2);margin-top:.5rem">Données non stockées · Analyse confidentielle</p>
         </div>
         <div style="display:flex;justify-content:flex-end;margin-top:.75rem">
@@ -293,18 +328,14 @@ textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
           <div class="section-title">Historique des analyses</div>
           <span class="sec-badge" id="h-count">0 analyses</span>
         </div>
-        <div id="history-list">
-          <div class="empty-state"><p>Aucune analyse pour l'instant.</p></div>
-        </div>
+        <div id="history-list"><div class="empty-state"><p>Aucune analyse pour l'instant.</p></div></div>
       </div>
     </div>
 
     <!-- VIEW: PLAN -->
     <div id="view-plan" style="display:none">
       <div class="section">
-        <div class="section-header">
-          <div class="section-title">Mon abonnement</div>
-        </div>
+        <div class="section-header"><div class="section-title">Mon abonnement</div></div>
         <div class="plan-card">
           <div style="flex:1">
             <div class="plan-name-big" id="pl-name">—</div>
@@ -312,14 +343,11 @@ textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
           </div>
           <div id="pl-actions"></div>
         </div>
-        <div class="res-lbl" style="margin-bottom:.75rem">Ce qui est inclus dans votre plan</div>
+        <div class="r-lbl" style="margin-bottom:.75rem">Ce qui est inclus dans votre plan</div>
         <div id="pl-features"></div>
       </div>
-
       <div class="section" id="upgrade-section" style="display:none">
-        <div class="section-header">
-          <div class="section-title">Changer de plan</div>
-        </div>
+        <div class="section-header"><div class="section-title">Changer de plan</div></div>
         <div class="upgrade-grid">
           <div class="upgrade-card">
             <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Starter</div>
@@ -337,7 +365,6 @@ textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
         </div>
       </div>
     </div>
-
   </main>
 </div>
 
@@ -349,6 +376,7 @@ const sb = supabase.createClient(
 
 let currentUser = null;
 let userProfile = null;
+let lastResult = null;
 
 async function init() {
   const { data: { session } } = await sb.auth.getSession();
@@ -361,16 +389,13 @@ async function init() {
 async function loadProfile() {
   const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
   userProfile = data || { plan: 'free', analyses_used: 0, analyses_limit: 1, full_name: currentUser.email };
-
   const initials = (userProfile.full_name || 'U').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   document.getElementById('sb-avatar').textContent = initials;
   document.getElementById('sb-name').textContent = userProfile.full_name || currentUser.email;
   document.getElementById('sb-plan').textContent = planLabel(userProfile.plan);
-
   const planColors = { free: '#6A6658', starter: '#088A4C', pro: '#088A4C', business: '#7A4A08' };
   const planBgs = { free: '#F2EFE7', starter: '#E6F8EF', pro: '#E6F8EF', business: '#FEF5E6' };
   document.getElementById('plan-badge-top').innerHTML = `<span style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:${planBgs[userProfile.plan]||'#F2EFE7'};color:${planColors[userProfile.plan]||'#6A6658'}">${planLabel(userProfile.plan)}</span>`;
-
   if (userProfile.secteur) document.getElementById('d-secteur').value = userProfile.secteur;
   if (userProfile.effectif) document.getElementById('d-effectif').value = userProfile.effectif;
   if (userProfile.refs) document.getElementById('d-refs').value = userProfile.refs;
@@ -378,21 +403,16 @@ async function loadProfile() {
 
 async function loadMetrics() {
   const used = userProfile?.analyses_used || 0;
-  const limit = userProfile?.analyses_limit || 3;
+  const limit = userProfile?.analyses_limit || 1;
   const unlimited = limit === -1;
-
   document.getElementById('m-used').textContent = used;
   document.getElementById('m-limit').textContent = unlimited ? '∞' : limit;
   document.getElementById('m-sub').textContent = unlimited ? 'Analyses illimitées' : `${Math.max(0, limit - used)} restantes ce mois`;
   document.getElementById('m-progress').style.width = unlimited ? '15%' : Math.min(100, (used / limit) * 100) + '%';
-
-  // Sidebar counter
   document.getElementById('sb-analyses').textContent = unlimited ? used + '' : `${used} / ${limit}`;
   document.getElementById('sb-analyses-sub').textContent = unlimited ? 'Illimitées' : `${Math.max(0, limit - used)} restantes`;
-
   const { count } = await sb.from('analyses').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id);
   document.getElementById('m-total').textContent = count || 0;
-
   const { data: last } = await sb.from('analyses').select('created_at,score,decision,objet').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(1).maybeSingle();
   if (last) {
     document.getElementById('m-last').textContent = (last.objet || 'AO analysé').slice(0, 28);
@@ -400,7 +420,6 @@ async function loadMetrics() {
   } else {
     document.getElementById('m-last').textContent = 'Aucune encore';
   }
-
   if (!unlimited && used >= limit) {
     document.getElementById('limit-warning').classList.add('show');
     document.getElementById('d-btn').disabled = true;
@@ -441,13 +460,13 @@ async function loadHistory() {
 function renderPlanView() {
   const p = userProfile?.plan || 'free';
   const features = {
-    free: ['1 analyses d\'essai', 'Score de pertinence go/no-go', 'Brouillon de réponse basique'],
-    starter: ['5 analyses par mois', 'Score de pertinence go/no-go', 'Brouillon de réponse généré', 'Identification des risques'],
-    pro: ['Analyses illimitées', 'Score de pertinence go/no-go', 'Brouillon de réponse généré', 'Identification des risques', 'Export Word professionnel', 'Historique complet des analyses'],
+    free: ['1 analyse d\'essai', 'Brief DCE complet', 'Fourchette de note par critère'],
+    starter: ['5 analyses par mois', 'Brief DCE complet', 'Attentes implicites détectées', 'Clauses de vigilance CCAP', 'Checklist des pièces'],
+    pro: ['Analyses illimitées', 'Brief DCE complet', 'Attentes implicites détectées', 'Clauses de vigilance CCAP', 'Checklist des pièces', 'Export Word professionnel', 'Historique complet des analyses'],
     business: ['Analyses illimitées', 'Tout le plan Pro inclus', 'Veille AO automatique BOAMP', 'Alertes en temps réel', 'Intégration CRM', 'Support prioritaire dédié']
   };
   document.getElementById('pl-name').textContent = planLabel(p);
-  document.getElementById('pl-renew').textContent = p === 'free' ? 'Compte gratuit — 1 analyses d\'essai' : 'Abonnement mensuel actif';
+  document.getElementById('pl-renew').textContent = p === 'free' ? 'Compte gratuit — 1 analyse d\'essai' : 'Abonnement mensuel actif';
   document.getElementById('pl-features').innerHTML = (features[p] || []).map(f =>
     `<div class="plan-feature-item"><span style="color:var(--green);font-weight:700;flex-shrink:0">✓</span><span>${f}</span></div>`
   ).join('');
@@ -455,7 +474,7 @@ function renderPlanView() {
     document.getElementById('pl-actions').innerHTML = `<button class="btn-upgrade" onclick="document.getElementById('upgrade-section').style.display='block';this.style.display='none'">Passer à un plan payant →</button>`;
     document.getElementById('upgrade-section').style.display = 'none';
   } else {
-    document.getElementById('pl-actions').innerHTML = `<button class="btn-portal" onclick="window.open('https://billing.stripe.com/p/login/5kQ4gzeKobzC5aE6GYdZ600','_blank')">Gérer mon abonnement</button>`;
+    document.getElementById('pl-actions').innerHTML = `<button class="btn-portal" onclick="window.open('https://billing.stripe.com/p/login/9B67sLcCg0UY62I9TadZ600','_blank')">Gérer mon abonnement</button>`;
     document.getElementById('upgrade-section').style.display = 'none';
   }
 }
@@ -476,17 +495,17 @@ function showView(v) {
 }
 
 const EX = {
-  esn: `Objet : Refonte du système d'information RH\nPouvoir adjudicateur : Communauté d'Agglomération du Val de Saône\nCritères : Technique 60% — Prix 40%\nBudget : 280 000 € HT — Délai : 3 semaines`,
-  maintenance: `Objet : Maintenance équipements de production\nDonneur d'ordre : Groupe agroalimentaire, Roanne\nCritères : Technique 50% — Prix 50%\nBudget : 380 000 € HT/an — Durée : 3 ans`,
-  securite: `Objet : Audit sécurité et conformité NIS2\nBénéficiaire : CHU de Lyon\nCritères : Technique 70% (PASSI) — Prix 30%\nBudget : 95 000 € HT — Délai : 10 jours`
+  esn: `Objet : Refonte du système d'information RH\nPouvoir adjudicateur : Communauté d'Agglomération du Val de Saône\nCritères : Valeur technique 60% (méthodologie 30%, moyens humains 20%, planning 10%) — Prix 40%\nBudget : 280 000 € HT — Durée : 18 mois\nRemise des offres : 15/09/2026 à 12h00\nVisite obligatoire : non\nLe titulaire devra assurer la reprise des données de l'ancien SIRH et la formation de 45 agents.`,
+  maintenance: `Objet : Maintenance préventive et curative des équipements de production\nDonneur d'ordre : Groupe agroalimentaire, site de Roanne (site en exploitation continue)\nCritères : Valeur technique 50% — Prix 50%\nBudget : 380 000 € HT/an — Durée : 3 ans reconductibles\nAstreinte 24/7 exigée, intervention sous 4h\nPénalités de retard : 500 €/heure de dépassement`,
+  securite: `Objet : Prestations de gardiennage et surveillance\nPouvoir adjudicateur : CHU de Lyon (site hospitalier occupé)\nCritères : Valeur technique 70% (dont continuité de service 25%) — Prix 30%\nBudget : 95 000 € HT/an — Marché reconductible, titulaire sortant en place depuis 6 ans\nCarte professionnelle CNAPS exigée pour tous les agents\nRemise des offres : 30/09/2026`
 };
 function loadEx(k) { document.getElementById('d-ao').value = EX[k]; }
 
 function bc(s) { return s >= 65 ? 'var(--green)' : s >= 40 ? 'var(--amber)' : 'var(--red)'; }
 function bgColor(s) { return s >= 65 ? 'rgba(11,191,106,0.1)' : s >= 40 ? 'rgba(201,123,16,0.1)' : 'rgba(217,79,79,0.1)'; }
 function tcColor(s) { return s >= 65 ? 'var(--green-dark)' : s >= 40 ? 'var(--amber)' : 'var(--red)'; }
-function glowColor(s) { return s >= 65 ? '0 0 24px rgba(11,191,106,0.2)' : s >= 40 ? '0 0 24px rgba(201,123,16,0.15)' : '0 0 24px rgba(217,79,79,0.15)'; }
 function planLabel(p) { return { free: 'Essai gratuit', starter: 'Starter', pro: 'Pro', business: 'Business' }[p] || p; }
+function esc(s) { return String(s ?? '').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
 async function analyze() {
   const ao = document.getElementById('d-ao').value.trim();
@@ -499,9 +518,9 @@ async function analyze() {
   const statusEl = document.getElementById('d-status');
   const errEl = document.getElementById('d-err');
   btn.disabled = true; document.getElementById('d-result').innerHTML = ''; errEl.textContent = '';
-  const steps = ["Lecture de l'AO...", "Analyse des critères...", "Scoring...", "Génération du brouillon..."];
+  const steps = ["Lecture du DCE...", "Extraction des critères et pondérations...", "Détection des attentes implicites...", "Analyse des clauses de vigilance...", "Simulation de note par critère...", "Génération du brouillon de mémoire..."];
   let si = 0; statusEl.style.display = 'block'; statusEl.innerHTML = `<span class="spinner"></span>${steps[0]}`;
-  const t = setInterval(() => { si = Math.min(si + 1, 3); statusEl.innerHTML = `<span class="spinner"></span>${steps[si]}`; }, 3000);
+  const t = setInterval(() => { si = Math.min(si + 1, steps.length - 1); statusEl.innerHTML = `<span class="spinner"></span>${steps[si]}`; }, 3500);
 
   try {
     const { data: { session } } = await sb.auth.getSession();
@@ -514,12 +533,13 @@ async function analyze() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Erreur serveur');
 
-    const objet = ao.split('\n')[0].replace('Objet :', '').trim().slice(0, 80);
+    const objet = (data.resume?.objet || ao.split('\n')[0].replace('Objet :', '').trim()).slice(0, 80);
     await sb.from('analyses').insert({ user_id: currentUser.id, objet, score: data.score, decision: data.decision, result: data, ao_text: ao.slice(0, 500) });
     await sb.from('profiles').update({ analyses_used: used + 1 }).eq('id', currentUser.id);
     userProfile.analyses_used = used + 1;
 
     statusEl.style.display = 'none';
+    lastResult = data;
     renderResult(data, objet);
     loadMetrics();
   } catch (e) {
@@ -529,62 +549,149 @@ async function analyze() {
 }
 
 function renderResult(r, objet) {
-  const sc = parseInt(r.score) || 50;
+  const scMin = r.score_min ?? r.score ?? 50;
+  const scMax = r.score_max ?? r.score ?? 50;
+  const scAvg = Math.round((scMin + scMax) / 2);
   const isPro = ['pro', 'business'].includes(userProfile?.plan);
-  const crits = (r.criteres || []).map(c =>
-    `<div class="crit-row">
-      <span style="min-width:110px;color:var(--muted)">${c.nom}</span>
-      <div class="bar-bg"><div class="bar-fill" style="width:0%;background:${bc(c.score)}" data-w="${c.score}"></div></div>
-      <span style="min-width:30px;text-align:right;font-weight:700;font-family:var(--display);color:${bc(c.score)}">${c.score}%</span>
-      <span style="font-size:12px;color:var(--muted)">${c.commentaire}</span>
-    </div>`).join('');
-  const pts = (r.points_forts || []).map(p => `<div style="display:flex;gap:8px;padding:.2rem 0"><span style="color:var(--green);font-weight:700;flex-shrink:0">+</span><span style="font-size:13px;color:var(--muted)">${p}</span></div>`).join('');
-  const rsqs = (r.risques || []).map(p => `<div style="display:flex;gap:8px;padding:.2rem 0"><span style="color:var(--red);font-weight:700;flex-shrink:0">–</span><span style="font-size:13px;color:var(--muted)">${p}</span></div>`).join('');
+  const decColor = r.decision === 'GO' ? 'var(--green-dark)' : (r.decision || '').includes('CONDITIONNEL') ? 'var(--amber)' : 'var(--red)';
+  const decBg = r.decision === 'GO' ? 'var(--green-light)' : (r.decision || '').includes('CONDITIONNEL') ? 'var(--amber-light)' : 'var(--red-light)';
+
+  // Resume
+  const rs = r.resume || {};
+  const resumeHtml = `
+    <div class="resume-grid">
+      ${rs.acheteur ? `<div class="resume-item"><div class="k">Acheteur</div><div class="v">${esc(rs.acheteur)}</div></div>` : ''}
+      ${rs.budget ? `<div class="resume-item"><div class="k">Budget</div><div class="v">${esc(rs.budget)}</div></div>` : ''}
+      ${rs.duree ? `<div class="resume-item"><div class="k">Durée</div><div class="v">${esc(rs.duree)}</div></div>` : ''}
+      ${rs.type ? `<div class="resume-item"><div class="k">Type de marché</div><div class="v">${esc(rs.type)}</div></div>` : ''}
+    </div>`;
+
+  // Dates
+  const datesHtml = (r.dates_cles || []).length ? `
+    <div class="r-card white">
+      <div class="r-lbl"><span class="dot"></span>Dates clés</div>
+      <div class="dates-row">
+        ${(r.dates_cles || []).map(d => `<div class="date-chip${d.critique ? ' critical' : ''}"><div class="dl">${esc(d.label)}</div><div class="dv">${esc(d.valeur)}</div></div>`).join('')}
+      </div>
+    </div>` : '';
+
+  // Criteres avec fourchettes
+  const critHtml = (r.criteres || []).length ? `
+    <div class="r-card white">
+      <div class="r-lbl"><span class="dot"></span>Critères de notation — simulation en fourchette</div>
+      ${(r.criteres || []).map(c => {
+        const nMin = c.note_min ?? 0, nMax = c.note_max ?? 0;
+        const pctMin = (nMin / 20) * 100, pctMax = (nMax / 20) * 100;
+        const col = nMax >= 14 ? 'var(--green)' : nMax >= 10 ? 'var(--amber)' : 'var(--red)';
+        return `<div class="crit-item">
+          <div class="crit-top">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <span class="crit-name">${esc(c.nom)}</span>
+              ${c.ponderation ? `<span class="crit-pond">${esc(c.ponderation)}</span>` : ''}
+            </div>
+            <span class="crit-note" style="color:${col}">${nMin}–${nMax} <span>/ 20</span></span>
+          </div>
+          <div class="crit-bar"><div class="crit-bar-fill" style="left:${pctMin}%;width:${Math.max(3, pctMax - pctMin)}%;background:${col}"></div></div>
+          <div class="crit-comment">${esc(c.commentaire)}</div>
+        </div>`;
+      }).join('')}
+      <p style="font-size:11px;color:var(--muted2);margin-top:.75rem;font-weight:300">Fourchettes indicatives — la note réelle dépend de la commission d'analyse des offres.</p>
+    </div>` : '';
+
+  // Top priorites
+  const prioHtml = (r.top_priorites || []).length ? `
+    <div class="r-card white">
+      <div class="r-lbl"><span class="dot"></span>Les points à absolument adresser</div>
+      ${(r.top_priorites || []).map((p, i) => `<div class="prio-item"><div class="prio-num">${i + 1}</div><div class="prio-txt">${esc(p)}</div></div>`).join('')}
+    </div>` : '';
+
+  // Attentes implicites
+  const impHtml = (r.attentes_implicites || []).length ? `
+    <div class="r-card white">
+      <div class="r-lbl"><span class="dot" style="background:var(--amber)"></span>Attentes implicites de l'acheteur</div>
+      ${(r.attentes_implicites || []).map(a => `<div class="imp-item"><div class="imp-signal">⚡ ${esc(a.signal)}</div><div class="imp-attente">${esc(a.attente)}</div></div>`).join('')}
+    </div>` : '';
+
+  // Clauses vigilance
+  const clausesHtml = (r.clauses_vigilance || []).length ? `
+    <div class="r-card white">
+      <div class="r-lbl"><span class="dot" style="background:var(--red)"></span>Clauses de vigilance</div>
+      ${(r.clauses_vigilance || []).map(c => `<div class="clause-item"><span class="grav ${esc((c.gravite || 'moyenne').toLowerCase())}">${esc(c.gravite || 'moyenne')}</span><div><div class="clause-txt">${esc(c.clause)}</div><div class="clause-risk">${esc(c.risque)}</div></div></div>`).join('')}
+    </div>` : '';
+
+  // Checklist
+  const checkHtml = (r.checklist_pieces || []).length ? `
+    <div class="r-card white">
+      <div class="r-lbl"><span class="dot"></span>Checklist des pièces à fournir</div>
+      <div class="check-grid">
+        ${(r.checklist_pieces || []).map(p => `<div class="check-item"><div class="cb">✓</div><div><div class="cp">${esc(p.piece)}</div>${p.note ? `<div class="cn">${esc(p.note)}</div>` : ''}</div></div>`).join('')}
+      </div>
+    </div>` : '';
+
+  // Questions acheteur
+  const qHtml = (r.questions_acheteur || []).length ? `
+    <div class="r-card white">
+      <div class="r-lbl"><span class="dot"></span>Questions à poser à l'acheteur</div>
+      ${(r.questions_acheteur || []).map(q => `<div class="q-item">${esc(q)}</div>`).join('')}
+    </div>` : '';
+
+  const pts = (r.points_forts || []).map(p => `<div class="pt-item"><span style="color:var(--green);font-weight:700;flex-shrink:0">+</span><span>${esc(p)}</span></div>`).join('');
+  const rsqs = (r.risques || []).map(p => `<div class="pt-item"><span style="color:var(--red);font-weight:700;flex-shrink:0">–</span><span>${esc(p)}</span></div>`).join('');
 
   document.getElementById('d-result').innerHTML = `
-    <div style="border-top:1px solid var(--border);margin-top:1.25rem;padding-top:1.25rem">
-      <div class="result-card" style="background:var(--card)">
-        <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap">
-          <div class="score-ring" style="border-color:${bc(sc)};background:${bgColor(sc)};color:${tcColor(sc)};box-shadow:${glowColor(sc)}">${sc}</div>
-          <div><span class="badge-dec" style="background:${bgColor(sc)};color:${tcColor(sc)}">${r.decision}</span>
-          <div style="font-size:15px;color:var(--text);max-width:460px">${r.decision_raison}</div></div>
+    <div class="result-wrap">
+      <div class="r-card" style="background:var(--card)">
+        <div class="score-header">
+          <div class="score-range">
+            <div class="score-range-val" style="color:${bc(scAvg)}">${scMin}–${scMax}</div>
+            <div class="score-range-lbl">Probabilité / 100</div>
+          </div>
+          <div style="flex:1;min-width:220px">
+            <span class="badge-dec" style="background:${decBg};color:${decColor}">${esc(r.decision)}</span>
+            <div style="font-size:15px;color:var(--text);line-height:1.6">${esc(r.decision_raison)}</div>
+          </div>
         </div>
-        <div class="divider"></div>
-        <div class="res-lbl">Résumé de l'AO</div>
-        <div class="res-body">${r.resume_ao}</div>
+        ${rs.objet ? `<div class="divider"></div><div style="font-size:13px;color:var(--muted);font-weight:300;line-height:1.7"><strong style="color:var(--text);font-weight:600">Objet :</strong> ${esc(rs.objet)}</div>` : ''}
+        ${resumeHtml}
       </div>
+      ${datesHtml}
+      ${critHtml}
+      ${prioHtml}
+      ${impHtml}
+      ${clausesHtml}
       <div class="grid2">
-        <div class="result-card" style="margin-bottom:0;background:var(--card)"><div class="res-lbl">Points forts</div>${pts}</div>
-        <div class="result-card" style="margin-bottom:0;background:var(--card)"><div class="res-lbl">Risques identifiés</div>${rsqs}</div>
+        <div class="r-card white" style="margin-bottom:0"><div class="r-lbl"><span class="dot"></span>Points forts</div>${pts}</div>
+        <div class="r-card white" style="margin-bottom:0"><div class="r-lbl"><span class="dot" style="background:var(--red)"></span>Risques identifiés</div>${rsqs}</div>
       </div>
-      <div class="result-card" style="background:var(--card)"><div class="res-lbl">Adéquation par critère</div>${crits}</div>
-      <div class="result-card" style="background:var(--card)">
-        <div class="res-lbl" style="margin-bottom:.75rem">Brouillon de réponse généré</div>
-        ${[['Introduction', r.draft_intro], ['Méthodologie', r.draft_methodo], ['Équipe projet', r.draft_equipe], ['Conseil prix', r.conseil_prix]].map(([title, content], i, arr) =>
-          `<div class="res-lbl">${title}</div><div class="res-body" style="margin-bottom:.75rem">${content}</div>${i < arr.length - 1 ? '<div class="divider"></div>' : ''}`
+      ${checkHtml}
+      ${qHtml}
+      <div class="r-card white">
+        <div class="r-lbl"><span class="dot"></span>Brouillon de mémoire technique</div>
+        ${[['Introduction', r.draft_intro], ['Méthodologie', r.draft_methodo], ['Équipe projet', r.draft_equipe], ['Positionnement prix', r.conseil_prix]].map(([title, content], i, arr) =>
+          `<div class="r-lbl" style="margin-bottom:.4rem;margin-top:${i > 0 ? '.85rem' : '0'}">${title}</div><div class="r-body">${esc(content)}</div>${i < arr.length - 1 ? '<div class="divider"></div>' : ''}`
         ).join('')}
       </div>
       <div style="text-align:right;margin-top:.5rem">
         ${isPro
-          ? `<button class="btn-export" onclick='exportWord(${JSON.stringify(r)}, "${(objet||'').replace(/"/g,'')}")'>Exporter en Word →</button>`
+          ? `<button class="btn-export" onclick="exportWord()">Exporter en Word →</button>`
           : `<p style="font-size:12px;color:var(--muted)">Export Word disponible sur le plan Pro. <a href="#" onclick="showView('plan')" style="color:var(--green)">Upgrader →</a></p>`}
       </div>
     </div>`;
-  setTimeout(() => document.querySelectorAll('.bar-fill').forEach(b => b.style.width = b.dataset.w + '%'), 120);
 }
 
-async function exportWord(r, objet) {
+async function exportWord() {
+  if (!lastResult) return;
   const { data: { session } } = await sb.auth.getSession();
   const res = await fetch('/api/export-word', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
-    body: JSON.stringify({ result: r, objet })
+    body: JSON.stringify({ result: lastResult, objet: lastResult.resume?.objet || 'Analyse' })
   });
   if (!res.ok) { alert('Erreur export Word'); return; }
   const blob = await res.blob();
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'BidAI-Analyse.docx'; a.click();
+  a.href = url; a.download = 'BidFlow-Analyse.docx'; a.click();
   URL.revokeObjectURL(url);
 }
 
