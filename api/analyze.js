@@ -31,13 +31,28 @@ module.exports = async function handler(req, res) {
     return res.status(429).json({ error: 'Trop de requêtes — réessayez dans une heure.' });
   }
 
-  const { ao, secteur, effectif, refs } = req.body;
+  const { ao, secteur, effectif, refs, entreprise } = req.body;
   if (!ao) return res.status(400).json({ error: 'AO manquant' });
+
+  const e = entreprise || {};
+  const entrepriseBlock = [
+    e.nom ? `Nom : ${e.nom}` : null,
+    `Secteur : ${e.secteur || secteur || 'non précisé'}`,
+    `Effectif : ${e.effectif || effectif || 'non précisé'}`,
+    e.zone ? `Zone d'intervention : ${e.zone}` : null,
+    e.ca ? `Chiffre d'affaires : ${e.ca}` : null,
+    e.certifications ? `Certifications & agréments : ${e.certifications}` : null,
+    `Références clés : ${e.references || refs || 'non précisées'}`,
+    e.moyens ? `Moyens matériels : ${e.moyens}` : null,
+    e.equipe ? `Équipe clé : ${e.equipe}` : null,
+    e.differenciation ? `Points de différenciation : ${e.differenciation}` : null
+  ].filter(Boolean).join('\n');
 
   const prompt = `Tu es un expert des marchés publics et privés français avec 15 ans d'expérience en réponse aux appels d'offres. Tu maîtrises parfaitement les DCE, CCTP, CCAP, RC, mémoires techniques, et tu connais les attentes implicites des acheteurs publics.
 
 Tu analyses cet appel d'offres pour l'entreprise candidate suivante :
-ENTREPRISE : Secteur ${secteur || 'non précisé'} | Effectif ${effectif || 'non précisé'} | Références : ${refs || 'non précisées'}
+ENTREPRISE CANDIDATE :
+${entrepriseBlock}
 
 APPEL D'OFFRES À ANALYSER :
 ${ao}
@@ -88,7 +103,8 @@ RÈGLES ABSOLUES :
 5. Clauses de vigilance : cherche pénalités de retard, retenue de garantie, révision de prix absente, délais de paiement, résiliation aux motifs flous, assurances disproportionnées. Si le texte ne contient pas le CCAP, indique les clauses à VÉRIFIER en priorité dans le CCAP complet.
 6. Le score global (score_min/score_max sur 100) reflète la probabilité de succès de CETTE entreprise sur CET AO, pas la qualité de l'AO.
 7. Checklist : liste les pièces standard exigibles selon le type de marché détecté.
-8. Sois direct et concret — tu parles à un dirigeant de PME, pas à un juriste.`;
+8. Dans les brouillons (draft_intro, draft_methodo, draft_equipe), utilise les VRAIES données de l'entreprise candidate (certifications, références, moyens, équipe) quand elles sont fournies — et n'invente JAMAIS un fait la concernant qui n'est pas listé.
+9. Sois direct et concret — tu parles à un dirigeant de PME, pas à un juriste.`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
