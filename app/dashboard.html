@@ -9,6 +9,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700..900;1,9..144,700..900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -170,6 +172,21 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
 .pt-item{display:flex;gap:8px;padding:.25rem 0;font-size:13px;color:var(--muted);line-height:1.6}
 .divider{border:none;border-top:1px solid var(--border);margin:.85rem 0}
 
+/* UPLOAD */
+.upload-zone{border:2px dashed var(--border2);border-radius:12px;padding:1.1rem 1.25rem;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .25s;margin-bottom:.75rem;background:var(--bg)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--green);background:var(--green-light)}
+.upload-zone .uz-ico{font-size:22px;flex-shrink:0}
+.upload-zone .uz-txt{font-size:13px;color:var(--muted);line-height:1.5}
+.upload-zone .uz-txt strong{color:var(--text);font-weight:600}
+.upload-zone .uz-formats{font-size:11px;color:var(--muted2)}
+.file-chip{display:none;align-items:center;gap:10px;background:var(--green-light);border:1.5px solid rgba(11,191,106,.25);border-radius:10px;padding:.6rem .9rem;margin-bottom:.75rem;font-size:13px}
+.file-chip.show{display:flex}
+.file-chip .fc-name{font-weight:600;color:var(--green-dark);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-chip .fc-meta{font-size:11px;color:var(--green-dark);opacity:.7;flex-shrink:0}
+.file-chip .fc-x{background:none;border:none;cursor:pointer;color:var(--green-dark);font-size:16px;padding:0 2px;flex-shrink:0}
+.upload-err{display:none;font-size:12.5px;color:var(--red);background:var(--red-light);border:1px solid rgba(217,79,79,.2);border-radius:8px;padding:.5rem .8rem;margin-bottom:.75rem}
+.upload-err.show{display:block}
+
 /* STATUS */
 .status-bar{font-size:13px;color:var(--muted);padding:.5rem 0;display:none}
 .limit-warning{background:var(--red-light);border:1px solid rgba(217,79,79,0.2);border-radius:10px;padding:1rem 1.25rem;font-size:13px;color:var(--red);display:none;margin-bottom:1rem}
@@ -303,6 +320,23 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
         </div>
         <div>
           <div class="demo-lbl">Appel d'offres à analyser (RC, CCTP, extrait du DCE...)</div>
+
+          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+            <span class="uz-ico">📄</span>
+            <div class="uz-txt">
+              <strong>Déposez votre DCE ici</strong> ou cliquez pour choisir un fichier<br>
+              <span class="uz-formats">PDF, Word (.docx) ou texte — extraction locale, le fichier ne quitte pas votre navigateur</span>
+            </div>
+          </div>
+          <input type="file" id="file-input" accept=".pdf,.docx,.txt" style="display:none" onchange="handleFile(this.files[0])">
+          <div class="file-chip" id="file-chip">
+            <span>✓</span>
+            <span class="fc-name" id="fc-name"></span>
+            <span class="fc-meta" id="fc-meta"></span>
+            <button class="fc-x" onclick="clearFile()" title="Retirer">×</button>
+          </div>
+          <div class="upload-err" id="upload-err"></div>
+
           <div class="ex-btns">
             <span style="font-size:12px;color:var(--muted2)">Exemples :</span>
             <button class="ex-btn" onclick="loadEx('esn')">ESN · SI RH</button>
@@ -499,7 +533,76 @@ const EX = {
   maintenance: `Objet : Maintenance préventive et curative des équipements de production\nDonneur d'ordre : Groupe agroalimentaire, site de Roanne (site en exploitation continue)\nCritères : Valeur technique 50% — Prix 50%\nBudget : 380 000 € HT/an — Durée : 3 ans reconductibles\nAstreinte 24/7 exigée, intervention sous 4h\nPénalités de retard : 500 €/heure de dépassement`,
   securite: `Objet : Prestations de gardiennage et surveillance\nPouvoir adjudicateur : CHU de Lyon (site hospitalier occupé)\nCritères : Valeur technique 70% (dont continuité de service 25%) — Prix 30%\nBudget : 95 000 € HT/an — Marché reconductible, titulaire sortant en place depuis 6 ans\nCarte professionnelle CNAPS exigée pour tous les agents\nRemise des offres : 30/09/2026`
 };
-function loadEx(k) { document.getElementById('d-ao').value = EX[k]; }
+function loadEx(k) { document.getElementById('d-ao').value = EX[k]; clearFile(); }
+
+/* ═══ UPLOAD & EXTRACTION LOCALE ═══ */
+const MAX_CHARS = 26000; // ~6000 mots — limite d'analyse fiable
+if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+function uploadErr(msg) {
+  const el = document.getElementById('upload-err');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 6000);
+}
+
+function clearFile() {
+  document.getElementById('file-chip').classList.remove('show');
+  document.getElementById('file-input').value = '';
+}
+
+async function handleFile(file) {
+  if (!file) return;
+  document.getElementById('upload-err').classList.remove('show');
+  const name = file.name.toLowerCase();
+  const chip = document.getElementById('file-chip');
+  document.getElementById('fc-name').textContent = file.name;
+  document.getElementById('fc-meta').textContent = 'Extraction...';
+  chip.classList.add('show');
+
+  try {
+    let text = '';
+    if (name.endsWith('.pdf')) {
+      const buf = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+      const pages = [];
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        pages.push(content.items.map(it => it.str).join(' '));
+        document.getElementById('fc-meta').textContent = `Extraction ${i}/${pdf.numPages} pages...`;
+      }
+      text = pages.join('\n\n');
+    } else if (name.endsWith('.docx')) {
+      const buf = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer: buf });
+      text = result.value;
+    } else if (name.endsWith('.txt')) {
+      text = await file.text();
+    } else {
+      throw new Error('Format non supporté — utilisez PDF, Word (.docx) ou texte (.txt).');
+    }
+
+    text = text.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+    if (!text || text.length < 100) {
+      throw new Error('Aucun texte lisible extrait. Si votre PDF est un scan (image), copiez-collez le texte manuellement.');
+    }
+
+    let truncated = false;
+    if (text.length > MAX_CHARS) { text = text.slice(0, MAX_CHARS); truncated = true; }
+    document.getElementById('d-ao').value = text;
+    const words = Math.round(text.length / 5.5);
+    document.getElementById('fc-meta').textContent = `~${words.toLocaleString('fr-FR')} mots extraits${truncated ? ' (tronqué aux sections principales)' : ''}`;
+  } catch (e) {
+    chip.classList.remove('show');
+    uploadErr(e.message || 'Erreur lors de la lecture du fichier.');
+  }
+}
+
+/* Drag & drop */
+const uz = document.getElementById('upload-zone');
+['dragover', 'dragenter'].forEach(ev => uz.addEventListener(ev, e => { e.preventDefault(); uz.classList.add('drag'); }));
+['dragleave', 'drop'].forEach(ev => uz.addEventListener(ev, e => { e.preventDefault(); uz.classList.remove('drag'); }));
+uz.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) handleFile(f); });
 
 function bc(s) { return s >= 65 ? 'var(--green)' : s >= 40 ? 'var(--amber)' : 'var(--red)'; }
 function bgColor(s) { return s >= 65 ? 'rgba(11,191,106,0.1)' : s >= 40 ? 'rgba(201,123,16,0.1)' : 'rgba(217,79,79,0.1)'; }
