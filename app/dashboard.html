@@ -238,6 +238,10 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
         <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M15 3l2 2-7 7-3 1 1-3 7-7z"/></svg>
         Analyser un AO
       </button>
+      <button class="nav-item" id="nav-audit" onclick="showView('audit')">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 3h6l4 4v10a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1h3z"/><path d="M7 12l2 2 4-4"/></svg>
+        Auditer un mémoire
+      </button>
       <button class="nav-item" id="nav-history" onclick="showView('history')">
         <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 3"/></svg>
         Historique
@@ -352,6 +356,47 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
         <div class="status-bar" id="d-status"></div>
         <div id="d-err" style="color:var(--red);font-size:13px;padding:.5rem 0"></div>
         <div id="d-result"></div>
+      </div>
+    </div>
+
+    <!-- VIEW: AUDIT -->
+    <div id="view-audit" style="display:none">
+      <div class="limit-warning" id="limit-warning-audit">
+        Vous avez atteint la limite de votre plan.
+        <a href="#" onclick="showView('plan')" style="color:var(--red);font-weight:700;margin-left:.5rem">Upgrader →</a>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Audit de mémoire technique</div>
+          <span class="sec-badge">Avant dépôt</span>
+        </div>
+        <p style="font-size:13.5px;color:var(--muted);font-weight:300;line-height:1.7;margin-bottom:1.25rem">Un relecteur expert confronte votre mémoire au règlement de consultation : manques critiques, incohérences, simulation de note et actions concrètes avant dépôt. Il ne réécrit pas à votre place.</p>
+
+        <div class="demo-lbl">1 — Votre mémoire technique</div>
+        <div class="upload-zone" onclick="document.getElementById('file-mem').click()" id="uz-mem">
+          <span class="uz-ico">📝</span>
+          <div class="uz-txt"><strong>Déposez votre mémoire</strong> ou cliquez pour choisir un fichier<br><span class="uz-formats">PDF, Word (.docx) ou texte — extraction locale</span></div>
+        </div>
+        <input type="file" id="file-mem" accept=".pdf,.docx,.txt" style="display:none" onchange="handleUpload(this.files[0],'a-mem','chip-mem')">
+        <div class="file-chip" id="chip-mem"><span>✓</span><span class="fc-name"></span><span class="fc-meta"></span><button class="fc-x" onclick="clearUpload('a-mem','chip-mem','file-mem')" title="Retirer">×</button></div>
+        <textarea class="demo-inp" id="a-mem" placeholder="...ou collez ici le texte de votre mémoire technique" style="margin-bottom:1.25rem"></textarea>
+
+        <div class="demo-lbl">2 — Le règlement de consultation / DCE <span style="font-weight:400;text-transform:none;letter-spacing:0">(recommandé — l'audit est bien plus précis avec le référentiel de notation)</span></div>
+        <div class="upload-zone" onclick="document.getElementById('file-rc').click()" id="uz-rc">
+          <span class="uz-ico">📄</span>
+          <div class="uz-txt"><strong>Déposez le RC / DCE</strong> ou cliquez pour choisir un fichier<br><span class="uz-formats">PDF, Word (.docx) ou texte — extraction locale</span></div>
+        </div>
+        <input type="file" id="file-rc" accept=".pdf,.docx,.txt" style="display:none" onchange="handleUpload(this.files[0],'a-rc','chip-rc')">
+        <div class="file-chip" id="chip-rc"><span>✓</span><span class="fc-name"></span><span class="fc-meta"></span><button class="fc-x" onclick="clearUpload('a-rc','chip-rc','file-rc')" title="Retirer">×</button></div>
+        <textarea class="demo-inp" id="a-rc" placeholder="...ou collez ici le RC, les critères de notation, le CCTP (optionnel)" style="min-height:100px"></textarea>
+        <div class="upload-err" id="upload-err-audit"></div>
+
+        <div style="display:flex;justify-content:flex-end;margin-top:.85rem">
+          <button class="btn-analyze" id="a-btn" onclick="runAudit()">Auditer ce mémoire →</button>
+        </div>
+        <div class="status-bar" id="a-status"></div>
+        <div id="a-err" style="color:var(--red);font-size:13px;padding:.5rem 0"></div>
+        <div id="a-result"></div>
       </div>
     </div>
 
@@ -514,12 +559,13 @@ function renderPlanView() {
 }
 
 function showView(v) {
-  ['analyze', 'history', 'plan'].forEach(x => {
+  ['analyze', 'audit', 'history', 'plan'].forEach(x => {
     document.getElementById('view-' + x).style.display = x === v ? 'block' : 'none';
     document.getElementById('nav-' + x).classList.toggle('active', x === v);
   });
   const titles = {
     analyze: 'Analyser un <em>appel d\'offres</em>',
+    audit: 'Auditer un <em>mémoire technique</em>',
     history: 'Historique des <em>analyses</em>',
     plan: 'Mon <em>abonnement</em>'
   };
@@ -535,74 +581,83 @@ const EX = {
 };
 function loadEx(k) { document.getElementById('d-ao').value = EX[k]; clearFile(); }
 
-/* ═══ UPLOAD & EXTRACTION LOCALE ═══ */
+/* ═══ UPLOAD & EXTRACTION LOCALE (partagée) ═══ */
 const MAX_CHARS = 26000; // ~6000 mots — limite d'analyse fiable
 if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-function uploadErr(msg) {
-  const el = document.getElementById('upload-err');
-  el.textContent = msg; el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 6000);
-}
-
-function clearFile() {
-  document.getElementById('file-chip').classList.remove('show');
-  document.getElementById('file-input').value = '';
-}
-
-async function handleFile(file) {
-  if (!file) return;
-  document.getElementById('upload-err').classList.remove('show');
+async function extractText(file, onProgress) {
   const name = file.name.toLowerCase();
-  const chip = document.getElementById('file-chip');
-  document.getElementById('fc-name').textContent = file.name;
-  document.getElementById('fc-meta').textContent = 'Extraction...';
+  let text = '';
+  if (name.endsWith('.pdf')) {
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+    const pages = [];
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      pages.push(content.items.map(it => it.str).join(' '));
+      if (onProgress) onProgress(`Extraction ${i}/${pdf.numPages} pages...`);
+    }
+    text = pages.join('\n\n');
+  } else if (name.endsWith('.docx')) {
+    const buf = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer: buf });
+    text = result.value;
+  } else if (name.endsWith('.txt')) {
+    text = await file.text();
+  } else {
+    throw new Error('Format non supporté — utilisez PDF, Word (.docx) ou texte (.txt).');
+  }
+  text = text.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+  if (!text || text.length < 100) {
+    throw new Error('Aucun texte lisible extrait. Si votre PDF est un scan (image), copiez-collez le texte manuellement.');
+  }
+  let truncated = false;
+  if (text.length > MAX_CHARS) { text = text.slice(0, MAX_CHARS); truncated = true; }
+  return { text, truncated };
+}
+
+function chipEls(chipId) {
+  const chip = document.getElementById(chipId);
+  return { chip, name: chip.querySelector('.fc-name'), meta: chip.querySelector('.fc-meta') };
+}
+
+async function handleUpload(file, targetId, chipId) {
+  if (!file) return;
+  const { chip, name, meta } = chipEls(chipId);
+  name.textContent = file.name;
+  meta.textContent = 'Extraction...';
   chip.classList.add('show');
-
   try {
-    let text = '';
-    if (name.endsWith('.pdf')) {
-      const buf = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-      const pages = [];
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const content = await page.getTextContent();
-        pages.push(content.items.map(it => it.str).join(' '));
-        document.getElementById('fc-meta').textContent = `Extraction ${i}/${pdf.numPages} pages...`;
-      }
-      text = pages.join('\n\n');
-    } else if (name.endsWith('.docx')) {
-      const buf = await file.arrayBuffer();
-      const result = await mammoth.extractRawText({ arrayBuffer: buf });
-      text = result.value;
-    } else if (name.endsWith('.txt')) {
-      text = await file.text();
-    } else {
-      throw new Error('Format non supporté — utilisez PDF, Word (.docx) ou texte (.txt).');
-    }
-
-    text = text.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
-    if (!text || text.length < 100) {
-      throw new Error('Aucun texte lisible extrait. Si votre PDF est un scan (image), copiez-collez le texte manuellement.');
-    }
-
-    let truncated = false;
-    if (text.length > MAX_CHARS) { text = text.slice(0, MAX_CHARS); truncated = true; }
-    document.getElementById('d-ao').value = text;
+    const { text, truncated } = await extractText(file, m => meta.textContent = m);
+    document.getElementById(targetId).value = text;
     const words = Math.round(text.length / 5.5);
-    document.getElementById('fc-meta').textContent = `~${words.toLocaleString('fr-FR')} mots extraits${truncated ? ' (tronqué aux sections principales)' : ''}`;
+    meta.textContent = `~${words.toLocaleString('fr-FR')} mots extraits${truncated ? ' (tronqué)' : ''}`;
   } catch (e) {
     chip.classList.remove('show');
-    uploadErr(e.message || 'Erreur lors de la lecture du fichier.');
+    const errEl = document.getElementById(targetId.startsWith('a-') ? 'upload-err-audit' : 'upload-err');
+    errEl.textContent = e.message; errEl.classList.add('show');
+    setTimeout(() => errEl.classList.remove('show'), 6000);
   }
 }
 
-/* Drag & drop */
-const uz = document.getElementById('upload-zone');
-['dragover', 'dragenter'].forEach(ev => uz.addEventListener(ev, e => { e.preventDefault(); uz.classList.add('drag'); }));
-['dragleave', 'drop'].forEach(ev => uz.addEventListener(ev, e => { e.preventDefault(); uz.classList.remove('drag'); }));
-uz.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) handleFile(f); });
+function clearUpload(targetId, chipId, inputId) {
+  document.getElementById(chipId).classList.remove('show');
+  document.getElementById(inputId).value = '';
+}
+
+/* Compat vue Analyse */
+async function handleFile(file) { return handleUpload(file, 'd-ao', 'file-chip'); }
+function clearFile() { clearUpload('d-ao', 'file-chip', 'file-input'); }
+
+/* Drag & drop — toutes les zones */
+[['upload-zone', 'd-ao', 'file-chip'], ['uz-mem', 'a-mem', 'chip-mem'], ['uz-rc', 'a-rc', 'chip-rc']].forEach(([zoneId, targetId, chipId]) => {
+  const z = document.getElementById(zoneId);
+  if (!z) return;
+  ['dragover', 'dragenter'].forEach(ev => z.addEventListener(ev, e => { e.preventDefault(); z.classList.add('drag'); }));
+  ['dragleave', 'drop'].forEach(ev => z.addEventListener(ev, e => { e.preventDefault(); z.classList.remove('drag'); }));
+  z.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) handleUpload(f, targetId, chipId); });
+});
 
 function bc(s) { return s >= 65 ? 'var(--green)' : s >= 40 ? 'var(--amber)' : 'var(--red)'; }
 function bgColor(s) { return s >= 65 ? 'rgba(11,191,106,0.1)' : s >= 40 ? 'rgba(201,123,16,0.1)' : 'rgba(217,79,79,0.1)'; }
@@ -796,6 +851,126 @@ async function exportWord() {
   const a = document.createElement('a');
   a.href = url; a.download = 'BidFlow-Analyse.docx'; a.click();
   URL.revokeObjectURL(url);
+}
+
+/* ═══ AUDIT DE MÉMOIRE ═══ */
+async function runAudit() {
+  const memoire = document.getElementById('a-mem').value.trim();
+  if (!memoire) { document.getElementById('a-mem').style.borderColor = 'var(--red)'; setTimeout(() => document.getElementById('a-mem').style.borderColor = '', 1500); return; }
+  const used = userProfile?.analyses_used || 0;
+  const limit = userProfile?.analyses_limit || -1;
+  if (limit !== -1 && used >= limit) { document.getElementById('limit-warning-audit').classList.add('show'); return; }
+
+  const btn = document.getElementById('a-btn');
+  const statusEl = document.getElementById('a-status');
+  const errEl = document.getElementById('a-err');
+  btn.disabled = true; document.getElementById('a-result').innerHTML = ''; errEl.textContent = '';
+  const steps = ["Lecture du mémoire...", "Confrontation au règlement de consultation...", "Recherche des manques et incohérences...", "Simulation de note par critère...", "Priorisation des actions..."];
+  let si = 0; statusEl.style.display = 'block'; statusEl.innerHTML = `<span class="spinner"></span>${steps[0]}`;
+  const t = setInterval(() => { si = Math.min(si + 1, steps.length - 1); statusEl.innerHTML = `<span class="spinner"></span>${steps[si]}`; }, 3500);
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const res = await fetch('/api/audit', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ memoire, rc: document.getElementById('a-rc').value.trim(), secteur: document.getElementById('d-secteur').value, effectif: document.getElementById('d-effectif').value, refs: document.getElementById('d-refs').value })
+    });
+    clearInterval(t);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur serveur');
+
+    const objet = 'Audit — ' + (memoire.split('\n')[0] || 'Mémoire technique').slice(0, 70);
+    await sb.from('analyses').insert({ user_id: currentUser.id, objet, score: data.score, decision: 'AUDIT', result: data, ao_text: memoire.slice(0, 500) });
+    await sb.from('profiles').update({ analyses_used: used + 1 }).eq('id', currentUser.id);
+    userProfile.analyses_used = used + 1;
+
+    statusEl.style.display = 'none';
+    renderAudit(data);
+    loadMetrics();
+  } catch (e) {
+    clearInterval(t); statusEl.style.display = 'none'; errEl.textContent = 'Erreur : ' + e.message;
+  }
+  btn.disabled = false;
+}
+
+function renderAudit(r) {
+  const sc = r.scores || {};
+  const dims = [['Conformité', sc.conformite], ['Pertinence', sc.pertinence], ['Clarté', sc.clarte], ['Différenciation', sc.differenciation]];
+  const dimCol = v => v >= 70 ? 'var(--green-dark)' : v >= 50 ? 'var(--amber)' : 'var(--red)';
+
+  const scoreCards = dims.map(([label, d]) => {
+    if (!d) return '';
+    const avg = Math.round(((d.min ?? 0) + (d.max ?? 0)) / 2);
+    return `<div style="background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:1rem;text-align:center">
+      <div style="font-family:var(--display);font-size:24px;font-weight:900;color:${dimCol(avg)};letter-spacing:-.02em">${d.min}–${d.max}<span style="font-size:11px;color:var(--muted2);font-family:var(--body);font-weight:400">%</span></div>
+      <div style="font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.05em;margin-top:4px">${label}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5;font-weight:300">${esc(d.commentaire || '')}</div>
+    </div>`;
+  }).join('');
+
+  const critHtml = (r.criteres || []).length ? `
+    <div class="r-card white">
+      <div class="r-lbl"><span class="dot"></span>Simulation de note par critère</div>
+      ${(r.criteres || []).map(c => {
+        const col = (c.note_max ?? 0) >= 14 ? 'var(--green)' : (c.note_max ?? 0) >= 10 ? 'var(--amber)' : 'var(--red)';
+        const pctMin = ((c.note_min ?? 0) / 20) * 100, pctMax = ((c.note_max ?? 0) / 20) * 100;
+        return `<div class="crit-item">
+          <div class="crit-top">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="crit-name">${esc(c.nom)}</span>${c.ponderation ? `<span class="crit-pond">${esc(c.ponderation)}</span>` : ''}</div>
+            <span class="crit-note" style="color:${col}">${c.note_min}–${c.note_max} <span>/ 20</span></span>
+          </div>
+          <div class="crit-bar"><div class="crit-bar-fill" style="left:${pctMin}%;width:${Math.max(3, pctMax - pctMin)}%;background:${col}"></div></div>
+          <div class="crit-comment">${esc(c.commentaire)}</div>
+        </div>`;
+      }).join('')}
+    </div>` : '';
+
+  const manquesHtml = (r.manques_critiques || []).length ? `
+    <div class="r-card white">
+      <div class="r-lbl"><span class="dot" style="background:var(--red)"></span>Manques critiques — ${r.manques_critiques.length}</div>
+      ${(r.manques_critiques || []).map(m => `<div class="clause-item"><span class="grav haute">Manque</span><div><div class="clause-txt">${esc(m.manque)}</div><div class="clause-risk">${esc(m.impact)}</div></div></div>`).join('')}
+    </div>` : '';
+
+  const clarifierHtml = (r.a_clarifier || []).length ? `
+    <div class="r-card white"><div class="r-lbl"><span class="dot" style="background:var(--amber)"></span>À clarifier ou chiffrer — ${r.a_clarifier.length}</div>
+      ${(r.a_clarifier || []).map(x => `<div class="pt-item"><span style="color:var(--amber);font-weight:700;flex-shrink:0">~</span><span>${esc(x)}</span></div>`).join('')}
+    </div>` : '';
+
+  const incoHtml = (r.incoherences || []).length ? `
+    <div class="r-card white"><div class="r-lbl"><span class="dot" style="background:var(--red)"></span>Incohérences internes</div>
+      ${(r.incoherences || []).map(x => `<div class="pt-item"><span style="color:var(--red);font-weight:700;flex-shrink:0">≠</span><span>${esc(x)}</span></div>`).join('')}
+    </div>` : '';
+
+  const impHtml = (r.attentes_non_couvertes || []).length ? `
+    <div class="r-card white"><div class="r-lbl"><span class="dot" style="background:var(--amber)"></span>Attentes implicites non couvertes</div>
+      ${(r.attentes_non_couvertes || []).map(a => `<div class="imp-item"><div class="imp-signal">⚡ ${esc(a.signal)}</div><div class="imp-attente">${esc(a.attente)}</div></div>`).join('')}
+    </div>` : '';
+
+  const gravOrder = { haute: 0, moyenne: 1, faible: 2 };
+  const recos = (r.recommandations || []).slice().sort((a, b) => (gravOrder[(a.gravite || 'moyenne').toLowerCase()] ?? 1) - (gravOrder[(b.gravite || 'moyenne').toLowerCase()] ?? 1));
+  const recoHtml = recos.length ? `
+    <div class="r-card white"><div class="r-lbl"><span class="dot"></span>Plan d'actions avant dépôt</div>
+      ${recos.map((rec, i) => `<div class="prio-item"><div class="prio-num">${i + 1}</div><div style="flex:1"><div class="prio-txt">${esc(rec.action)}</div></div><span class="grav ${esc((rec.gravite || 'moyenne').toLowerCase())}" style="margin-top:4px">${esc(rec.gravite || 'moyenne')}</span></div>`).join('')}
+    </div>` : '';
+
+  const pts = (r.points_forts || []).map(p => `<div class="pt-item"><span style="color:var(--green);font-weight:700;flex-shrink:0">+</span><span>${esc(p)}</span></div>`).join('');
+
+  document.getElementById('a-result').innerHTML = `
+    <div class="result-wrap">
+      <div class="r-card" style="background:var(--card)">
+        <div class="r-lbl"><span class="dot"></span>Verdict de l'audit</div>
+        <div style="font-size:15px;color:var(--text);line-height:1.7;margin-bottom:1.1rem">${esc(r.verdict)}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.75rem">${scoreCards}</div>
+      </div>
+      ${critHtml}
+      ${manquesHtml}
+      ${incoHtml}
+      ${clarifierHtml}
+      ${impHtml}
+      ${pts ? `<div class="r-card white"><div class="r-lbl"><span class="dot"></span>Points forts du mémoire</div>${pts}</div>` : ''}
+      ${recoHtml}
+    </div>`;
 }
 
 async function logout() {
