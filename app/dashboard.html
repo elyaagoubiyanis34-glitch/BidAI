@@ -242,6 +242,10 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
         <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 3h6l4 4v10a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1h3z"/><path d="M7 12l2 2 4-4"/></svg>
         Auditer un mémoire
       </button>
+      <button class="nav-item" id="nav-company" onclick="showView('company')">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 17V5a1 1 0 011-1h7a1 1 0 011 1v12M12 9h4a1 1 0 011 1v7M3 17h16M6 8h2M6 11h2M6 14h2"/></svg>
+        Mon entreprise
+      </button>
       <button class="nav-item" id="nav-history" onclick="showView('history')">
         <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 3"/></svg>
         Historique
@@ -314,14 +318,7 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
           <div class="section-title">Nouvelle analyse</div>
           <span class="sec-badge">Brief DCE complet</span>
         </div>
-        <div style="margin-bottom:1.25rem">
-          <div class="demo-lbl">Profil de votre entreprise</div>
-          <div class="demo-row">
-            <input class="demo-inp" id="d-secteur" placeholder="Secteur d'activité">
-            <input class="demo-inp" id="d-effectif" placeholder="Effectif" style="max-width:180px">
-          </div>
-          <input class="demo-inp" id="d-refs" placeholder="Références clés (chantiers, certifications, clients notables...)" style="width:100%">
-        </div>
+        <div id="profile-chip-analyze" style="margin-bottom:1.25rem"></div>
         <div>
           <div class="demo-lbl">Appel d'offres à analyser (RC, CCTP, extrait du DCE...)</div>
 
@@ -371,6 +368,7 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
           <span class="sec-badge">Avant dépôt</span>
         </div>
         <p style="font-size:13.5px;color:var(--muted);font-weight:300;line-height:1.7;margin-bottom:1.25rem">Un relecteur expert confronte votre mémoire au règlement de consultation : manques critiques, incohérences, simulation de note et actions concrètes avant dépôt. Il ne réécrit pas à votre place.</p>
+        <div id="profile-chip-audit" style="margin-bottom:1.25rem"></div>
 
         <div class="demo-lbl">1 — Votre mémoire technique</div>
         <div class="upload-zone" onclick="document.getElementById('file-mem').click()" id="uz-mem">
@@ -397,6 +395,48 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
         <div class="status-bar" id="a-status"></div>
         <div id="a-err" style="color:var(--red);font-size:13px;padding:.5rem 0"></div>
         <div id="a-result"></div>
+      </div>
+    </div>
+
+    <!-- VIEW: COMPANY -->
+    <div id="view-company" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Profil de votre entreprise</div>
+          <span class="sec-badge">Alimente chaque analyse</span>
+        </div>
+        <p style="font-size:13.5px;color:var(--muted);font-weight:300;line-height:1.7;margin-bottom:1.5rem">Renseignez-le une fois — chaque analyse, audit et brouillon de mémoire s'appuie automatiquement sur ces informations. Plus c'est précis, moins vos brouillons sont génériques. Aucun fait inventé : seul ce qui est listé ici est utilisé.</p>
+
+        <div class="demo-lbl">Identité</div>
+        <div class="demo-row">
+          <input class="demo-inp" id="e-nom" placeholder="Nom de l'entreprise">
+          <input class="demo-inp" id="e-secteur" placeholder="Secteur (ESN, BTP, maintenance...)">
+        </div>
+        <div class="demo-row">
+          <input class="demo-inp" id="e-effectif" placeholder="Effectif (ex: 45 salariés)" style="max-width:220px">
+          <input class="demo-inp" id="e-ca" placeholder="CA annuel (optionnel)" style="max-width:220px">
+          <input class="demo-inp" id="e-zone" placeholder="Zone d'intervention (ex: Occitanie, national...)">
+        </div>
+
+        <div class="demo-lbl" style="margin-top:1rem">Certifications & agréments</div>
+        <input class="demo-inp" id="e-certifs" placeholder="ISO 9001, MASE, Qualibat, RGE, CNAPS, Qualiopi..." style="width:100%;margin-bottom:1rem">
+
+        <div class="demo-lbl">Références clés</div>
+        <textarea class="demo-inp" id="e-refs" placeholder="Vos chantiers / missions marquants : client, objet, montant, année. Ex : Mairie de Lyon — refonte SIRH — 250 k€ — 2024" style="min-height:90px;margin-bottom:1rem"></textarea>
+
+        <div class="demo-lbl">Moyens matériels & techniques</div>
+        <textarea class="demo-inp" id="e-moyens" placeholder="Parc matériel, outils, logiciels, ateliers... Ex : 12 véhicules équipés, GMAO CARL, atelier 800 m²" style="min-height:70px;margin-bottom:1rem"></textarea>
+
+        <div class="demo-lbl">Équipe clé</div>
+        <textarea class="demo-inp" id="e-equipe" placeholder="Profils qui portent vos réponses. Ex : 1 directeur travaux 20 ans d'exp., 3 chefs de projet certifiés PMP, 8 techniciens habilités B2V" style="min-height:70px;margin-bottom:1rem"></textarea>
+
+        <div class="demo-lbl">Points de différenciation</div>
+        <textarea class="demo-inp" id="e-diff" placeholder="Ce qui vous distingue vraiment : délais, astreinte 24/7, ancrage local, taux de fidélisation clients..." style="min-height:70px"></textarea>
+
+        <div style="display:flex;align-items:center;gap:1rem;justify-content:flex-end;margin-top:1.25rem">
+          <span id="e-saved" style="font-size:13px;color:var(--green-dark);font-weight:600;display:none">✓ Profil enregistré</span>
+          <button class="btn-analyze" id="e-btn" onclick="saveCompany()">Enregistrer mon profil</button>
+        </div>
       </div>
     </div>
 
@@ -475,9 +515,82 @@ async function loadProfile() {
   const planColors = { free: '#6A6658', starter: '#088A4C', pro: '#088A4C', business: '#7A4A08' };
   const planBgs = { free: '#F2EFE7', starter: '#E6F8EF', pro: '#E6F8EF', business: '#FEF5E6' };
   document.getElementById('plan-badge-top').innerHTML = `<span style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:${planBgs[userProfile.plan]||'#F2EFE7'};color:${planColors[userProfile.plan]||'#6A6658'}">${planLabel(userProfile.plan)}</span>`;
-  if (userProfile.secteur) document.getElementById('d-secteur').value = userProfile.secteur;
-  if (userProfile.effectif) document.getElementById('d-effectif').value = userProfile.effectif;
-  if (userProfile.refs) document.getElementById('d-refs').value = userProfile.refs;
+  if (userProfile.secteur) document.getElementById('e-secteur').value ||= userProfile.secteur;
+  fillCompanyForm();
+  renderProfileChips();
+}
+
+function getCompanyProfile() {
+  const cp = userProfile?.company_profile || {};
+  return {
+    nom: cp.nom || '', secteur: cp.secteur || userProfile?.secteur || '',
+    effectif: cp.effectif || userProfile?.effectif || '', ca: cp.ca || '',
+    zone: cp.zone || '', certifications: cp.certifications || '',
+    references: cp.references || userProfile?.refs || '',
+    moyens: cp.moyens || '', equipe: cp.equipe || '', differenciation: cp.differenciation || ''
+  };
+}
+
+function fillCompanyForm() {
+  const p = getCompanyProfile();
+  const map = { 'e-nom': 'nom', 'e-secteur': 'secteur', 'e-effectif': 'effectif', 'e-ca': 'ca', 'e-zone': 'zone', 'e-certifs': 'certifications', 'e-refs': 'references', 'e-moyens': 'moyens', 'e-equipe': 'equipe', 'e-diff': 'differenciation' };
+  for (const [id, key] of Object.entries(map)) {
+    const el = document.getElementById(id);
+    if (el && p[key]) el.value = p[key];
+  }
+}
+
+function renderProfileChips() {
+  const p = getCompanyProfile();
+  const filled = p.secteur || p.references || p.certifications;
+  const html = filled
+    ? `<div style="display:flex;align-items:center;gap:12px;background:var(--green-light);border:1.5px solid rgba(11,191,106,.25);border-radius:12px;padding:.8rem 1.1rem;flex-wrap:wrap">
+        <span style="font-size:18px">🏢</span>
+        <div style="flex:1;min-width:200px">
+          <div style="font-size:13px;font-weight:700;color:var(--green-dark)">${esc(p.nom || 'Votre entreprise')}${p.secteur ? ' · ' + esc(p.secteur) : ''}${p.effectif ? ' · ' + esc(p.effectif) : ''}</div>
+          <div style="font-size:11.5px;color:var(--green-dark);opacity:.75;margin-top:1px">Profil appliqué automatiquement à cette analyse${p.certifications ? ' · ' + esc(p.certifications.split(',')[0]) : ''}</div>
+        </div>
+        <a href="#" onclick="showView('company');return false" style="font-size:12.5px;font-weight:700;color:var(--green-dark);text-decoration:none;flex-shrink:0">Modifier →</a>
+      </div>`
+    : `<div style="display:flex;align-items:center;gap:12px;background:var(--amber-light);border:1.5px solid rgba(201,123,16,.3);border-radius:12px;padding:.8rem 1.1rem;flex-wrap:wrap">
+        <span style="font-size:18px">🏢</span>
+        <div style="flex:1;min-width:200px;font-size:13px;color:var(--amber);font-weight:500">Complétez votre profil entreprise — vos analyses et brouillons seront personnalisés avec vos vraies références.</div>
+        <a href="#" onclick="showView('company');return false" style="font-size:12.5px;font-weight:700;color:var(--amber);text-decoration:none;flex-shrink:0">Compléter →</a>
+      </div>`;
+  const a = document.getElementById('profile-chip-analyze');
+  const b = document.getElementById('profile-chip-audit');
+  if (a) a.innerHTML = html;
+  if (b) b.innerHTML = html;
+}
+
+async function saveCompany() {
+  const cp = {
+    nom: document.getElementById('e-nom').value.trim(),
+    secteur: document.getElementById('e-secteur').value.trim(),
+    effectif: document.getElementById('e-effectif').value.trim(),
+    ca: document.getElementById('e-ca').value.trim(),
+    zone: document.getElementById('e-zone').value.trim(),
+    certifications: document.getElementById('e-certifs').value.trim(),
+    references: document.getElementById('e-refs').value.trim(),
+    moyens: document.getElementById('e-moyens').value.trim(),
+    equipe: document.getElementById('e-equipe').value.trim(),
+    differenciation: document.getElementById('e-diff').value.trim()
+  };
+  const btn = document.getElementById('e-btn');
+  btn.disabled = true;
+  const { error } = await sb.from('profiles').update({
+    company_profile: cp,
+    secteur: cp.secteur, effectif: cp.effectif, refs: cp.references,
+    updated_at: new Date().toISOString()
+  }).eq('id', currentUser.id);
+  btn.disabled = false;
+  if (error) { alert('Erreur enregistrement : ' + error.message); return; }
+  userProfile.company_profile = cp;
+  userProfile.secteur = cp.secteur; userProfile.effectif = cp.effectif; userProfile.refs = cp.references;
+  renderProfileChips();
+  const ok = document.getElementById('e-saved');
+  ok.style.display = 'inline';
+  setTimeout(() => ok.style.display = 'none', 3000);
 }
 
 async function loadMetrics() {
@@ -559,13 +672,14 @@ function renderPlanView() {
 }
 
 function showView(v) {
-  ['analyze', 'audit', 'history', 'plan'].forEach(x => {
+  ['analyze', 'audit', 'company', 'history', 'plan'].forEach(x => {
     document.getElementById('view-' + x).style.display = x === v ? 'block' : 'none';
     document.getElementById('nav-' + x).classList.toggle('active', x === v);
   });
   const titles = {
     analyze: 'Analyser un <em>appel d\'offres</em>',
     audit: 'Auditer un <em>mémoire technique</em>',
+    company: 'Mon <em>entreprise</em>',
     history: 'Historique des <em>analyses</em>',
     plan: 'Mon <em>abonnement</em>'
   };
@@ -685,7 +799,7 @@ async function analyze() {
     const res = await fetch('/api/analyze', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
-      body: JSON.stringify({ ao, secteur: document.getElementById('d-secteur').value, effectif: document.getElementById('d-effectif').value, refs: document.getElementById('d-refs').value })
+      body: JSON.stringify({ ao, entreprise: getCompanyProfile() })
     });
     clearInterval(t);
     const data = await res.json();
@@ -874,7 +988,7 @@ async function runAudit() {
     const res = await fetch('/api/audit', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
-      body: JSON.stringify({ memoire, rc: document.getElementById('a-rc').value.trim(), secteur: document.getElementById('d-secteur').value, effectif: document.getElementById('d-effectif').value, refs: document.getElementById('d-refs').value })
+      body: JSON.stringify({ memoire, rc: document.getElementById('a-rc').value.trim(), entreprise: getCompanyProfile() })
     });
     clearInterval(t);
     const data = await res.json();
