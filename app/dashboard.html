@@ -187,6 +187,63 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
 .upload-err{display:none;font-size:12.5px;color:var(--red);background:var(--red-light);border:1px solid rgba(217,79,79,.2);border-radius:8px;padding:.5rem .8rem;margin-bottom:.75rem}
 .upload-err.show{display:block}
 
+/* ═══ PILOTAGE ═══ */
+.pilot-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.pilot-stat{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:.9rem 1rem;text-align:center}
+.pilot-stat .n{font-family:var(--display);font-size:24px;font-weight:900;letter-spacing:-.02em}
+.pilot-stat .l{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+.pilot-table{width:100%;border-collapse:collapse}
+.pilot-table th{font-size:10.5px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.05em;text-align:left;padding:.6rem .7rem;border-bottom:1.5px solid var(--border)}
+.pilot-table td{font-size:13px;padding:.75rem .7rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.pilot-row:hover{background:var(--bg)}
+.pilot-objet{font-weight:600;color:var(--text);cursor:pointer}
+.pilot-objet:hover{color:var(--green-dark)}
+.pilot-ach{font-size:11.5px;color:var(--muted);margin-top:1px}
+.st-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;white-space:nowrap;border:none;cursor:pointer;font-family:var(--body)}
+.st-a_decider{background:var(--bg2);color:var(--muted)}
+.st-go{background:var(--green-light);color:var(--green-dark)}
+.st-en_redaction{background:#EAF2FD;color:#2563A8}
+.st-depose{background:#F0EAFB;color:#7C3AED}
+.st-gagne{background:var(--green-light);color:var(--green-dark)}
+.st-perdu{background:var(--red-light);color:var(--red)}
+.st-abandonne{background:var(--bg2);color:var(--muted2)}
+.deadline{font-weight:600;font-size:12.5px}
+.deadline.urgent{color:var(--red)}
+.deadline.soon{color:var(--amber)}
+.deadline.ok{color:var(--muted)}
+.pilot-empty{text-align:center;padding:2.5rem 1rem;color:var(--muted)}
+.icon-btn{background:none;border:none;cursor:pointer;color:var(--muted2);font-size:15px;padding:3px 6px;border-radius:6px;transition:all .15s}
+.icon-btn:hover{background:var(--bg2);color:var(--red)}
+
+/* Modal générique */
+.bf-modal-bg{position:fixed;inset:0;background:rgba(26,26,18,.55);z-index:600;display:none;align-items:center;justify-content:center;padding:1.5rem;backdrop-filter:blur(4px)}
+.bf-modal-bg.show{display:flex}
+.bf-modal{background:var(--card);border-radius:18px;max-width:560px;width:100%;max-height:88vh;overflow-y:auto;padding:1.8rem;position:relative;box-shadow:var(--shadow-lg)}
+.bf-modal h3{font-family:var(--display);font-size:19px;font-weight:800;letter-spacing:-.02em;margin-bottom:1.2rem}
+.bf-modal-close{position:absolute;top:1.2rem;right:1.3rem;background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted)}
+.bf-field{margin-bottom:.9rem}
+.bf-field label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px}
+
+/* ═══ ATTESTATIONS ═══ */
+.att-item{display:flex;align-items:center;gap:1rem;padding:.9rem 1rem;background:var(--card);border:1.5px solid var(--border);border-radius:12px;margin-bottom:.6rem}
+.att-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.att-info{flex:1;min-width:0}
+.att-nom{font-size:13.5px;font-weight:600;color:var(--text)}
+.att-meta{font-size:11.5px;color:var(--muted);margin-top:1px}
+.att-status{font-size:11px;font-weight:700;padding:3px 11px;border-radius:12px;white-space:nowrap;flex-shrink:0}
+.att-ok{background:var(--green-light);color:var(--green-dark)}
+.att-soon{background:var(--amber-light);color:var(--amber)}
+.att-expired{background:var(--red-light);color:var(--red)}
+
+/* ═══ SIMULATEUR PRIX ═══ */
+.price-sim{background:var(--bg);border:1.5px solid var(--border);border-radius:14px;padding:1.3rem;margin-top:1rem}
+.price-formula{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;font-size:12.5px;color:var(--muted);margin-bottom:1rem;line-height:1.6}
+.price-formula code{font-family:'SF Mono',Menlo,monospace;font-size:12px;color:var(--green-dark);background:var(--green-light);padding:1px 6px;border-radius:4px}
+.price-hyp{display:grid;grid-template-columns:1fr auto auto;gap:.75rem;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--border)}
+.price-hyp .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.price-hyp input{width:130px}
+.price-note-big{font-family:var(--display);font-weight:900;font-size:17px}
+
 /* STATUS */
 .status-bar{font-size:13px;color:var(--muted);padding:.5rem 0;display:none}
 .limit-warning{background:var(--red-light);border:1px solid rgba(217,79,79,0.2);border-radius:10px;padding:1rem 1.25rem;font-size:13px;color:var(--red);display:none;margin-bottom:1rem}
@@ -234,7 +291,11 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
     <div class="sidebar-logo"><a href="/" class="logo">Bid<em>Flow</em></a></div>
     <nav class="nav-section">
       <div class="nav-label">Menu</div>
-      <button class="nav-item active" id="nav-analyze" onclick="showView('analyze')">
+      <button class="nav-item active" id="nav-pilotage" onclick="showView('pilotage')">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M3 8h14M8 8v9"/></svg>
+        Pilotage
+      </button>
+      <button class="nav-item" id="nav-analyze" onclick="showView('analyze')">
         <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M15 3l2 2-7 7-3 1 1-3 7-7z"/></svg>
         Analyser un AO
       </button>
@@ -245,6 +306,10 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
       <button class="nav-item" id="nav-company" onclick="showView('company')">
         <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 17V5a1 1 0 011-1h7a1 1 0 011 1v12M12 9h4a1 1 0 011 1v7M3 17h16M6 8h2M6 11h2M6 14h2"/></svg>
         Mon entreprise
+      </button>
+      <button class="nav-item" id="nav-attestations" onclick="showView('attestations')">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2l6 3v5c0 4-3 7-6 8-3-1-6-4-6-8V5l6-3z"/><path d="M7.5 10l1.5 1.5 3.5-3.5"/></svg>
+        Attestations
       </button>
       <button class="nav-item" id="nav-history" onclick="showView('history')">
         <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 3"/></svg>
@@ -307,8 +372,21 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
       </div>
     </div>
 
+    <!-- VIEW: PILOTAGE -->
+    <div id="view-pilotage" style="display:none">
+      <div class="pilot-stats" id="pilot-stats"></div>
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Mes dossiers en cours</div>
+          <button class="btn-upgrade" onclick="openDossier()">+ Nouveau dossier</button>
+        </div>
+        <div id="pilot-alert-att"></div>
+        <div id="pilot-content"></div>
+      </div>
+    </div>
+
     <!-- VIEW: ANALYZE -->
-    <div id="view-analyze">
+    <div id="view-analyze" style="display:none">
       <div class="limit-warning" id="limit-warning">
         Vous avez atteint la limite de votre plan.
         <a href="#" onclick="showView('plan')" style="color:var(--red);font-weight:700;margin-left:.5rem">Upgrader →</a>
@@ -440,6 +518,18 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
       </div>
     </div>
 
+    <!-- VIEW: ATTESTATIONS -->
+    <div id="view-attestations" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Coffre-fort des attestations</div>
+          <button class="btn-upgrade" onclick="openAttestation()">+ Ajouter</button>
+        </div>
+        <p style="font-size:13.5px;color:var(--muted);font-weight:300;line-height:1.7;margin-bottom:1.25rem">Ne perdez plus un marché sur une attestation périmée. BidFlow surveille les dates d'expiration et vous alerte avant qu'une pièce ne devienne bloquante.</p>
+        <div id="att-content"></div>
+      </div>
+    </div>
+
     <!-- VIEW: HISTORY -->
     <div id="view-history" style="display:none">
       <div class="section">
@@ -487,6 +577,15 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
   </main>
 </div>
 
+<!-- MODALE GÉNÉRIQUE (dossiers + attestations) -->
+<div class="bf-modal-bg" id="bf-modal" onclick="if(event.target===this)closeBfModal()">
+  <div class="bf-modal">
+    <button class="bf-modal-close" onclick="closeBfModal()">×</button>
+    <h3 id="bf-modal-title">Dossier</h3>
+    <div id="bf-modal-body"></div>
+  </div>
+</div>
+
 <script>
 const sb = supabase.createClient(
   'https://mohwccfmjolimwrhhcev.supabase.co',
@@ -496,6 +595,7 @@ const sb = supabase.createClient(
 let currentUser = null;
 let userProfile = null;
 let lastResult = null;
+let lastAoText = '';
 
 async function init() {
   const { data: { session } } = await sb.auth.getSession();
@@ -503,6 +603,7 @@ async function init() {
   currentUser = session.user;
   await loadProfile();
   await loadMetrics();
+  showView('pilotage');
 }
 
 async function loadProfile() {
@@ -653,8 +754,8 @@ function renderPlanView() {
   const p = userProfile?.plan || 'free';
   const features = {
     free: ['1 analyse d\'essai', 'Brief DCE complet', 'Fourchette de note par critère'],
-    starter: ['5 analyses par mois', 'Brief DCE complet', 'Attentes implicites détectées', 'Clauses de vigilance CCAP', 'Checklist des pièces'],
-    pro: ['Analyses illimitées', 'Brief DCE complet', 'Attentes implicites détectées', 'Clauses de vigilance CCAP', 'Checklist des pièces', 'Export Word professionnel', 'Historique complet des analyses'],
+    starter: ['5 dossiers analysés par mois', 'Ré-analyses du même dossier gratuites', 'Pilotage multi-AO & échéances', 'Coffre-fort des attestations', 'Brief DCE + audit de mémoire', 'Simulateur de note prix'],
+    pro: ['Dossiers illimités', 'Tout le plan Starter inclus', 'Analyse de vos pertes (capitalisation)', 'Brouillon de mémoire technique', 'Export Word professionnel', 'Historique complet', 'Support prioritaire'],
     business: ['Analyses illimitées', 'Tout le plan Pro inclus', 'Veille AO automatique BOAMP', 'Alertes en temps réel', 'Intégration CRM', 'Support prioritaire dédié']
   };
   document.getElementById('pl-name').textContent = planLabel(p);
@@ -672,20 +773,24 @@ function renderPlanView() {
 }
 
 function showView(v) {
-  ['analyze', 'audit', 'company', 'history', 'plan'].forEach(x => {
+  ['pilotage', 'analyze', 'audit', 'company', 'attestations', 'history', 'plan'].forEach(x => {
     document.getElementById('view-' + x).style.display = x === v ? 'block' : 'none';
     document.getElementById('nav-' + x).classList.toggle('active', x === v);
   });
   const titles = {
+    pilotage: 'Pilotage de mes <em>appels d\'offres</em>',
     analyze: 'Analyser un <em>appel d\'offres</em>',
     audit: 'Auditer un <em>mémoire technique</em>',
     company: 'Mon <em>entreprise</em>',
+    attestations: 'Coffre-fort des <em>attestations</em>',
     history: 'Historique des <em>analyses</em>',
     plan: 'Mon <em>abonnement</em>'
   };
   document.getElementById('page-title').innerHTML = titles[v];
   if (v === 'plan') renderPlanView();
   if (v === 'history') loadHistory();
+  if (v === 'pilotage') loadPilotage();
+  if (v === 'attestations') loadAttestations();
 }
 
 const EX = {
@@ -850,6 +955,7 @@ function showReuseHint(containerId) {
 async function analyze() {
   const ao = document.getElementById('d-ao').value.trim();
   if (!ao) { document.getElementById('d-ao').style.borderColor = 'var(--red)'; setTimeout(() => document.getElementById('d-ao').style.borderColor = '', 1500); return; }
+  lastAoText = ao;
   const used = userProfile?.analyses_used || 0;
   const limit = userProfile?.analyses_limit || -1;
   if (limit !== -1 && used >= limit) { document.getElementById('limit-warning').classList.add('show'); return; }
@@ -1016,11 +1122,14 @@ function renderResult(r, objet) {
           `<div class="r-lbl" style="margin-bottom:.4rem;margin-top:${i > 0 ? '.85rem' : '0'}">${title}</div><div class="r-body">${esc(content)}</div>${i < arr.length - 1 ? '<div class="divider"></div>' : ''}`
         ).join('')}
       </div>
-      <div style="text-align:right;margin-top:.5rem">
+      <div style="display:flex;gap:.6rem;justify-content:flex-end;margin-top:.5rem;flex-wrap:wrap">
+        <button class="btn-export" onclick="followFromAnalysis()">+ Suivre ce dossier</button>
+        <button class="btn-export" onclick="togglePriceSim()">💶 Simuler la note prix</button>
         ${isPro
           ? `<button class="btn-export" onclick="exportWord()">Exporter en Word →</button>`
-          : `<p style="font-size:12px;color:var(--muted)">Export Word disponible sur le plan Pro. <a href="#" onclick="showView('plan')" style="color:var(--green)">Upgrader →</a></p>`}
+          : `<span style="font-size:12px;color:var(--muted);align-self:center">Export Word sur le plan Pro · <a href="#" onclick="showView('plan')" style="color:var(--green)">Upgrader →</a></span>`}
       </div>
+      <div id="price-sim-wrap"></div>
     </div>`;
 }
 
@@ -1165,6 +1274,323 @@ function renderAudit(r) {
       ${recoHtml}
     </div>`;
 }
+
+/* ═══════════════════════════════════════════════
+   FONCTIONNALITÉS RESPONSABLE AO
+═══════════════════════════════════════════════ */
+
+const STATUTS = {
+  a_decider: 'À décider', go: 'GO', en_redaction: 'En rédaction',
+  depose: 'Déposé', gagne: 'Gagné', perdu: 'Perdu', abandonne: 'Abandonné'
+};
+
+/* ── 1 + 4 · PILOTAGE MULTI-AO ── */
+async function loadPilotage() {
+  const { data: dossiers } = await sb.from('dossiers').select('*').eq('user_id', currentUser.id).order('date_limite', { ascending: true, nullsFirst: false });
+  renderPilotStats(dossiers || []);
+  await renderAttestationAlert();
+
+  const c = document.getElementById('pilot-content');
+  if (!dossiers || dossiers.length === 0) {
+    c.innerHTML = `<div class="pilot-empty"><p style="font-size:28px;margin-bottom:.5rem">📋</p><p style="font-size:14px;font-weight:300">Aucun dossier suivi. Analysez un AO puis cliquez "Suivre ce dossier", ou ajoutez-en un manuellement.</p></div>`;
+    return;
+  }
+
+  const actifs = dossiers.filter(d => !['gagne', 'perdu', 'abandonne'].includes(d.statut));
+  const clos = dossiers.filter(d => ['gagne', 'perdu', 'abandonne'].includes(d.statut));
+
+  const rowsHtml = list => list.map(d => {
+    const dl = deadlineInfo(d.date_limite);
+    return `<tr class="pilot-row">
+      <td><div class="pilot-objet" onclick="openDossier('${d.id}')">${esc(d.objet)}</div>${d.acheteur ? `<div class="pilot-ach">${esc(d.acheteur)}</div>` : ''}</td>
+      <td>${d.date_limite ? `<span class="deadline ${dl.cls}">${dl.txt}</span>` : '<span style="color:var(--muted2)">—</span>'}</td>
+      <td>${d.score_min != null ? `<span style="font-family:var(--display);font-weight:900;color:${d.score_max >= 65 ? 'var(--green-dark)' : d.score_max >= 40 ? 'var(--amber)' : 'var(--red)'}">${d.score_min}–${d.score_max}</span>` : '<span style="color:var(--muted2)">—</span>'}</td>
+      <td><select class="st-badge st-${d.statut}" onchange="updateStatut('${d.id}',this.value)">${Object.entries(STATUTS).map(([k, v]) => `<option value="${k}" ${k === d.statut ? 'selected' : ''}>${v}</option>`).join('')}</select></td>
+      <td style="text-align:right"><button class="icon-btn" onclick="openDossier('${d.id}')" title="Éditer">✎</button><button class="icon-btn" onclick="deleteDossier('${d.id}')" title="Supprimer">🗑</button></td>
+    </tr>`;
+  }).join('');
+
+  c.innerHTML = `
+    <table class="pilot-table">
+      <thead><tr><th>Dossier</th><th>Échéance</th><th>Score</th><th>Statut</th><th></th></tr></thead>
+      <tbody>${rowsHtml(actifs)}</tbody>
+    </table>
+    ${clos.length ? `<div style="margin-top:1.5rem"><div class="r-lbl" style="margin-bottom:.5rem"><span class="dot"></span>Dossiers clos</div><table class="pilot-table"><tbody>${rowsHtml(clos)}</tbody></table></div>` : ''}
+    ${renderLossInsight(dossiers)}`;
+}
+
+function renderPilotStats(dossiers) {
+  const actifs = dossiers.filter(d => !['gagne', 'perdu', 'abandonne'].includes(d.statut)).length;
+  const urgents = dossiers.filter(d => { const i = deadlineInfo(d.date_limite); return (i.cls === 'urgent' || i.cls === 'soon') && !['gagne', 'perdu', 'abandonne', 'depose'].includes(d.statut); }).length;
+  const gagnes = dossiers.filter(d => d.statut === 'gagne').length;
+  const decides = dossiers.filter(d => ['gagne', 'perdu'].includes(d.statut)).length;
+  const tx = decides > 0 ? Math.round((gagnes / decides) * 100) : null;
+  document.getElementById('pilot-stats').innerHTML = `
+    <div class="pilot-stat"><div class="n">${actifs}</div><div class="l">Dossiers actifs</div></div>
+    <div class="pilot-stat"><div class="n" style="color:${urgents > 0 ? 'var(--red)' : 'var(--text)'}">${urgents}</div><div class="l">Échéances proches</div></div>
+    <div class="pilot-stat"><div class="n" style="color:var(--green-dark)">${gagnes}</div><div class="l">Marchés gagnés</div></div>
+    <div class="pilot-stat"><div class="n">${tx != null ? tx + '%' : '—'}</div><div class="l">Taux de réussite</div></div>`;
+}
+
+function deadlineInfo(date) {
+  if (!date) return { cls: 'ok', txt: '—', days: null };
+  const d = new Date(date); d.setHours(23, 59, 59);
+  const now = new Date();
+  const days = Math.ceil((d - now) / 86400000);
+  const txt = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  if (days < 0) return { cls: 'ok', txt: txt + ' (passé)', days };
+  if (days <= 3) return { cls: 'urgent', txt: `${txt} · J-${days}`, days };
+  if (days <= 10) return { cls: 'soon', txt: `${txt} · J-${days}`, days };
+  return { cls: 'ok', txt: `${txt} · J-${days}`, days };
+}
+
+/* Capitalisation sur les pertes (fonctionnalité 4) */
+function renderLossInsight(dossiers) {
+  const perdus = dossiers.filter(d => d.statut === 'perdu' && d.critere_perdu);
+  if (perdus.length < 2) return '';
+  const counts = {};
+  perdus.forEach(d => { const k = d.critere_perdu.trim().toLowerCase(); counts[k] = (counts[k] || 0) + 1; });
+  const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+  if (!top || top[1] < 2) return '';
+  return `<div style="background:var(--amber-light);border:1.5px solid rgba(201,123,16,.3);border-radius:12px;padding:1.1rem 1.3rem;margin-top:1.5rem">
+    <div style="font-size:12px;font-weight:800;color:var(--amber);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem">📉 Analyse de vos pertes</div>
+    <div style="font-size:13.5px;color:var(--text);line-height:1.6">Sur vos ${perdus.length} derniers marchés perdus, vous décrochez <strong>${top[1]} fois</strong> sur le critère « ${esc(top[0])} ». C'est votre axe d'amélioration prioritaire — renforcez cette partie dans vos prochains mémoires.</div>
+  </div>`;
+}
+
+async function openDossier(id) {
+  let d = { objet: '', acheteur: '', reference: '', statut: 'a_decider', date_limite: '', budget: '', montant_offre: '', motif_perte: '', critere_perdu: '', notes: '' };
+  if (id) {
+    const { data } = await sb.from('dossiers').select('*').eq('id', id).maybeSingle();
+    if (data) d = data;
+  }
+  document.getElementById('bf-modal-title').textContent = id ? 'Modifier le dossier' : 'Nouveau dossier';
+  document.getElementById('bf-modal-body').innerHTML = `
+    <input type="hidden" id="do-id" value="${id || ''}">
+    <div class="bf-field"><label>Objet du marché *</label><input class="demo-inp" id="do-objet" value="${esc(d.objet)}" placeholder="Objet de l'AO"></div>
+    <div class="demo-row">
+      <div class="bf-field" style="flex:1"><label>Acheteur</label><input class="demo-inp" id="do-acheteur" value="${esc(d.acheteur || '')}"></div>
+      <div class="bf-field" style="flex:1"><label>Référence</label><input class="demo-inp" id="do-reference" value="${esc(d.reference || '')}"></div>
+    </div>
+    <div class="demo-row">
+      <div class="bf-field" style="flex:1"><label>Date limite de remise</label><input class="demo-inp" type="date" id="do-date" value="${d.date_limite || ''}"></div>
+      <div class="bf-field" style="flex:1"><label>Statut</label><select class="demo-inp" id="do-statut">${Object.entries(STATUTS).map(([k, v]) => `<option value="${k}" ${k === d.statut ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
+    </div>
+    <div class="demo-row">
+      <div class="bf-field" style="flex:1"><label>Budget estimé</label><input class="demo-inp" id="do-budget" value="${esc(d.budget || '')}" placeholder="ex: 280 000 € HT"></div>
+      <div class="bf-field" style="flex:1"><label>Notre offre (€ HT)</label><input class="demo-inp" type="number" id="do-montant" value="${d.montant_offre || ''}"></div>
+    </div>
+    <div id="do-perte" style="display:${d.statut === 'perdu' ? 'block' : 'none'}">
+      <div class="demo-row">
+        <div class="bf-field" style="flex:1"><label>Critère sur lequel vous avez perdu</label><input class="demo-inp" id="do-critere" value="${esc(d.critere_perdu || '')}" placeholder="ex: Prix, Valeur technique, Environnemental"></div>
+      </div>
+      <div class="bf-field"><label>Motif de rejet (si connu)</label><input class="demo-inp" id="do-motif" value="${esc(d.motif_perte || '')}"></div>
+    </div>
+    <div class="bf-field"><label>Notes</label><textarea class="demo-inp" id="do-notes" style="min-height:70px">${esc(d.notes || '')}</textarea></div>
+    <div style="display:flex;justify-content:flex-end;gap:.6rem;margin-top:.5rem">
+      <button class="btn-portal" onclick="closeBfModal()">Annuler</button>
+      <button class="btn-analyze" onclick="saveDossier()">${id ? 'Enregistrer' : 'Créer le dossier'}</button>
+    </div>`;
+  document.getElementById('do-statut').addEventListener('change', function () {
+    document.getElementById('do-perte').style.display = this.value === 'perdu' ? 'block' : 'none';
+  });
+  openBfModal();
+}
+
+async function saveDossier() {
+  const id = document.getElementById('do-id').value;
+  const objet = document.getElementById('do-objet').value.trim();
+  if (!objet) { document.getElementById('do-objet').style.borderColor = 'var(--red)'; return; }
+  const payload = {
+    user_id: currentUser.id, objet,
+    acheteur: document.getElementById('do-acheteur').value.trim(),
+    reference: document.getElementById('do-reference').value.trim(),
+    date_limite: document.getElementById('do-date').value || null,
+    statut: document.getElementById('do-statut').value,
+    budget: document.getElementById('do-budget').value.trim(),
+    montant_offre: parseFloat(document.getElementById('do-montant').value) || null,
+    critere_perdu: document.getElementById('do-critere')?.value.trim() || null,
+    motif_perte: document.getElementById('do-motif')?.value.trim() || null,
+    notes: document.getElementById('do-notes').value.trim(),
+    updated_at: new Date().toISOString()
+  };
+  if (id) await sb.from('dossiers').update(payload).eq('id', id);
+  else await sb.from('dossiers').insert(payload);
+  closeBfModal();
+  loadPilotage();
+}
+
+async function updateStatut(id, statut) {
+  await sb.from('dossiers').update({ statut, updated_at: new Date().toISOString() }).eq('id', id);
+  if (statut === 'perdu') { openDossier(id); return; }
+  loadPilotage();
+}
+
+async function deleteDossier(id) {
+  if (!confirm('Supprimer ce dossier du suivi ?')) return;
+  await sb.from('dossiers').delete().eq('id', id);
+  loadPilotage();
+}
+
+/* Créer un dossier depuis une analyse */
+async function followFromAnalysis() {
+  if (!lastResult) return;
+  const rs = lastResult.resume || {};
+  const dl = (lastResult.dates_cles || []).find(d => /remise|limite|offre/i.test(d.label || ''));
+  let dateVal = null;
+  if (dl && dl.valeur) { const m = dl.valeur.match(/(\d{1,2})[\/\.\-](\d{1,2})[\/\.\-](\d{2,4})/); if (m) { const y = m[3].length === 2 ? '20' + m[3] : m[3]; dateVal = `${y}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`; } }
+  await sb.from('dossiers').insert({
+    user_id: currentUser.id,
+    objet: (rs.objet || 'Dossier').slice(0, 120),
+    acheteur: rs.acheteur || '', budget: rs.budget || '',
+    statut: (lastResult.decision || '').includes('GO') ? 'go' : 'a_decider',
+    date_limite: dateVal, score_min: lastResult.score_min, score_max: lastResult.score_max
+  });
+  const btn = event.target;
+  btn.textContent = '✓ Ajouté au pilotage'; btn.disabled = true;
+}
+
+/* ── 2 · ATTESTATIONS ── */
+const ATT_TYPES = { fiscale: '🧾', sociale: '👥', assurance: '🛡️', qualif: '🏅', autre: '📎' };
+
+async function loadAttestations() {
+  const { data } = await sb.from('attestations').select('*').eq('user_id', currentUser.id).order('date_expiration', { ascending: true, nullsFirst: false });
+  const c = document.getElementById('att-content');
+  if (!data || data.length === 0) {
+    c.innerHTML = `<div class="pilot-empty"><p style="font-size:28px;margin-bottom:.5rem">🛡️</p><p style="font-size:14px;font-weight:300">Aucune attestation. Ajoutez vos pièces (URSSAF, décennale, Kbis, qualifications...) pour être alerté avant leur expiration.</p></div>`;
+    return;
+  }
+  c.innerHTML = data.map(a => {
+    const s = attStatus(a.date_expiration);
+    return `<div class="att-item">
+      <div class="att-icon" style="background:${s.cls === 'att-expired' ? 'var(--red-light)' : s.cls === 'att-soon' ? 'var(--amber-light)' : 'var(--green-light)'}">${ATT_TYPES[a.type] || '📎'}</div>
+      <div class="att-info"><div class="att-nom">${esc(a.nom)}</div><div class="att-meta">${a.date_expiration ? 'Expire le ' + new Date(a.date_expiration).toLocaleDateString('fr-FR') : 'Sans date d\'expiration'}${a.reference ? ' · ' + esc(a.reference) : ''}</div></div>
+      <span class="att-status ${s.cls}">${s.txt}</span>
+      <button class="icon-btn" onclick="openAttestation('${a.id}')" title="Éditer">✎</button>
+      <button class="icon-btn" onclick="deleteAttestation('${a.id}')" title="Supprimer">🗑</button>
+    </div>`;
+  }).join('');
+}
+
+function attStatus(date) {
+  if (!date) return { cls: 'att-ok', txt: 'Valide' };
+  const days = Math.ceil((new Date(date) - new Date()) / 86400000);
+  if (days < 0) return { cls: 'att-expired', txt: 'Expirée' };
+  if (days <= 30) return { cls: 'att-soon', txt: `J-${days}` };
+  return { cls: 'att-ok', txt: 'Valide' };
+}
+
+async function renderAttestationAlert() {
+  const { data } = await sb.from('attestations').select('*').eq('user_id', currentUser.id);
+  const el = document.getElementById('pilot-alert-att');
+  if (!el || !data) return;
+  const risk = data.filter(a => { const s = attStatus(a.date_expiration); return s.cls === 'att-expired' || s.cls === 'att-soon'; });
+  if (risk.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div style="background:var(--red-light);border:1.5px solid rgba(217,79,79,.25);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.25rem">
+    <div style="font-size:13px;color:var(--red);font-weight:600;line-height:1.6">⚠️ ${risk.length} attestation${risk.length > 1 ? 's' : ''} à renouveler : ${risk.map(a => esc(a.nom)).join(', ')}. <a href="#" onclick="showView('attestations');return false" style="color:var(--red);font-weight:700">Gérer →</a></div>
+  </div>`;
+}
+
+async function openAttestation(id) {
+  let a = { nom: '', type: 'autre', date_expiration: '', reference: '', notes: '' };
+  if (id) { const { data } = await sb.from('attestations').select('*').eq('id', id).maybeSingle(); if (data) a = data; }
+  document.getElementById('bf-modal-title').textContent = id ? 'Modifier l\'attestation' : 'Nouvelle attestation';
+  document.getElementById('bf-modal-body').innerHTML = `
+    <input type="hidden" id="at-id" value="${id || ''}">
+    <div class="bf-field"><label>Nom de la pièce *</label><input class="demo-inp" id="at-nom" value="${esc(a.nom)}" placeholder="ex: Attestation URSSAF, Assurance décennale"></div>
+    <div class="demo-row">
+      <div class="bf-field" style="flex:1"><label>Type</label><select class="demo-inp" id="at-type">${Object.keys(ATT_TYPES).map(t => `<option value="${t}" ${t === a.type ? 'selected' : ''}>${t.charAt(0).toUpperCase() + t.slice(1)}</option>`).join('')}</select></div>
+      <div class="bf-field" style="flex:1"><label>Date d'expiration</label><input class="demo-inp" type="date" id="at-date" value="${a.date_expiration || ''}"></div>
+    </div>
+    <div class="bf-field"><label>Référence / n° (optionnel)</label><input class="demo-inp" id="at-ref" value="${esc(a.reference || '')}"></div>
+    <div style="display:flex;justify-content:flex-end;gap:.6rem;margin-top:.5rem">
+      <button class="btn-portal" onclick="closeBfModal()">Annuler</button>
+      <button class="btn-analyze" onclick="saveAttestation()">${id ? 'Enregistrer' : 'Ajouter'}</button>
+    </div>`;
+  openBfModal();
+}
+
+async function saveAttestation() {
+  const id = document.getElementById('at-id').value;
+  const nom = document.getElementById('at-nom').value.trim();
+  if (!nom) { document.getElementById('at-nom').style.borderColor = 'var(--red)'; return; }
+  const payload = {
+    user_id: currentUser.id, nom,
+    type: document.getElementById('at-type').value,
+    date_expiration: document.getElementById('at-date').value || null,
+    reference: document.getElementById('at-ref').value.trim()
+  };
+  if (id) await sb.from('attestations').update(payload).eq('id', id);
+  else await sb.from('attestations').insert(payload);
+  closeBfModal();
+  loadAttestations();
+}
+
+async function deleteAttestation(id) {
+  if (!confirm('Supprimer cette attestation ?')) return;
+  await sb.from('attestations').delete().eq('id', id);
+  loadAttestations();
+}
+
+/* ── 3 · SIMULATEUR DE NOTE PRIX ── */
+let priceFormula = null;
+async function togglePriceSim() {
+  const wrap = document.getElementById('price-sim-wrap');
+  if (wrap.innerHTML) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = `<div class="price-sim"><div class="status-bar" style="display:block"><span class="spinner"></span>Détection de la formule de notation du prix dans le RC...</div></div>`;
+  try {
+    const res = await fetch('/api/price-formula', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ rc: lastAoText }) });
+    priceFormula = await res.json();
+    if (!res.ok) throw new Error(priceFormula.error || 'Erreur');
+    renderPriceSim();
+  } catch (e) {
+    wrap.innerHTML = `<div class="price-sim"><p style="font-size:13px;color:var(--red)">Impossible de détecter la formule. Réessayez.</p></div>`;
+  }
+}
+
+function renderPriceSim() {
+  const f = priceFormula;
+  const noteMax = f.note_max_prix || 20;
+  document.getElementById('price-sim-wrap').innerHTML = `
+    <div class="price-sim">
+      <div class="r-lbl"><span class="dot"></span>Simulateur de note prix ${f.ponderation_prix && f.ponderation_prix !== 'Non précisée' ? `· pondération ${esc(f.ponderation_prix)}` : ''}</div>
+      <div class="price-formula">${f.formule_detectee ? '📐 Formule détectée dans le RC' : '📐 Formule non précisée — hypothèse standard appliquée'} : <code>${esc(f.formule_texte || 'note = (prix mini / votre prix) × ' + noteMax)}</code><br><span style="font-size:11.5px">${esc(f.description || '')}</span></div>
+      <div class="price-hyp" style="border-bottom:1.5px solid var(--border);font-weight:700"><span class="lbl" style="color:var(--text)">Hypothèse</span><span style="font-size:11px;color:var(--muted);width:130px;text-align:center">Votre prix € HT</span><span style="font-size:11px;color:var(--muted);width:90px;text-align:right">Note /${noteMax}</span></div>
+      ${['Offre agressive', 'Offre médiane', 'Offre haute'].map((lbl, i) => `
+        <div class="price-hyp">
+          <span class="lbl">${lbl}</span>
+          <input class="demo-inp" type="number" id="ph-${i}" placeholder="ex: ${[250000, 275000, 300000][i]}" oninput="calcPrice()" style="width:130px">
+          <span class="price-note-big" id="pn-${i}" style="width:90px;text-align:right;color:var(--muted2)">—</span>
+        </div>`).join('')}
+      <div class="bf-field" style="margin-top:1rem"><label>Prix estimé du moins-disant concurrent (€ HT)</label><input class="demo-inp" type="number" id="ph-mini" placeholder="Le prix le plus bas attendu sur ce marché" oninput="calcPrice()"></div>
+      <p style="font-size:11.5px;color:var(--muted2);margin-top:.5rem;line-height:1.5">Estimation indicative basée sur la formule du RC. La note réelle dépend des offres effectivement déposées par vos concurrents.</p>
+    </div>`;
+}
+
+function calcPrice() {
+  const f = priceFormula;
+  const noteMax = f.note_max_prix || 20;
+  const mini = parseFloat(document.getElementById('ph-mini').value);
+  for (let i = 0; i < 3; i++) {
+    const prix = parseFloat(document.getElementById('ph-' + i).value);
+    const el = document.getElementById('pn-' + i);
+    if (!prix || !mini) { el.textContent = '—'; el.style.color = 'var(--muted2)'; continue; }
+    let note;
+    if (f.type_formule === 'lineaire') {
+      // approximation linéaire simple autour du moins-disant
+      note = noteMax * (mini / prix);
+    } else {
+      note = (mini / prix) * noteMax;
+    }
+    note = Math.max(0, Math.min(noteMax, note));
+    el.textContent = note.toFixed(1);
+    el.style.color = note >= noteMax * 0.85 ? 'var(--green-dark)' : note >= noteMax * 0.65 ? 'var(--amber)' : 'var(--red)';
+  }
+}
+
+/* ── MODALE GÉNÉRIQUE ── */
+function openBfModal() { document.getElementById('bf-modal').classList.add('show'); }
+function closeBfModal() { document.getElementById('bf-modal').classList.remove('show'); }
 
 async function logout() {
   await sb.auth.signOut();
