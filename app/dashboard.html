@@ -726,9 +726,45 @@ async function extractText(file, onProgress) {
   if (!text || text.length < 100) {
     throw new Error('Aucun texte lisible extrait. Si votre PDF est un scan (image), copiez-collez le texte manuellement.');
   }
-  let truncated = false;
-  if (text.length > MAX_CHARS) { text = text.slice(0, MAX_CHARS); truncated = true; }
-  return { text, truncated };
+  const { text: finalText, truncated } = smartTrim(text, MAX_CHARS);
+  return { text: finalText, truncated };
+}
+
+/* Découpage intelligent d'un DCE : si le texte dépasse la limite, on garde en
+   priorité les sections qui portent la valeur (critères de notation + CCAP/clauses,
+   souvent en fin de document) plutôt que de couper aveuglément le début. */
+function smartTrim(text, max) {
+  if (text.length <= max) return { text, truncated: false };
+
+  const markers = [
+    { re: /crit[èe]re[s]?\s+(de\s+)?(jugement|notation|attribution|s[ée]lection|pond[ée]r)/i, w: 3200, label: 'critères' },
+    { re: /(r[èe]glement\s+de\s+consultation|\bR\.?C\.?\b)/i, w: 2600, label: 'RC' },
+    { re: /(C\.?C\.?A\.?P\.?|clauses\s+administratives|p[ée]nalit[ée]s|retenue\s+de\s+garantie|r[ée]vision\s+de[s]?\s+prix|r[ée]siliation)/i, w: 3600, label: 'CCAP' },
+    { re: /(C\.?C\.?T\.?P\.?|clauses\s+techniques|prestations\s+attendues|sp[ée]cifications)/i, w: 2600, label: 'CCTP' },
+    { re: /(d[ée]lai|dur[ée]e\s+du\s+march[ée]|remise\s+des\s+offres|date\s+limite)/i, w: 1400, label: 'délais' }
+  ];
+
+  // Toujours garder le tout début (objet, acheteur, budget)
+  const head = text.slice(0, 2600);
+  const chunks = [{ start: 0, text: head }];
+  let budget = max - head.length;
+
+  for (const m of markers) {
+    if (budget <= 400) break;
+    const idx = text.search(m.re);
+    if (idx > 2600) {
+      const take = Math.min(m.w, budget);
+      const start = Math.max(0, idx - 200);
+      chunks.push({ start, text: `\n\n[...] ${text.slice(start, start + take)}` });
+      budget -= take;
+    }
+  }
+
+  // Dédoublonne / ordonne par position réelle dans le document
+  chunks.sort((a, b) => a.start - b.start);
+  const assembled = chunks.map(c => c.text).join('');
+  const finalText = assembled.length > max ? assembled.slice(0, max) : assembled;
+  return { text: finalText, truncated: true };
 }
 
 function chipEls(chipId) {
@@ -746,7 +782,7 @@ async function handleUpload(file, targetId, chipId) {
     const { text, truncated } = await extractText(file, m => meta.textContent = m);
     document.getElementById(targetId).value = text;
     const words = Math.round(text.length / 5.5);
-    meta.textContent = `~${words.toLocaleString('fr-FR')} mots extraits${truncated ? ' (tronqué)' : ''}`;
+    meta.textContent = `~${words.toLocaleString('fr-FR')} mots${truncated ? ' · sections clés extraites (RC, critères, CCAP)' : ' extraits'}`;
   } catch (e) {
     chip.classList.remove('show');
     const errEl = document.getElementById(targetId.startsWith('a-') ? 'upload-err-audit' : 'upload-err');
@@ -779,6 +815,38 @@ function tcColor(s) { return s >= 65 ? 'var(--green-dark)' : s >= 40 ? 'var(--am
 function planLabel(p) { return { free: 'Essai gratuit', starter: 'Starter', pro: 'Pro', business: 'Business' }[p] || p; }
 function esc(s) { return String(s ?? '').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
+/* Signature de dossier : empreinte stable sur les 400 premiers caractères
+   significatifs, pour ne pas recompter le quota quand on ré-itère le même AO. */
+function dossierSig(txt) {
+  const norm = (txt || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 400);
+  let h = 0;
+  for (let i = 0; i < norm.length; i++) { h = (h * 31 + norm.charCodeAt(i)) >>> 0; }
+  return 'd' + h.toString(36);
+}
+
+/* Un dossier déjà analysé ce mois-ci ne recompte pas le quota. */
+async function isNewDossier(sig) {
+  try {
+    const since = new Date(); since.setDate(1); since.setHours(0, 0, 0, 0);
+    const { data } = await sb.from('analyses')
+      .select('dossier_sig')
+      .eq('user_id', currentUser.id)
+      .eq('dossier_sig', sig)
+      .gte('created_at', since.toISOString())
+      .limit(1);
+    return !data || data.length === 0;
+  } catch (e) { return true; }
+}
+
+function showReuseHint(containerId) {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  const hint = document.createElement('div');
+  hint.style.cssText = 'display:flex;align-items:center;gap:10px;background:var(--green-light);border:1.5px solid rgba(11,191,106,.25);border-radius:10px;padding:.7rem 1rem;margin-bottom:1rem;font-size:12.5px;color:var(--green-dark);font-weight:500';
+  hint.innerHTML = '♻️ Ré-analyse du même dossier — non décomptée de votre quota. Itérez autant que nécessaire avant dépôt.';
+  c.insertBefore(hint, c.firstChild);
+}
+
 async function analyze() {
   const ao = document.getElementById('d-ao').value.trim();
   if (!ao) { document.getElementById('d-ao').style.borderColor = 'var(--red)'; setTimeout(() => document.getElementById('d-ao').style.borderColor = '', 1500); return; }
@@ -806,13 +874,18 @@ async function analyze() {
     if (!res.ok) throw new Error(data.error || 'Erreur serveur');
 
     const objet = (data.resume?.objet || ao.split('\n')[0].replace('Objet :', '').trim()).slice(0, 80);
-    await sb.from('analyses').insert({ user_id: currentUser.id, objet, score: data.score, decision: data.decision, result: data, ao_text: ao.slice(0, 500) });
-    await sb.from('profiles').update({ analyses_used: used + 1 }).eq('id', currentUser.id);
-    userProfile.analyses_used = used + 1;
+    const sig = dossierSig(ao);
+    const newDossier = await isNewDossier(sig);
+    await sb.from('analyses').insert({ user_id: currentUser.id, objet, score: data.score, decision: data.decision, result: data, ao_text: ao.slice(0, 500), dossier_sig: sig });
+    if (newDossier) {
+      await sb.from('profiles').update({ analyses_used: used + 1 }).eq('id', currentUser.id);
+      userProfile.analyses_used = used + 1;
+    }
 
     statusEl.style.display = 'none';
     lastResult = data;
     renderResult(data, objet);
+    if (!newDossier) showReuseHint('d-result');
     loadMetrics();
   } catch (e) {
     clearInterval(t); statusEl.style.display = 'none'; errEl.textContent = 'Erreur : ' + e.message;
@@ -995,12 +1068,18 @@ async function runAudit() {
     if (!res.ok) throw new Error(data.error || 'Erreur serveur');
 
     const objet = 'Audit — ' + (memoire.split('\n')[0] || 'Mémoire technique').slice(0, 70);
-    await sb.from('analyses').insert({ user_id: currentUser.id, objet, score: data.score, decision: 'AUDIT', result: data, ao_text: memoire.slice(0, 500) });
-    await sb.from('profiles').update({ analyses_used: used + 1 }).eq('id', currentUser.id);
-    userProfile.analyses_used = used + 1;
+    const rcVal = document.getElementById('a-rc').value.trim();
+    const sig = dossierSig(rcVal || memoire);
+    const newDossier = await isNewDossier(sig);
+    await sb.from('analyses').insert({ user_id: currentUser.id, objet, score: data.score, decision: 'AUDIT', result: data, ao_text: memoire.slice(0, 500), dossier_sig: sig });
+    if (newDossier) {
+      await sb.from('profiles').update({ analyses_used: used + 1 }).eq('id', currentUser.id);
+      userProfile.analyses_used = used + 1;
+    }
 
     statusEl.style.display = 'none';
     renderAudit(data);
+    if (!newDossier) showReuseHint('a-result');
     loadMetrics();
   } catch (e) {
     clearInterval(t); statusEl.style.display = 'none'; errEl.textContent = 'Erreur : ' + e.message;
