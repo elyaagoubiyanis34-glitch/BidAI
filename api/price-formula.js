@@ -1,3 +1,10 @@
+const { createClient } = require('@supabase/supabase-js');
+
+const sb = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
 const ipCache = new Map();
 function isRateLimited(ip) {
   const now = Date.now(), windowMs = 3600000, max = 20;
@@ -18,6 +25,13 @@ module.exports = async function handler(req, res) {
 
   const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
   if (isRateLimited(ip)) return res.status(429).json({ error: 'Trop de requêtes' });
+
+  // Authentification requise
+  const token = (req.headers.authorization || '').replace('Bearer ', '');
+  if (!token) return res.status(401).json({ error: 'Connexion requise' });
+  const { data: { user }, error: authError } = await sb.auth.getUser(token);
+  if (authError || !user) return res.status(401).json({ error: 'Session expirée — reconnectez-vous.' });
+
 
   const { rc } = req.body;
   if (!rc) return res.status(400).json({ error: 'RC manquant' });
