@@ -1539,7 +1539,8 @@ async function togglePriceSim() {
   if (wrap.innerHTML) { wrap.innerHTML = ''; return; }
   wrap.innerHTML = `<div class="price-sim"><div class="status-bar" style="display:block"><span class="spinner"></span>Détection de la formule de notation du prix dans le RC...</div></div>`;
   try {
-    const res = await fetch('/api/price-formula', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ rc: lastAoText }) });
+    const { data: { session } } = await sb.auth.getSession();
+    const res = await fetch('/api/price-formula', { method: 'POST', headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + session.access_token }, body: JSON.stringify({ rc: lastAoText }) });
     priceFormula = await res.json();
     if (!res.ok) throw new Error(priceFormula.error || 'Erreur');
     renderPriceSim();
