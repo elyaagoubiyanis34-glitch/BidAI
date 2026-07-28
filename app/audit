@@ -1,3 +1,10 @@
+const { createClient } = require('@supabase/supabase-js');
+
+const sb = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
 const ipCache = new Map();
 
 function isRateLimited(ip) {
@@ -31,12 +38,34 @@ module.exports = async function handler(req, res) {
     return res.status(429).json({ error: 'Trop de requêtes — réessayez dans une heure.' });
   }
 
-  const { memoire, rc, secteur, effectif, refs } = req.body;
+  // Authentification requise
+  const token = (req.headers.authorization || '').replace('Bearer ', '');
+  if (!token) return res.status(401).json({ error: 'Connexion requise' });
+  const { data: { user }, error: authError } = await sb.auth.getUser(token);
+  if (authError || !user) return res.status(401).json({ error: 'Session expirée — reconnectez-vous.' });
+
+
+  const { memoire, rc, secteur, effectif, refs, entreprise } = req.body;
   if (!memoire) return res.status(400).json({ error: 'Mémoire technique manquant' });
+
+  const e = entreprise || {};
+  const entrepriseBlock = [
+    e.nom ? `Nom : ${e.nom}` : null,
+    `Secteur : ${e.secteur || secteur || 'non précisé'}`,
+    `Effectif : ${e.effectif || effectif || 'non précisé'}`,
+    e.zone ? `Zone d'intervention : ${e.zone}` : null,
+    e.certifications ? `Certifications & agréments : ${e.certifications}` : null,
+    `Références clés : ${e.references || refs || 'non précisées'}`,
+    e.moyens ? `Moyens matériels : ${e.moyens}` : null,
+    e.equipe ? `Équipe clé : ${e.equipe}` : null
+  ].filter(Boolean).join('\n');
 
   const prompt = `Tu es un expert des marchés publics français avec 15 ans d'expérience comme membre de commissions d'analyse des offres ET comme rédacteur de mémoires techniques. Tu audites le mémoire technique d'une entreprise AVANT dépôt, comme un relecteur expert impitoyable mais constructif.
 
-ENTREPRISE CANDIDATE : Secteur ${secteur || 'non précisé'} | Effectif ${effectif || 'non précisé'} | Références : ${refs || 'non précisées'}
+ENTREPRISE CANDIDATE :
+${entrepriseBlock}
+
+NOTE : si le mémoire n'exploite pas des atouts réels listés ci-dessus (certification pertinente non mentionnée, référence similaire absente), signale-le dans les recommandations — c'est un point facile à gagner.
 
 ${rc ? `RÈGLEMENT DE CONSULTATION / DCE (référentiel de notation) :\n${rc}\n` : `AUCUN RC FOURNI — audite le mémoire selon les standards des commissions d'analyse des offres françaises (structure attendue, précision, preuves, personnalisation).`}
 
