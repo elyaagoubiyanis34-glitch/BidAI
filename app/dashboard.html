@@ -187,6 +187,24 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
 .upload-err{display:none;font-size:12.5px;color:var(--red);background:var(--red-light);border:1px solid rgba(217,79,79,.2);border-radius:8px;padding:.5rem .8rem;margin-bottom:.75rem}
 .upload-err.show{display:block}
 
+/* ═══ ÉQUIPE ═══ */
+.mb-card{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:1rem 1.1rem;margin-bottom:.7rem}
+.mb-top{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap}
+.mb-av{width:36px;height:36px;border-radius:50%;background:var(--green-light);border:1.5px solid rgba(11,191,106,.25);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--green-dark);flex-shrink:0}
+.mb-id{flex:1;min-width:170px}
+.mb-mail{font-size:13.5px;font-weight:600;color:var(--text);word-break:break-all}
+.mb-sub{font-size:11.5px;color:var(--muted);margin-top:1px}
+.mb-role{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:.4rem .6rem;font-size:12.5px;font-family:var(--body);color:var(--text);cursor:pointer}
+.mb-perso{font-size:10px;font-weight:700;letter-spacing:.05em;background:var(--amber-light);color:var(--amber);padding:2px 8px;border-radius:10px;text-transform:uppercase}
+.perm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.4rem;margin-top:.85rem;padding-top:.85rem;border-top:1px solid var(--border)}
+.perm{display:flex;align-items:center;gap:.55rem;font-size:12.5px;color:var(--muted);cursor:pointer;padding:.3rem .1rem}
+.perm input{width:16px;height:16px;accent-color:var(--green);cursor:pointer;flex-shrink:0}
+.perm.off{color:var(--muted2)}
+.perm.locked{opacity:.5;cursor:not-allowed}
+.invit-row{display:flex;align-items:center;gap:.9rem;padding:.8rem 1rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-bottom:.55rem;flex-wrap:wrap}
+.invit-mail{flex:1;min-width:180px;font-size:13px;font-weight:500;word-break:break-all}
+.invit-meta{font-size:11.5px;color:var(--muted)}
+
 /* ═══ PILOTAGE ═══ */
 .pilot-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.75rem;margin-bottom:1.5rem}
 .pilot-stat{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:.9rem 1rem;text-align:center}
@@ -311,6 +329,10 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
         <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2l6 3v5c0 4-3 7-6 8-3-1-6-4-6-8V5l6-3z"/><path d="M7.5 10l1.5 1.5 3.5-3.5"/></svg>
         Attestations
       </button>
+      <button class="nav-item" id="nav-equipe" onclick="showView('equipe')">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="3"/><path d="M2 17v-1a5 5 0 015-5 5 5 0 015 5v1M13.5 7.5a2.5 2.5 0 100-5M14 17v-1a4.5 4.5 0 00-1.2-3"/></svg>
+        Équipe
+      </button>
       <button class="nav-item" id="nav-history" onclick="showView('history')">
         <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 3"/></svg>
         Historique
@@ -341,6 +363,7 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
         <div class="user-info">
           <div class="user-name" id="sb-name">Chargement…</div>
           <div class="user-plan" id="sb-plan">—</div>
+          <div class="user-plan" id="sb-role" style="font-size:10px;color:var(--muted2)"></div>
         </div>
         <button class="logout-btn" onclick="logout()" title="Se déconnecter">⏻</button>
       </div>
@@ -378,7 +401,7 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
       <div class="section">
         <div class="section-header">
           <div class="section-title">Mes dossiers en cours</div>
-          <button class="btn-upgrade" onclick="openDossier()">+ Nouveau dossier</button>
+          <button class="btn-upgrade" data-need="modifier" onclick="openDossier()">+ Nouveau dossier</button>
         </div>
         <div id="pilot-alert-att"></div>
         <div id="pilot-content"></div>
@@ -523,10 +546,26 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
       <div class="section">
         <div class="section-header">
           <div class="section-title">Coffre-fort des attestations</div>
-          <button class="btn-upgrade" onclick="openAttestation()">+ Ajouter</button>
+          <button class="btn-upgrade" data-need="attestations" onclick="openAttestation()">+ Ajouter</button>
         </div>
         <p style="font-size:13.5px;color:var(--muted);font-weight:300;line-height:1.7;margin-bottom:1.25rem">Ne perdez plus un marché sur une attestation périmée. BidFlow surveille les dates d'expiration et vous alerte avant qu'une pièce ne devienne bloquante.</p>
         <div id="att-content"></div>
+      </div>
+    </div>
+
+    <!-- VIEW: EQUIPE -->
+    <div id="view-equipe" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Membres de l'équipe</div>
+          <button class="btn-upgrade" onclick="openInvite()">+ Inviter</button>
+        </div>
+        <p style="font-size:13.5px;color:var(--muted);font-weight:300;line-height:1.7;margin-bottom:1.25rem">Le rôle définit un jeu de permissions par défaut. Vous pouvez ensuite ajuster chaque droit individuellement : le membre passe alors en réglage personnalisé.</p>
+        <div id="equipe-content"></div>
+      </div>
+      <div class="section" id="invit-section" style="display:none">
+        <div class="section-header"><div class="section-title">Invitations en attente</div></div>
+        <div id="invit-content"></div>
       </div>
     </div>
 
@@ -593,41 +632,96 @@ const sb = supabase.createClient(
 );
 
 let currentUser = null;
-let userProfile = null;
+let userProfile = null;   // ligne profiles (nom, avatar)
+let org = null;           // organisation : plan, quota, profil entreprise
+let perms = {};           // permissions du membre connecté
+let monRole = 'lecteur';
 let lastResult = null;
 let lastAoText = '';
+
+function peut(p) { return perms[p] === true; }
 
 async function init() {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { window.location.href = '/app/login.html'; return; }
   currentUser = session.user;
+  const ok = await loadOrg();
+  if (!ok) return;
   await loadProfile();
   await loadMetrics();
+  applyPermissions();
   showView('pilotage');
+}
+
+async function loadOrg() {
+  const { data: m } = await sb.from('membres')
+    .select('org_id, role, p_analyser, p_modifier, p_supprimer, p_attestations, p_membres, p_facturation')
+    .eq('user_id', currentUser.id).maybeSingle();
+
+  if (!m) {
+    document.querySelector('.main-content').innerHTML =
+      `<div class="section" style="text-align:center;padding:3rem">
+        <div class="section-title" style="margin-bottom:.6rem">Compte non rattaché</div>
+        <p style="font-size:14px;color:var(--muted);font-weight:300;line-height:1.7">
+          Aucune organisation n'est associée à ce compte. Contactez
+          <a href="mailto:contact@bidflow.fr" style="color:var(--green)">contact@bidflow.fr</a>.
+        </p>
+      </div>`;
+    return false;
+  }
+
+  monRole = m.role;
+  perms = {
+    analyser: m.p_analyser, modifier: m.p_modifier, supprimer: m.p_supprimer,
+    attestations: m.p_attestations, membres: m.p_membres, facturation: m.p_facturation
+  };
+
+  const { data: o } = await sb.from('organisations').select('*').eq('id', m.org_id).maybeSingle();
+  org = o || { id: m.org_id, plan: 'free', analyses_used: 0, analyses_limit: 1, company_profile: {} };
+  return true;
+}
+
+/* Masque ce que le membre n'a pas le droit de faire */
+function applyPermissions() {
+  const cacher = (sel, cond) => document.querySelectorAll(sel).forEach(el => {
+    if (!cond) el.style.display = 'none';
+  });
+  cacher('#nav-attestations', peut('attestations'));
+  cacher('#nav-equipe', peut('membres'));
+  cacher('#nav-plan', peut('facturation'));
+
+  if (!peut('analyser')) {
+    cacher('#nav-analyze', false);
+    cacher('#nav-audit', false);
+  }
+  ['modifier','attestations','supprimer','analyser'].forEach(p => {
+    if (!peut(p)) document.querySelectorAll(`[data-need="${p}"]`).forEach(el => el.style.display = 'none');
+  });
+
+  const badge = document.getElementById('sb-role');
+  if (badge) badge.textContent = { admin: 'Administrateur', contributeur: 'Contributeur', lecteur: 'Lecteur' }[monRole] || monRole;
 }
 
 async function loadProfile() {
   const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
-  userProfile = data || { plan: 'free', analyses_used: 0, analyses_limit: 1, full_name: currentUser.email };
+  userProfile = data || { full_name: currentUser.email };
   const initials = (userProfile.full_name || 'U').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   document.getElementById('sb-avatar').textContent = initials;
   document.getElementById('sb-name').textContent = userProfile.full_name || currentUser.email;
-  document.getElementById('sb-plan').textContent = planLabel(userProfile.plan);
+  document.getElementById('sb-plan').textContent = planLabel(org.plan);
   const planColors = { free: '#6A6658', starter: '#088A4C', pro: '#088A4C', business: '#7A4A08' };
   const planBgs = { free: '#F2EFE7', starter: '#E6F8EF', pro: '#E6F8EF', business: '#FEF5E6' };
-  document.getElementById('plan-badge-top').innerHTML = `<span style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:${planBgs[userProfile.plan]||'#F2EFE7'};color:${planColors[userProfile.plan]||'#6A6658'}">${planLabel(userProfile.plan)}</span>`;
-  if (userProfile.secteur) document.getElementById('e-secteur').value ||= userProfile.secteur;
+  document.getElementById('plan-badge-top').innerHTML = `<span style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:${planBgs[org.plan]||'#F2EFE7'};color:${planColors[org.plan]||'#6A6658'}">${planLabel(org.plan)}</span>`;
+  
   fillCompanyForm();
   renderProfileChips();
 }
 
 function getCompanyProfile() {
-  const cp = userProfile?.company_profile || {};
+  const cp = org?.company_profile || {};
   return {
-    nom: cp.nom || '', secteur: cp.secteur || userProfile?.secteur || '',
-    effectif: cp.effectif || userProfile?.effectif || '', ca: cp.ca || '',
-    zone: cp.zone || '', certifications: cp.certifications || '',
-    references: cp.references || userProfile?.refs || '',
+    nom: cp.nom || '', secteur: cp.secteur || '', effectif: cp.effectif || '', ca: cp.ca || '',
+    zone: cp.zone || '', certifications: cp.certifications || '', references: cp.references || '',
     moyens: cp.moyens || '', equipe: cp.equipe || '', differenciation: cp.differenciation || ''
   };
 }
@@ -665,6 +759,7 @@ function renderProfileChips() {
 }
 
 async function saveCompany() {
+  if (!peut('modifier')) { alert("Vous n'avez pas la permission de modifier le profil entreprise."); return; }
   const cp = {
     nom: document.getElementById('e-nom').value.trim(),
     secteur: document.getElementById('e-secteur').value.trim(),
@@ -679,15 +774,13 @@ async function saveCompany() {
   };
   const btn = document.getElementById('e-btn');
   btn.disabled = true;
-  const { error } = await sb.from('profiles').update({
+  const { error } = await sb.from('organisations').update({
     company_profile: cp,
-    secteur: cp.secteur, effectif: cp.effectif, refs: cp.references,
     updated_at: new Date().toISOString()
-  }).eq('id', currentUser.id);
+  }).eq('id', org.id);
   btn.disabled = false;
   if (error) { alert('Erreur enregistrement : ' + error.message); return; }
-  userProfile.company_profile = cp;
-  userProfile.secteur = cp.secteur; userProfile.effectif = cp.effectif; userProfile.refs = cp.references;
+  org.company_profile = cp;
   renderProfileChips();
   const ok = document.getElementById('e-saved');
   ok.style.display = 'inline';
@@ -695,8 +788,8 @@ async function saveCompany() {
 }
 
 async function loadMetrics() {
-  const used = userProfile?.analyses_used || 0;
-  const limit = userProfile?.analyses_limit || 1;
+  const used = org?.analyses_used || 0;
+  const limit = org?.analyses_limit || 1;
   const unlimited = limit === -1;
   document.getElementById('m-used').textContent = used;
   document.getElementById('m-limit').textContent = unlimited ? '∞' : limit;
@@ -704,9 +797,9 @@ async function loadMetrics() {
   document.getElementById('m-progress').style.width = unlimited ? '15%' : Math.min(100, (used / limit) * 100) + '%';
   document.getElementById('sb-analyses').textContent = unlimited ? used + '' : `${used} / ${limit}`;
   document.getElementById('sb-analyses-sub').textContent = unlimited ? 'Illimitées' : `${Math.max(0, limit - used)} restantes`;
-  const { count } = await sb.from('analyses').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id);
+  const { count } = await sb.from('analyses').select('*', { count: 'exact', head: true }).eq('org_id', org.id);
   document.getElementById('m-total').textContent = count || 0;
-  const { data: last } = await sb.from('analyses').select('created_at,score,decision,objet').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(1).maybeSingle();
+  const { data: last } = await sb.from('analyses').select('created_at,score,decision,objet').eq('org_id', org.id).order('created_at', { ascending: false }).limit(1).maybeSingle();
   if (last) {
     document.getElementById('m-last').textContent = (last.objet || 'AO analysé').slice(0, 28);
     document.getElementById('m-last-score').textContent = `Score ${last.score}/100 · ${last.decision} · ${new Date(last.created_at).toLocaleDateString('fr-FR')}`;
@@ -720,7 +813,7 @@ async function loadMetrics() {
 }
 
 async function loadHistory() {
-  const plan = userProfile?.plan || 'free';
+  const plan = org?.plan || 'free';
   if (!['pro', 'business'].includes(plan)) {
     document.getElementById('history-list').innerHTML = `
       <div class="empty-state">
@@ -730,7 +823,7 @@ async function loadHistory() {
       </div>`;
     return;
   }
-  const { data } = await sb.from('analyses').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(50);
+  const { data } = await sb.from('analyses').select('*').eq('org_id', org.id).order('created_at', { ascending: false }).limit(50);
   document.getElementById('h-count').textContent = `${data?.length || 0} analyse${data?.length !== 1 ? 's' : ''}`;
   if (!data || data.length === 0) {
     document.getElementById('history-list').innerHTML = '<div class="empty-state"><p>Aucune analyse pour l\'instant.</p></div>';
@@ -751,7 +844,7 @@ async function loadHistory() {
 }
 
 function renderPlanView() {
-  const p = userProfile?.plan || 'free';
+  const p = org?.plan || 'free';
   const features = {
     free: ['1 analyse d\'essai', 'Brief DCE complet', 'Fourchette de note par critère'],
     starter: ['5 dossiers analysés par mois', 'Ré-analyses du même dossier gratuites', 'Pilotage multi-AO & échéances', 'Coffre-fort des attestations', 'Brief DCE + audit de mémoire', 'Simulateur de note prix'],
@@ -773,7 +866,7 @@ function renderPlanView() {
 }
 
 function showView(v) {
-  ['pilotage', 'analyze', 'audit', 'company', 'attestations', 'history', 'plan'].forEach(x => {
+  ['pilotage', 'analyze', 'audit', 'company', 'attestations', 'equipe', 'history', 'plan'].forEach(x => {
     document.getElementById('view-' + x).style.display = x === v ? 'block' : 'none';
     document.getElementById('nav-' + x).classList.toggle('active', x === v);
   });
@@ -783,6 +876,7 @@ function showView(v) {
     audit: 'Auditer un <em>mémoire technique</em>',
     company: 'Mon <em>entreprise</em>',
     attestations: 'Coffre-fort des <em>attestations</em>',
+    equipe: 'Mon <em>équipe</em>',
     history: 'Historique des <em>analyses</em>',
     plan: 'Mon <em>abonnement</em>'
   };
@@ -791,6 +885,7 @@ function showView(v) {
   if (v === 'history') loadHistory();
   if (v === 'pilotage') loadPilotage();
   if (v === 'attestations') loadAttestations();
+  if (v === 'equipe') loadEquipe();
 }
 
 const EX = {
@@ -935,7 +1030,7 @@ async function isNewDossier(sig) {
     const since = new Date(); since.setDate(1); since.setHours(0, 0, 0, 0);
     const { data } = await sb.from('analyses')
       .select('dossier_sig')
-      .eq('user_id', currentUser.id)
+      .eq('org_id', org.id)
       .eq('dossier_sig', sig)
       .gte('created_at', since.toISOString())
       .limit(1);
@@ -953,11 +1048,12 @@ function showReuseHint(containerId) {
 }
 
 async function analyze() {
+  if (!peut('analyser')) { alert("Vous n'avez pas la permission de lancer une analyse."); return; }
   const ao = document.getElementById('d-ao').value.trim();
   if (!ao) { document.getElementById('d-ao').style.borderColor = 'var(--red)'; setTimeout(() => document.getElementById('d-ao').style.borderColor = '', 1500); return; }
   lastAoText = ao;
-  const used = userProfile?.analyses_used || 0;
-  const limit = userProfile?.analyses_limit || -1;
+  const used = org?.analyses_used || 0;
+  const limit = org?.analyses_limit || -1;
   if (limit !== -1 && used >= limit) { document.getElementById('limit-warning').classList.add('show'); return; }
 
   const btn = document.getElementById('d-btn');
@@ -982,10 +1078,10 @@ async function analyze() {
     const objet = (data.resume?.objet || ao.split('\n')[0].replace('Objet :', '').trim()).slice(0, 80);
     const sig = dossierSig(ao);
     const newDossier = await isNewDossier(sig);
-    await sb.from('analyses').insert({ user_id: currentUser.id, objet, score: data.score, decision: data.decision, result: data, ao_text: ao.slice(0, 500), dossier_sig: sig });
+    await sb.from('analyses').insert({ org_id: org.id, user_id: currentUser.id, objet, score: data.score, decision: data.decision, result: data, ao_text: ao.slice(0, 500), dossier_sig: sig });
     if (newDossier) {
-      await sb.from('profiles').update({ analyses_used: used + 1 }).eq('id', currentUser.id);
-      userProfile.analyses_used = used + 1;
+      await sb.from('organisations').update({ analyses_used: used + 1 }).eq('id', org.id);
+      org.analyses_used = used + 1;
     }
 
     statusEl.style.display = 'none';
@@ -1003,7 +1099,7 @@ function renderResult(r, objet) {
   const scMin = r.score_min ?? r.score ?? 50;
   const scMax = r.score_max ?? r.score ?? 50;
   const scAvg = Math.round((scMin + scMax) / 2);
-  const isPro = ['pro', 'business'].includes(userProfile?.plan);
+  const isPro = ['pro', 'business'].includes(org?.plan);
   const decColor = r.decision === 'GO' ? 'var(--green-dark)' : (r.decision || '').includes('CONDITIONNEL') ? 'var(--amber)' : 'var(--red)';
   const decBg = r.decision === 'GO' ? 'var(--green-light)' : (r.decision || '').includes('CONDITIONNEL') ? 'var(--amber-light)' : 'var(--red-light)';
 
@@ -1151,10 +1247,11 @@ async function exportWord() {
 
 /* ═══ AUDIT DE MÉMOIRE ═══ */
 async function runAudit() {
+  if (!peut('analyser')) { alert("Vous n'avez pas la permission de lancer un audit."); return; }
   const memoire = document.getElementById('a-mem').value.trim();
   if (!memoire) { document.getElementById('a-mem').style.borderColor = 'var(--red)'; setTimeout(() => document.getElementById('a-mem').style.borderColor = '', 1500); return; }
-  const used = userProfile?.analyses_used || 0;
-  const limit = userProfile?.analyses_limit || -1;
+  const used = org?.analyses_used || 0;
+  const limit = org?.analyses_limit || -1;
   if (limit !== -1 && used >= limit) { document.getElementById('limit-warning-audit').classList.add('show'); return; }
 
   const btn = document.getElementById('a-btn');
@@ -1180,10 +1277,10 @@ async function runAudit() {
     const rcVal = document.getElementById('a-rc').value.trim();
     const sig = dossierSig(rcVal || memoire);
     const newDossier = await isNewDossier(sig);
-    await sb.from('analyses').insert({ user_id: currentUser.id, objet, score: data.score, decision: 'AUDIT', result: data, ao_text: memoire.slice(0, 500), dossier_sig: sig });
+    await sb.from('analyses').insert({ org_id: org.id, user_id: currentUser.id, objet, score: data.score, decision: 'AUDIT', result: data, ao_text: memoire.slice(0, 500), dossier_sig: sig });
     if (newDossier) {
-      await sb.from('profiles').update({ analyses_used: used + 1 }).eq('id', currentUser.id);
-      userProfile.analyses_used = used + 1;
+      await sb.from('organisations').update({ analyses_used: used + 1 }).eq('id', org.id);
+      org.analyses_used = used + 1;
     }
 
     statusEl.style.display = 'none';
@@ -1286,7 +1383,7 @@ const STATUTS = {
 
 /* ── 1 + 4 · PILOTAGE MULTI-AO ── */
 async function loadPilotage() {
-  const { data: dossiers } = await sb.from('dossiers').select('*').eq('user_id', currentUser.id).order('date_limite', { ascending: true, nullsFirst: false });
+  const { data: dossiers } = await sb.from('dossiers').select('*').eq('org_id', org.id).order('date_limite', { ascending: true, nullsFirst: false });
   renderPilotStats(dossiers || []);
   await renderAttestationAlert();
 
@@ -1361,7 +1458,7 @@ function renderLossInsight(dossiers) {
 async function openDossier(id) {
   let d = { objet: '', acheteur: '', reference: '', statut: 'a_decider', date_limite: '', budget: '', montant_offre: '', motif_perte: '', critere_perdu: '', notes: '' };
   if (id) {
-    const { data } = await sb.from('dossiers').select('*').eq('id', id).maybeSingle();
+    const { data } = await sb.from('dossiers').select('*').eq('id', id).eq('org_id', org.id).maybeSingle();
     if (data) d = data;
   }
   document.getElementById('bf-modal-title').textContent = id ? 'Modifier le dossier' : 'Nouveau dossier';
@@ -1398,11 +1495,12 @@ async function openDossier(id) {
 }
 
 async function saveDossier() {
+  if (!peut('modifier')) { alert("Vous n'avez pas la permission de modifier un dossier."); return; }
   const id = document.getElementById('do-id').value;
   const objet = document.getElementById('do-objet').value.trim();
   if (!objet) { document.getElementById('do-objet').style.borderColor = 'var(--red)'; return; }
   const payload = {
-    user_id: currentUser.id, objet,
+    org_id: org.id, user_id: currentUser.id, objet,
     acheteur: document.getElementById('do-acheteur').value.trim(),
     reference: document.getElementById('do-reference').value.trim(),
     date_limite: document.getElementById('do-date').value || null,
@@ -1414,21 +1512,23 @@ async function saveDossier() {
     notes: document.getElementById('do-notes').value.trim(),
     updated_at: new Date().toISOString()
   };
-  if (id) await sb.from('dossiers').update(payload).eq('id', id);
+  if (id) await sb.from('dossiers').update(payload).eq('id', id).eq('org_id', org.id);
   else await sb.from('dossiers').insert(payload);
   closeBfModal();
   loadPilotage();
 }
 
 async function updateStatut(id, statut) {
-  await sb.from('dossiers').update({ statut, updated_at: new Date().toISOString() }).eq('id', id);
+  if (!peut('modifier')) { alert("Vous n'avez pas la permission de modifier un dossier."); return; }
+  await sb.from('dossiers').update({ statut, updated_at: new Date().toISOString() }).eq('id', id).eq('org_id', org.id);
   if (statut === 'perdu') { openDossier(id); return; }
   loadPilotage();
 }
 
 async function deleteDossier(id) {
+  if (!peut('supprimer')) { alert("Seule une personne autorisée peut supprimer un dossier."); return; }
   if (!confirm('Supprimer ce dossier du suivi ?')) return;
-  await sb.from('dossiers').delete().eq('id', id);
+  await sb.from('dossiers').delete().eq('id', id).eq('org_id', org.id);
   loadPilotage();
 }
 
@@ -1440,7 +1540,7 @@ async function followFromAnalysis() {
   let dateVal = null;
   if (dl && dl.valeur) { const m = dl.valeur.match(/(\d{1,2})[\/\.\-](\d{1,2})[\/\.\-](\d{2,4})/); if (m) { const y = m[3].length === 2 ? '20' + m[3] : m[3]; dateVal = `${y}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`; } }
   await sb.from('dossiers').insert({
-    user_id: currentUser.id,
+    org_id: org.id, user_id: currentUser.id,
     objet: (rs.objet || 'Dossier').slice(0, 120),
     acheteur: rs.acheteur || '', budget: rs.budget || '',
     statut: (lastResult.decision || '').includes('GO') ? 'go' : 'a_decider',
@@ -1454,7 +1554,7 @@ async function followFromAnalysis() {
 const ATT_TYPES = { fiscale: '🧾', sociale: '👥', assurance: '🛡️', qualif: '🏅', autre: '📎' };
 
 async function loadAttestations() {
-  const { data } = await sb.from('attestations').select('*').eq('user_id', currentUser.id).order('date_expiration', { ascending: true, nullsFirst: false });
+  const { data } = await sb.from('attestations').select('*').eq('org_id', org.id).order('date_expiration', { ascending: true, nullsFirst: false });
   const c = document.getElementById('att-content');
   if (!data || data.length === 0) {
     c.innerHTML = `<div class="pilot-empty"><p style="font-size:28px;margin-bottom:.5rem">🛡️</p><p style="font-size:14px;font-weight:300">Aucune attestation. Ajoutez vos pièces (URSSAF, décennale, Kbis, qualifications...) pour être alerté avant leur expiration.</p></div>`;
@@ -1481,7 +1581,7 @@ function attStatus(date) {
 }
 
 async function renderAttestationAlert() {
-  const { data } = await sb.from('attestations').select('*').eq('user_id', currentUser.id);
+  const { data } = await sb.from('attestations').select('*').eq('org_id', org.id);
   const el = document.getElementById('pilot-alert-att');
   if (!el || !data) return;
   const risk = data.filter(a => { const s = attStatus(a.date_expiration); return s.cls === 'att-expired' || s.cls === 'att-soon'; });
@@ -1493,7 +1593,7 @@ async function renderAttestationAlert() {
 
 async function openAttestation(id) {
   let a = { nom: '', type: 'autre', date_expiration: '', reference: '', notes: '' };
-  if (id) { const { data } = await sb.from('attestations').select('*').eq('id', id).maybeSingle(); if (data) a = data; }
+  if (id) { const { data } = await sb.from('attestations').select('*').eq('id', id).eq('org_id', org.id).maybeSingle(); if (data) a = data; }
   document.getElementById('bf-modal-title').textContent = id ? 'Modifier l\'attestation' : 'Nouvelle attestation';
   document.getElementById('bf-modal-body').innerHTML = `
     <input type="hidden" id="at-id" value="${id || ''}">
@@ -1511,24 +1611,26 @@ async function openAttestation(id) {
 }
 
 async function saveAttestation() {
+  if (!peut('attestations')) { alert("Vous n'avez pas la permission de gérer les attestations."); return; }
   const id = document.getElementById('at-id').value;
   const nom = document.getElementById('at-nom').value.trim();
   if (!nom) { document.getElementById('at-nom').style.borderColor = 'var(--red)'; return; }
   const payload = {
-    user_id: currentUser.id, nom,
+    org_id: org.id, user_id: currentUser.id, nom,
     type: document.getElementById('at-type').value,
     date_expiration: document.getElementById('at-date').value || null,
     reference: document.getElementById('at-ref').value.trim()
   };
-  if (id) await sb.from('attestations').update(payload).eq('id', id);
+  if (id) await sb.from('attestations').update(payload).eq('id', id).eq('org_id', org.id);
   else await sb.from('attestations').insert(payload);
   closeBfModal();
   loadAttestations();
 }
 
 async function deleteAttestation(id) {
+  if (!peut('attestations')) { alert("Vous n'avez pas la permission de gérer les attestations."); return; }
   if (!confirm('Supprimer cette attestation ?')) return;
-  await sb.from('attestations').delete().eq('id', id);
+  await sb.from('attestations').delete().eq('id', id).eq('org_id', org.id);
   loadAttestations();
 }
 
@@ -1592,6 +1694,155 @@ function calcPrice() {
 /* ── MODALE GÉNÉRIQUE ── */
 function openBfModal() { document.getElementById('bf-modal').classList.add('show'); }
 function closeBfModal() { document.getElementById('bf-modal').classList.remove('show'); }
+
+
+/* ═══════════════════════════════════════════════
+   ÉQUIPE — rôles et permissions
+═══════════════════════════════════════════════ */
+const ROLE_LABEL = { admin: 'Administrateur', contributeur: 'Contributeur', lecteur: 'Lecteur' };
+const PERM_LABEL = {
+  analyser: 'Analyser et auditer',
+  modifier: 'Créer et modifier les dossiers',
+  supprimer: 'Supprimer un dossier',
+  attestations: 'Gérer les attestations',
+  membres: "Gérer l'équipe",
+  facturation: "Gérer l'abonnement"
+};
+
+async function apiEquipe(method, body) {
+  const { data: { session } } = await sb.auth.getSession();
+  const res = await fetch('/api/equipe', {
+    method,
+    headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Erreur serveur');
+  return data;
+}
+
+async function loadEquipe() {
+  const c = document.getElementById('equipe-content');
+  c.innerHTML = '<div class="status-bar" style="display:block"><span class="spinner"></span>Chargement de l\'équipe…</div>';
+  try {
+    const d = await apiEquipe('GET');
+    const gere = peut('membres');
+
+    c.innerHTML = d.membres.map(m => {
+      const initiales = (m.email[0] || '?').toUpperCase();
+      return `<div class="mb-card">
+        <div class="mb-top">
+          <div class="mb-av">${initiales}</div>
+          <div class="mb-id">
+            <div class="mb-mail">${esc(m.email)}${m.moi ? ' <span style="font-size:11px;color:var(--muted)">(vous)</span>' : ''}</div>
+            <div class="mb-sub">Depuis le ${new Date(m.depuis).toLocaleDateString('fr-FR')}</div>
+          </div>
+          ${m.personnalise ? '<span class="mb-perso">Personnalisé</span>' : ''}
+          ${gere && !m.moi
+            ? `<select class="mb-role" onchange="majRole('${m.user_id}',this.value)">
+                 ${Object.entries(ROLE_LABEL).map(([k, v]) => `<option value="${k}" ${k === m.role ? 'selected' : ''}>${v}</option>`).join('')}
+               </select>
+               <button class="icon-btn" onclick="retirerMembre('${m.user_id}','${esc(m.email)}')" title="Retirer">🗑</button>`
+            : `<span class="chip c-neutre" style="font-size:11px">${ROLE_LABEL[m.role] || m.role}</span>`}
+        </div>
+        <div class="perm-grid">
+          ${Object.entries(PERM_LABEL).map(([k, lib]) => {
+            const on = m.permissions[k] === true;
+            const bloque = !gere || m.moi;
+            return `<label class="perm ${on ? '' : 'off'} ${bloque ? 'locked' : ''}">
+              <input type="checkbox" ${on ? 'checked' : ''} ${bloque ? 'disabled' : ''}
+                     onchange="majPerm('${m.user_id}','${k}',this.checked,this)">
+              ${lib}
+            </label>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }).join('');
+
+    // invitations en attente
+    const sec = document.getElementById('invit-section');
+    if (d.invitations.length && gere) {
+      sec.style.display = 'block';
+      document.getElementById('invit-content').innerHTML = d.invitations.map(i => `
+        <div class="invit-row">
+          <span class="invit-mail">${esc(i.email)}</span>
+          <span class="chip c-neutre" style="font-size:11px">${ROLE_LABEL[i.role] || i.role}</span>
+          <span class="invit-meta">expire le ${new Date(i.expires_at).toLocaleDateString('fr-FR')}</span>
+          <button class="icon-btn" onclick="annulerInvit('${i.id}')" title="Annuler">🗑</button>
+        </div>`).join('');
+    } else {
+      sec.style.display = 'none';
+    }
+  } catch (e) {
+    c.innerHTML = `<p style="font-size:13px;color:var(--red)">Erreur : ${esc(e.message)}</p>`;
+  }
+}
+
+async function majRole(user_id, role) {
+  try { await apiEquipe('PATCH', { user_id, role }); loadEquipe(); }
+  catch (e) { alert(e.message); loadEquipe(); }
+}
+
+async function majPerm(user_id, nom, valeur, input) {
+  input.disabled = true;
+  try {
+    await apiEquipe('PATCH', { user_id, permissions: { [nom]: valeur } });
+    loadEquipe();
+  } catch (e) {
+    alert(e.message);
+    input.checked = !valeur;
+    input.disabled = false;
+  }
+}
+
+async function retirerMembre(user_id, email) {
+  if (!confirm(`Retirer ${email} de l'équipe ?`)) return;
+  try { await apiEquipe('DELETE', { user_id }); loadEquipe(); }
+  catch (e) { alert(e.message); }
+}
+
+async function annulerInvit(invitation_id) {
+  try { await apiEquipe('DELETE', { invitation_id }); loadEquipe(); }
+  catch (e) { alert(e.message); }
+}
+
+function openInvite() {
+  document.getElementById('bf-modal-title').textContent = 'Inviter une personne';
+  document.getElementById('bf-modal-body').innerHTML = `
+    <div class="bf-field"><label>Adresse email *</label><input class="demo-inp" id="iv-mail" placeholder="prenom.nom@entreprise.fr" type="email"></div>
+    <div class="bf-field"><label>Rôle</label>
+      <select class="demo-inp" id="iv-role">
+        <option value="contributeur">Contributeur — analyse et modifie les dossiers</option>
+        <option value="lecteur">Lecteur — consultation seule</option>
+        <option value="admin">Administrateur — tous les droits</option>
+      </select>
+    </div>
+    <p style="font-size:12.5px;color:var(--muted);font-weight:300;line-height:1.6">La personne rejoindra automatiquement votre équipe en créant son compte sur BidFlow avec cette adresse. Vous pourrez ensuite ajuster ses droits un par un.</p>
+    <div id="iv-msg" style="font-size:13px;padding:.5rem 0"></div>
+    <div style="display:flex;justify-content:flex-end;gap:.6rem;margin-top:.5rem">
+      <button class="btn-portal" onclick="closeBfModal()">Annuler</button>
+      <button class="btn-analyze" id="iv-btn" onclick="envoyerInvit()">Créer l'invitation</button>
+    </div>`;
+  openBfModal();
+}
+
+async function envoyerInvit() {
+  const email = document.getElementById('iv-mail').value.trim();
+  const role = document.getElementById('iv-role').value;
+  const msg = document.getElementById('iv-msg');
+  const btn = document.getElementById('iv-btn');
+  btn.disabled = true; msg.textContent = '';
+  try {
+    const d = await apiEquipe('POST', { email, role });
+    msg.style.color = 'var(--green-dark)';
+    msg.textContent = d.message;
+    setTimeout(() => { closeBfModal(); loadEquipe(); }, 1800);
+  } catch (e) {
+    msg.style.color = 'var(--red)';
+    msg.textContent = e.message;
+    btn.disabled = false;
+  }
+}
 
 async function logout() {
   await sb.auth.signOut();
