@@ -4,679 +4,1018 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BidFlow — Gérez et gagnez vos appels d'offres, sans bureau d'études</title>
-<meta name="description" content="BidFlow pilote tous vos appels d'offres, décode chaque DCE en 2 minutes, audite vos mémoires avant dépôt et surveille vos attestations. L'assistant AO des PME françaises. Essai gratuit.">
+<meta name="description" content="Suivez un appel d'offres réel de sa réception à sa victoire. BidFlow surligne ce qui compte dans vos DCE, chiffre vos offres, audite vos mémoires et pilote vos dossiers. Essai gratuit.">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600..900;1,9..144,600..900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Familjen+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#FAF9F4;--bg2:#F2EFE7;--card:#fff;--border:#DDD9CE;--border2:#C8C3B5;
-  --text:#1A1A12;--muted:#6A6658;--muted2:#A39F93;
-  --green:#0BBF6A;--green-dark:#088A4C;--green-light:#E6F8EF;--green-glow:rgba(11,191,106,0.18);
-  --red:#D94F4F;--red-light:#FDF0F0;--amber:#C97B10;--amber-light:#FBF3E4;
-  --blue:#2563A8;--blue-light:#EAF2FD;--purple:#7C3AED;--purple-light:#F0EAFB;
-  --display:'Fraunces',Georgia,serif;--body:'Outfit',system-ui,sans-serif;
-  --shadow:0 1px 4px rgba(0,0,0,.05),0 4px 20px rgba(0,0,0,.05);
-  --shadow-lg:0 8px 44px rgba(0,0,0,.09);
+  --pap:#FDFBF5; --pap2:#F7F4EA; --card:#FFFFFF;
+  --ink:#151510; --mid:#6E6C60; --faint:#9B998D;
+  --ln:#E4E0D4; --ln2:#CFCABA;
+  --vt:#0BBF6A; --vt-d:#067A43; --vt-w:#E7F8EF;
+  --jau:#FFE24D; --jau-w:#FFF6D6; --jau-d:#8A6608;
+  --cor:#F04E37; --cor-w:#FEEEEB; --cor-d:#9C2C1B;
+  --amb:#E2A81E; --amb-d:#B07A12;
+  --bleu:#3A6FA8; --bleu-w:#EDF3FA;
+  --disp:'Familjen Grotesk',system-ui,sans-serif;
+  --mono:'DM Mono',ui-monospace,monospace;
+  --serif:'Instrument Serif',Georgia,serif;
+  --sh-hard:6px 6px 0 rgba(21,21,16,.07);
 }
-html{scroll-behavior:smooth}
-body{font-family:var(--body);background:var(--bg);color:var(--text);overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(0,0,0,.05) 1px,transparent 1px);background-size:30px 30px;mask-image:radial-gradient(ellipse 90% 80% at 50% 30%,black 10%,transparent 85%);pointer-events:none;z-index:0}
-section{position:relative;z-index:1}
-.wrap{max-width:1120px;margin:0 auto;padding:0 1.5rem}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--disp);background:var(--pap);color:var(--ink);overflow-x:hidden;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1160px;margin:0 auto;padding:0 1.6rem}
+h1,h2,h3{font-weight:700;letter-spacing:-.042em;line-height:1.06}
+h1{font-size:clamp(32px,4.5vw,55px);line-height:1.05}
+h2{font-size:clamp(25px,3.3vw,38px)}
+h3{font-size:clamp(20px,2.3vw,27px);letter-spacing:-.036em}
+.lede{font-size:16px;color:var(--mid);line-height:1.68;max-width:54ch}
+.lede b{color:var(--ink);font-weight:600}
 
-/* NAV */
-nav{position:sticky;top:0;z-index:200;background:rgba(250,249,244,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
-.nav-inner{max-width:1120px;margin:0 auto;padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
-.logo{font-family:var(--display);font-size:23px;font-weight:900;font-style:italic;color:var(--text);text-decoration:none}
-.logo em{color:var(--green);font-style:normal}
-.nav-links{display:flex;gap:1.6rem;align-items:center}
-.nav-links a{font-size:13.5px;color:var(--muted);text-decoration:none;font-weight:500;transition:color .2s}
-.nav-links a:hover{color:var(--text)}
-.nav-cta{background:var(--green);color:#fff!important;padding:.55rem 1.2rem;border-radius:10px;font-weight:700!important;box-shadow:0 3px 12px var(--green-glow);transition:all .2s!important}
-.nav-cta:hover{background:var(--green-dark)}
-.nav-login{border:1.5px solid var(--border2);padding:.5rem 1.1rem;border-radius:10px}
-@media(max-width:900px){.nav-links a:not(.nav-cta):not(.nav-login){display:none}}
+.fait{font-family:var(--mono);font-weight:500;font-size:.86em;letter-spacing:-.02em;display:inline-block;border:2.5px solid var(--ink);border-radius:5px;padding:.02em .2em .08em;line-height:1.05;white-space:nowrap;vertical-align:.04em;clip-path:inset(0 100% 0 0)}
+.fait.on{animation:draw .5s cubic-bezier(.3,.9,.3,1) forwards}
+@keyframes draw{to{clip-path:inset(0 0 0 0)}}
+.promesse{font-family:var(--serif);font-style:italic;font-weight:400;font-size:1.13em;letter-spacing:-.015em;position:relative;display:inline-block;white-space:nowrap}
+.promesse::before{content:'';position:absolute;left:-.11em;right:-.11em;top:.13em;bottom:.09em;background:var(--jau);mix-blend-mode:multiply;z-index:-1;border-radius:3px 9px 5px 8px;transform:rotate(-.6deg) scaleX(0);transform-origin:left}
+.promesse.on::before{animation:swipe .58s cubic-bezier(.25,.9,.3,1) forwards}
+@keyframes swipe{to{transform:rotate(-.6deg) scaleX(1)}}
+.tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.15em;color:var(--faint);text-transform:uppercase;display:inline-block}
 
-/* HERO */
-.hero{padding:4.5rem 0 3.5rem;position:relative;overflow:hidden}
-.hero-deco{position:absolute;top:30%;right:-90px;font-family:var(--display);font-size:250px;font-weight:900;font-style:italic;color:rgba(11,191,106,.055);pointer-events:none;user-select:none;white-space:nowrap;line-height:1}
-.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center}
-@media(max-width:900px){.hero-grid{grid-template-columns:1fr}}
-.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;background:var(--green-light);color:var(--green-dark);padding:6px 14px;border-radius:20px;letter-spacing:.03em;margin-bottom:1.4rem}
-.hero-tag .pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.8s ease-in-out infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--green-glow)}50%{box-shadow:0 0 0 6px transparent}}
-h1{font-family:var(--display);font-size:clamp(34px,5vw,56px);font-weight:900;letter-spacing:-.035em;line-height:1.07;margin-bottom:1.2rem}
-h1 em{font-style:italic;color:var(--green)}
-.hero-sub{font-size:16.5px;color:var(--muted);font-weight:300;line-height:1.75;max-width:520px;margin-bottom:1.8rem}
-.hero-sub strong{color:var(--text);font-weight:600}
-.hero-ctas{display:flex;gap:.9rem;flex-wrap:wrap;margin-bottom:1.6rem}
-.btn-primary{background:var(--green);color:#fff;border:none;border-radius:12px;padding:.95rem 1.9rem;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--body);text-decoration:none;display:inline-block;box-shadow:0 5px 20px var(--green-glow);transition:all .25s}
-.btn-primary:hover{background:var(--green-dark);transform:translateY(-2px)}
-.btn-ghost{background:transparent;color:var(--text);border:1.5px solid var(--border2);border-radius:12px;padding:.95rem 1.9rem;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--body);text-decoration:none;display:inline-block;transition:all .25s}
-.btn-ghost:hover{border-color:var(--green);color:var(--green)}
-.hero-rea{font-size:13px;color:var(--muted2);font-weight:400}
-.hero-rea b{color:var(--green-dark);font-weight:700}
+nav{position:sticky;top:0;z-index:300;background:rgba(253,251,245,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--ln)}
+.nav-in{max-width:1160px;margin:0 auto;padding:.8rem 1.6rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.logo{font-size:21px;font-weight:700;letter-spacing:-.05em;color:var(--ink);text-decoration:none}
+.logo em{font-style:normal;color:var(--vt-d)}
+.nav-l{display:flex;gap:1.4rem;align-items:center}
+.nav-l a{font-size:14px;color:var(--mid);text-decoration:none;font-weight:500;transition:color .18s}
+.nav-l a:hover{color:var(--ink)}
+.btn{font-family:var(--disp);font-weight:600;text-decoration:none;display:inline-block;cursor:pointer;border:none;border-radius:6px;transition:transform .16s cubic-bezier(.2,.8,.2,1),background .18s,box-shadow .18s,border-color .18s}
+.btn:active{transform:translateY(1px)}
+.btn-ink{background:var(--ink);color:var(--pap);padding:.5rem 1.05rem;font-size:13.5px}
+.btn-line{border:1.5px solid var(--ln2);color:var(--ink);padding:.48rem 1rem;font-size:13.5px;background:transparent}
+.btn-line:hover{border-color:var(--ink)}
+.btn-vt{background:var(--vt);color:#04250F;box-shadow:0 3px 0 var(--vt-d);padding:.85rem 1.65rem;font-size:15px;font-weight:700}
+.btn-vt:hover{background:#0AAE60}
+.btn-vt:active{box-shadow:0 1px 0 var(--vt-d);transform:translateY(2px)}
+.btn-lg{padding:.85rem 1.55rem;font-size:15px}
+@media(max-width:900px){.nav-l a:not(.btn){display:none}}
 
-/* Hero mockup — pilotage */
-.mockup{background:var(--card);border:1.5px solid var(--border);border-radius:18px;box-shadow:var(--shadow-lg);padding:1.3rem;position:relative;overflow:hidden}
-.mockup::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--green),rgba(11,191,106,.2),transparent)}
-.mk-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.85rem;border-bottom:1px solid var(--border)}
-.mk-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
-.mk-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:1rem}
-.mk-stat{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:.55rem;text-align:center}
-.mk-stat .n{font-family:var(--display);font-size:19px;font-weight:900;line-height:1}
-.mk-stat .l{font-size:9px;color:var(--muted);margin-top:2px;font-weight:600}
-.mk-line{display:flex;align-items:center;justify-content:space-between;padding:.55rem .2rem;border-bottom:1px solid var(--border);font-size:12px}
-.mk-line:last-child{border:none}
-.mk-line .obj{font-weight:600;color:var(--text)}
-.mk-line .ach{font-size:10.5px;color:var(--muted2);margin-top:1px}
-.mk-st{font-size:10px;font-weight:700;padding:2px 9px;border-radius:11px}
-.mk-dl{font-size:11px;font-weight:700}
-.mk-alert{display:flex;gap:8px;align-items:center;background:var(--red-light);border:1px solid rgba(217,79,79,.2);border-radius:10px;padding:.6rem .8rem;margin-top:.9rem;font-size:11px;color:var(--red);font-weight:600}
+.chrono{position:fixed;left:50%;top:58px;z-index:250;transform:translateX(-50%) translateY(-160%);
+  background:var(--ink);color:var(--pap);border-radius:8px;padding:.5rem .9rem;display:flex;align-items:center;gap:.8rem;
+  box-shadow:0 8px 26px rgba(21,21,16,.22);transition:transform .45s cubic-bezier(.2,.9,.3,1);white-space:nowrap;max-width:94vw;overflow:hidden}
+.chrono.show{transform:translateX(-50%) translateY(0)}
+.chrono .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;color:rgba(253,251,245,.55);text-transform:uppercase}
+.chrono .v{font-family:var(--mono);font-size:19px;font-weight:500;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;transition:color .3s}
+.chrono .d{font-family:var(--mono);font-size:10.5px;color:var(--vt);opacity:0;transition:opacity .3s}
+.chrono .d.on{opacity:1}
+@media(max-width:700px){.chrono{top:auto;bottom:14px;transform:translateX(-50%) translateY(220%)}.chrono .k{display:none}}
 
-/* TICKER */
-.ticker-wrap{border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--card);overflow:hidden;padding:.85rem 0}
-.ticker{display:flex;gap:2.8rem;white-space:nowrap;animation:scroll 32s linear infinite;width:max-content}
-@keyframes scroll{to{transform:translateX(-50%)}}
-.ticker span{font-size:13px;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:2.8rem}
-.ticker b{color:var(--green);font-weight:700}
+.hero{padding:3.4rem 0 3rem}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+@media(max-width:940px){.hero-grid{grid-template-columns:1fr;gap:2.4rem}}
+.hero h1{margin:1rem 0 1.1rem}
+.hero .lede{margin-bottom:1.7rem}
+.hero-ctas{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.hero-meta{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:1.1rem}
+.hero-meta b{color:var(--vt-d);font-weight:500}
 
-/* PROBLEM */
-.problem{padding:4rem 0;background:var(--text);position:relative;overflow:hidden}
-.problem::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.03) 1px,transparent 1px);background-size:26px 26px}
-.problem h2{color:#fff;text-align:center;margin-bottom:.8rem}
-.problem .psub{color:rgba(255,255,255,.6);text-align:center;max-width:560px;margin:0 auto 2.5rem;font-size:15px;font-weight:300;line-height:1.7}
-.problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;position:relative;z-index:1}
-@media(max-width:820px){.problem-grid{grid-template-columns:1fr}}
-.pcard{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:1.5rem}
-.pcard .pico{font-size:24px;margin-bottom:.7rem}
-.pcard h3{color:#fff;font-size:16px;font-weight:700;margin-bottom:.5rem}
-.pcard p{color:rgba(255,255,255,.6);font-size:13px;font-weight:300;line-height:1.65}
+.R{background:var(--card);border:1.5px solid var(--ink);border-radius:10px;overflow:hidden;box-shadow:var(--sh-hard)}
+.R-h{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.68rem .95rem;border-bottom:1px solid var(--ln);background:#FBF8F1}
+.R-h .ref{font-family:var(--mono);font-size:10.5px;font-weight:500}
+.R-h .ach{font-family:var(--mono);font-size:10px;color:var(--faint)}
+.R-v{padding:.9rem .95rem .8rem;border-bottom:1px solid var(--ln)}
+.R-vtop{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+.R-score{font-family:var(--mono);font-size:28px;font-weight:500;letter-spacing:-.05em;color:var(--vt-d);line-height:1;font-variant-numeric:tabular-nums}
+.R-score s{text-decoration:none;font-size:10.5px;color:var(--faint)}
+.R-dec{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.07em;padding:.26rem .58rem;border-radius:4px;background:var(--jau-w);color:var(--jau-d);border:1px solid #F0DC97}
+.R-why{font-size:12px;color:var(--mid);line-height:1.5;margin-top:.45rem}
+.R-facts{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--ln)}
+.R-f{padding:.55rem .68rem;border-right:1px solid var(--ln)}
+.R-f:last-child{border-right:none}
+.R-fk{font-family:var(--mono);font-size:8.5px;letter-spacing:.11em;color:var(--faint);text-transform:uppercase}
+.R-fv{font-family:var(--mono);font-size:13px;font-weight:500;margin-top:2px;letter-spacing:-.02em}
+.R-fv.urg{color:var(--cor)}
+.R-fs{font-size:9.5px;color:var(--faint);margin-top:1px}
+.R-sec{padding:.7rem .95rem;border-bottom:1px solid var(--ln)}
+.R-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.13em;color:var(--faint);text-transform:uppercase;display:flex;justify-content:space-between;margin-bottom:.4rem}
+.R-c{display:grid;grid-template-columns:1fr 42px 62px;gap:.55rem;align-items:center;padding:.3rem 0}
+.R-c + .R-c{border-top:1px solid #F1EEE5}
+.R-cn{font-size:12.5px;font-weight:500}
+.R-cn.sub{padding-left:.75rem;position:relative;font-weight:400;color:var(--mid);font-size:12px}
+.R-cn.sub::before{content:'';position:absolute;left:.15rem;top:.55em;width:.4rem;height:1px;background:var(--ln2)}
+.R-cp{font-family:var(--mono);font-size:10.5px;color:var(--faint);text-align:right}
+.R-cv{font-family:var(--mono);font-size:13px;font-weight:500;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.R-cv::before,.gauge-v::before{content:'≈ ';color:var(--faint);font-weight:400;font-size:.85em}
+.R-cv u,.gauge-v u{text-decoration:none;font-size:9.5px;color:var(--faint);font-weight:400;margin-left:.45em}
+.R-bar{grid-column:1/-1;height:3px;background:#F1EEE5;border-radius:2px;position:relative;overflow:hidden;margin-top:.2rem}
+.R-bar i{position:absolute;inset:0 auto 0 0;width:0;font-style:normal;border-radius:2px;transition:width .95s cubic-bezier(.2,.85,.3,1)}
+.R-find{padding:.65rem .95rem;border-bottom:1px solid var(--ln);display:flex;gap:.6rem;align-items:flex-start}
+.R-tag{font-family:var(--mono);font-size:8.5px;font-weight:500;letter-spacing:.08em;padding:.2rem .42rem;border-radius:3px;flex-shrink:0;margin-top:1px}
+.R-t-att{background:var(--jau);color:#5C4700}
+.R-t-cla{background:var(--cor-w);color:var(--cor-d);border:1px solid #F5C6BC}
+.R-ft{font-size:12px;font-weight:500;line-height:1.45}
+.R-fd{font-size:11.5px;color:var(--mid);line-height:1.5;margin-top:2px}
+.R-act{padding:.65rem .95rem;background:var(--vt-w);display:flex;align-items:center;gap:.6rem}
+.R-ak{font-family:var(--mono);font-size:8.5px;letter-spacing:.11em;color:var(--vt-d);text-transform:uppercase;flex-shrink:0}
+.R-av{font-size:12px;color:#0A3D23;font-weight:500;line-height:1.45}
+@media(max-width:900px){.R-facts{grid-template-columns:repeat(2,1fr)}.R-f:nth-child(2){border-right:none}.R-f:nth-child(-n+2){border-bottom:1px solid var(--ln)}}
 
-/* SECTIONS */
-.sec{padding:4.5rem 0}
-.sec-head{text-align:center;max-width:640px;margin:0 auto 3rem}
-.sec-tag{display:inline-block;font-size:11.5px;font-weight:800;color:var(--green-dark);background:var(--green-light);padding:5px 14px;border-radius:16px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:1rem}
-h2{font-family:var(--display);font-size:clamp(27px,3.6vw,40px);font-weight:900;letter-spacing:-.03em;line-height:1.12;margin-bottom:.9rem}
-h2 em{font-style:italic;color:var(--green)}
-.sub{font-size:15.5px;color:var(--muted);font-weight:300;line-height:1.75}
+.strip{border-top:1px solid var(--ln);border-bottom:1px solid var(--ln);background:var(--card);overflow:hidden;padding:.7rem 0}
+.strip-t{display:flex;width:max-content;animation:slide 40s linear infinite}
+@keyframes slide{to{transform:translateX(-50%)}}
+.strip-t span{font-family:var(--mono);font-size:11.5px;color:var(--mid);letter-spacing:.03em;display:flex;gap:2rem;padding-right:2rem;white-space:nowrap}
+.strip-t b{color:var(--ink);font-weight:500}
 
-/* BENEFIT ROWS */
-.brow{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;margin-bottom:2.5rem;padding:2.5rem 0;border-bottom:1px solid var(--border)}
-.brow:last-child{border-bottom:none}
-.brow.rev .bvisual{order:2}
-@media(max-width:860px){.brow{grid-template-columns:1fr;gap:1.8rem;padding:2rem 0}.brow.rev .bvisual{order:0}}
-.bnum{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:800;color:var(--green-dark);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.9rem}
-.bnum .n{width:26px;height:26px;border-radius:8px;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:14px}
-.brow h3{font-family:var(--display);font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.15;margin-bottom:.7rem}
-.brow .bdesc{font-size:15px;color:var(--muted);font-weight:300;line-height:1.75;margin-bottom:1.1rem}
-.bgain{display:inline-flex;align-items:center;gap:8px;background:var(--green-light);border:1px solid rgba(11,191,106,.2);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;color:var(--green-dark);margin-bottom:1.2rem}
+.sec{padding:4.4rem 0}
+.sec-head{max-width:660px;margin-bottom:2.6rem}
+.sec-head h2{margin:.8rem 0 .85rem}
+
+.chap{padding:3.6rem 0;border-top:1px solid var(--ln)}
+.chap-mark{display:flex;align-items:baseline;gap:.7rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.chap-n{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--faint);text-transform:uppercase}
+.chap-t{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;padding:.24rem .55rem;border-radius:4px;background:var(--pap2);color:var(--mid);border:1px solid var(--ln)}
+.chap-t.spent{background:var(--cor-w);color:var(--cor-d);border-color:#F5C6BC}
+.chap-t.saved{background:var(--vt-w);color:var(--vt-d);border-color:rgba(11,191,106,.25)}
+.chap-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:3rem;align-items:center}
+.chap-grid.rev .chap-vis{order:-1}
+@media(max-width:940px){.chap-grid{grid-template-columns:1fr;gap:2rem}.chap-grid.rev .chap-vis{order:0}}
+.chap h3{margin-bottom:.8rem}
+.chap .lede{margin-bottom:1.1rem}
+.gain{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--vt-d);background:var(--vt-w);border:1px solid rgba(11,191,106,.22);padding:.34rem .68rem;border-radius:5px;margin-bottom:1rem}
 .blist{list-style:none}
-.blist li{display:flex;gap:10px;font-size:13.5px;color:var(--muted);padding:.32rem 0;line-height:1.6}
-.blist li::before{content:'→';color:var(--green);font-weight:700;flex-shrink:0}
-.bvisual{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:1.4rem;box-shadow:var(--shadow)}
+.blist li{display:flex;gap:.65rem;font-size:14px;color:var(--mid);padding:.26rem 0;line-height:1.55}
+.blist li::before{content:'—';color:var(--ln2);flex-shrink:0}
 
-/* visual bits */
-.v-row{display:flex;justify-content:space-between;align-items:center;padding:.55rem 0;border-bottom:1px solid var(--border);font-size:13px}
-.v-row:last-child{border-bottom:none}
-.v-row .k{color:var(--text);font-weight:600}
-.v-range{font-family:var(--display);font-weight:900;font-size:15px}
-.v-chip{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;margin:3px 4px 3px 0}
-.v-lbl{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.7rem}
-.v-alert{display:flex;gap:8px;align-items:flex-start;border-radius:10px;padding:.65rem .8rem;margin-top:.6rem}
-.v-alert .tt{font-size:11.5px;font-weight:700}
-.v-alert .tx{font-size:11px;color:var(--muted);margin-top:1px;line-height:1.5}
-.v-price{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;font-size:12.5px;border-bottom:1px solid var(--border)}
-.v-price .pn{font-family:var(--display);font-weight:900;font-size:15px}
+.dce{background:var(--card);border:1.5px solid var(--ink);border-radius:10px;overflow:hidden;box-shadow:var(--sh-hard)}
+.dce-h{padding:.65rem .95rem;border-bottom:1px solid var(--ln);background:#FBF8F1;font-family:var(--mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--mid);display:flex;justify-content:space-between;gap:1rem}
+.dce-b{padding:1rem 1.05rem;font-size:12.5px;line-height:1.95;color:#605E54;max-height:330px;overflow:hidden;position:relative}
+.dce-b::after{content:'';position:absolute;left:0;right:0;bottom:0;height:48px;background:linear-gradient(transparent,#fff);pointer-events:none}
+.dce-b p{margin-bottom:.5rem}
+.hl{position:relative;padding:.05em .12em;border-radius:3px;background-size:0% 100%;background-repeat:no-repeat;transition:background-size .55s cubic-bezier(.25,.9,.3,1),color .3s,font-weight .3s}
+.hl.j{background-image:linear-gradient(var(--jau),var(--jau))}
+.hl.c{background-image:linear-gradient(var(--cor-w),var(--cor-w))}
+.hl.v{background-image:linear-gradient(#9BF0C6,#9BF0C6)}
+.hl.on{background-size:100% 100%;color:var(--ink);font-weight:500}
+.hl.c.on{box-shadow:inset 0 -2px 0 rgba(240,78,55,.55)}
+.dce-margin{border-top:1px solid var(--ln);padding:.7rem .95rem;display:flex;flex-direction:column;gap:.5rem;background:#FBF8F1}
+.mnote{display:flex;gap:.55rem;align-items:flex-start;opacity:0;transform:translateX(8px);transition:opacity .4s,transform .4s cubic-bezier(.2,.8,.2,1)}
+.mnote.on{opacity:1;transform:none}
+.mnote .k{font-family:var(--mono);font-size:8.5px;font-weight:500;letter-spacing:.08em;padding:.2rem .42rem;border-radius:3px;flex-shrink:0;margin-top:1px}
+.mnote .v{font-size:11.5px;color:var(--mid);line-height:1.5}
+.mnote .v b{color:var(--ink);font-weight:600}
 
-/* WHO */
-.who{padding:4.5rem 0;background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.who-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2.5rem}
-@media(max-width:820px){.who-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:480px){.who-grid{grid-template-columns:1fr}}
-.who-card{background:var(--bg);border:1.5px solid var(--border);border-radius:14px;padding:1.4rem;text-align:center;transition:all .3s}
-.who-card:hover{border-color:var(--green);transform:translateY(-3px);box-shadow:var(--shadow-lg)}
-.who-ico{font-size:30px;margin-bottom:.6rem}
-.who-card h3{font-size:15px;font-weight:700;margin-bottom:.35rem}
-.who-card p{font-size:12.5px;color:var(--muted);font-weight:300;line-height:1.6}
+.stack{position:relative;height:280px}
+.sc{position:absolute;left:50%;width:min(90%,320px);background:var(--card);border:1.5px solid var(--ink);border-radius:9px;padding:.72rem .85rem;box-shadow:var(--sh-hard);transition:transform .85s cubic-bezier(.22,.9,.3,1),opacity .6s}
+.sc-t{font-size:13px;font-weight:600}
+.sc-s{font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-top:2px}
+.sc-b{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-top:.5rem;padding-top:.5rem;border-top:1px solid #F1EEE5}
+.sc-v{font-family:var(--mono);font-size:15px;font-weight:500;letter-spacing:-.04em}
+.chip{font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.06em;padding:.2rem .5rem;border-radius:4px;display:inline-block;white-space:nowrap}
+.c-vt{background:var(--vt-w);color:var(--vt-d)}
+.c-cor{background:var(--cor-w);color:var(--cor-d)}
+.c-jau{background:var(--jau-w);color:var(--jau-d)}
+.c-n{background:var(--pap2);color:var(--mid)}
 
-/* DEMO */
-.demo-box{background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:2rem;margin-top:2.5rem;box-shadow:var(--shadow-lg);position:relative;overflow:hidden}
-.demo-box::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--green),rgba(11,191,106,.2),transparent)}
-.demo-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
-.demo-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}
-.demo-inp{flex:1;min-width:150px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:.65rem .85rem;font-size:14px;color:var(--text);font-family:var(--body);outline:none;transition:all .2s}
-.demo-inp:focus{border-color:var(--green);background:var(--card);box-shadow:0 0 0 3px rgba(11,191,106,.08)}
-textarea.demo-inp{resize:vertical;min-height:120px;line-height:1.6;width:100%}
-.ex-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center}
-.ex-btn{font-size:12px;padding:4px 12px;border:1.5px solid var(--border2);border-radius:20px;cursor:pointer;background:var(--bg);color:var(--muted);font-family:var(--body);transition:all .2s}
-.ex-btn:hover{border-color:var(--green);color:var(--green);background:var(--green-light)}
-.status-bar{font-size:13px;color:var(--muted);padding:.5rem 0;display:none}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spinner{display:inline-block;width:13px;height:13px;border:2px solid var(--border2);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
-.d-res-card{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:1.2rem;margin-top:1rem}
-.d-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
-.demo-upsell{background:var(--green-light);border:1.5px solid rgba(11,191,106,.25);border-radius:12px;padding:1.1rem 1.3rem;margin-top:1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
-.demo-upsell p{font-size:13.5px;color:var(--green-dark);font-weight:500;flex:1;min-width:200px}
+.sim{background:var(--card);border:1.5px solid var(--ink);border-radius:10px;overflow:hidden;box-shadow:var(--sh-hard)}
+.sim-h{padding:.65rem .95rem;border-bottom:1px solid var(--ln);background:#FBF8F1;font-family:var(--mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--mid);display:flex;justify-content:space-between;gap:1rem}
+.sim-b{padding:1.05rem}
+.sim-f{background:var(--pap2);border-radius:6px;padding:.6rem .8rem;margin-bottom:1rem}
+.sim-f .k{font-family:var(--mono);font-size:9px;letter-spacing:.11em;color:var(--faint);text-transform:uppercase;margin-bottom:.2rem}
+.sim-f .v{font-family:var(--mono);font-size:12px;color:var(--vt-d)}
+.sim-out{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.1rem}
+.sim-o{border:1.5px solid var(--ln);border-radius:7px;padding:.7rem .8rem;text-align:center;transition:border-color .3s,background .3s}
+.sim-o.hot{border-color:var(--vt);background:var(--vt-w)}
+.sim-ok{font-family:var(--mono);font-size:9px;letter-spacing:.11em;color:var(--faint);text-transform:uppercase}
+.sim-ov{font-family:var(--mono);font-size:26px;font-weight:500;letter-spacing:-.05em;line-height:1.15;font-variant-numeric:tabular-nums;transition:color .3s}
+.sim-os{font-size:10.5px;color:var(--faint)}
+.sim-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.45rem}
+.sim-lbl .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--faint);text-transform:uppercase}
+.sim-lbl .v{font-family:var(--mono);font-size:15px;font-weight:500;letter-spacing:-.03em}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;background:linear-gradient(90deg,var(--vt) 0%,var(--vt) var(--p,50%),#F1EEE5 var(--p,50%),#F1EEE5 100%);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--ink);border:3px solid var(--card);box-shadow:0 2px 6px rgba(21,21,16,.25);cursor:grab}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--ink);border:3px solid var(--card);cursor:grab}
+.sim-scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-top:.35rem}
+.sim-verdict{margin-top:.9rem;padding:.65rem .8rem;border-radius:7px;font-size:12px;line-height:1.5;transition:background .3s,color .3s}
+.sim-hint{font-family:var(--mono);font-size:10px;color:var(--faint);text-align:center;margin-top:.7rem;letter-spacing:.04em}
 
-/* PRICING */
-.pricing-grid{display:grid;grid-template-columns:repeat(2,minmax(0,420px));gap:1.2rem;margin-top:2.5rem;justify-content:center}
-@media(max-width:760px){.pricing-grid{grid-template-columns:1fr}}
-.price-card{background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:2.2rem;position:relative;transition:all .3s}
-.price-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
-.price-card.featured{border-color:var(--green);border-width:2px}
-.price-pop{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;font-size:11px;font-weight:800;padding:4px 15px;border-radius:20px;white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}
-.price-name{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem}
-.price-val{font-family:var(--display);font-size:44px;font-weight:900;letter-spacing:-.03em;line-height:1}
-.price-val span{font-size:15px;font-weight:400;color:var(--muted);font-family:var(--body)}
-.price-desc{font-size:13.5px;color:var(--muted);font-weight:300;margin:.7rem 0 1.3rem;line-height:1.6}
-.price-list{list-style:none;margin-bottom:1.6rem}
-.price-list li{display:flex;gap:10px;font-size:13.5px;color:var(--muted);padding:.38rem 0;line-height:1.55}
-.price-list li::before{content:'✓';color:var(--green);font-weight:800;flex-shrink:0}
-.price-note{text-align:center;font-size:13px;color:var(--muted2);margin-top:1.4rem;font-weight:300}
+.fiche{background:var(--card);border:1.5px solid var(--ink);border-radius:10px;overflow:hidden;box-shadow:var(--sh-hard)}
+.fh{padding:.68rem .95rem;border-bottom:1px solid var(--ln);background:#FBF8F1;font-family:var(--mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--mid);display:flex;justify-content:space-between;gap:1rem}
+.fb{padding:.9rem .95rem}
+.fl{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.55rem 0;border-bottom:1px solid #F1EEE5}
+.fl:last-child{border-bottom:none}
+.fl-t{font-size:13px;font-weight:500}
+.ffoot{display:flex;gap:.6rem;align-items:flex-start;padding:.7rem .8rem;margin:.85rem .95rem .95rem;border-radius:7px}
+.ffoot .k{font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.08em}
+.ffoot .v{font-size:11.5px;color:var(--mid);line-height:1.5;margin-top:2px}
+.f-att{background:var(--jau-w);border:1px solid #F0DC97}
+.f-att .k{color:var(--jau-d)}
+.f-cor{background:var(--cor-w);border:1px solid #F5C6BC}
+.f-cor .k{color:var(--cor-d)}
+.f-vt{background:var(--vt-w);border:1px solid rgba(11,191,106,.2)}
+.f-vt .k{color:var(--vt-d)}
+.gauge{margin-top:.5rem}
+.gauge-top{display:flex;align-items:baseline;justify-content:space-between;gap:.6rem;margin-bottom:.3rem}
+.gauge-k{font-size:12.5px;font-weight:500}
+.gauge-k s{text-decoration:none;font-family:var(--mono);font-size:10px;color:var(--faint);margin-left:.3rem}
+.gauge-v{font-family:var(--mono);font-size:12px;font-weight:500;font-variant-numeric:tabular-nums}
+.gauge-tr{height:3px;background:#F1EEE5;border-radius:2px;position:relative;overflow:hidden}
+.gauge-fl{position:absolute;inset:0 auto 0 0;width:0;border-radius:2px;transition:width .95s cubic-bezier(.2,.85,.3,1)}
+.big{font-family:var(--mono);font-size:clamp(24px,3vw,31px);font-weight:500;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums}
+.big s{text-decoration:none;font-size:11px;color:var(--faint)}
 
-/* FAQ */
-.faq-list{max-width:760px;margin:2.5rem auto 0}
-.faq-item{border-bottom:1px solid var(--border)}
-.faq-q{width:100%;background:none;border:none;text-align:left;padding:1.15rem 0;font-size:15.5px;font-weight:600;color:var(--text);cursor:pointer;font-family:var(--body);display:flex;justify-content:space-between;align-items:center;gap:1rem;transition:color .2s}
-.faq-q:hover{color:var(--green-dark)}
-.faq-icon{font-size:19px;color:var(--green);transition:transform .3s;flex-shrink:0}
-.faq-item.open .faq-icon{transform:rotate(45deg)}
-.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease;font-size:14px;color:var(--muted);font-weight:300;line-height:1.75}
-.faq-item.open .faq-a{max-height:280px;padding-bottom:1.15rem}
+.epi{background:var(--ink);color:var(--pap);padding:3.4rem 2rem;border-radius:12px;margin-top:2rem}
+.epi h2{color:var(--pap);margin:.8rem 0}
+.epi .promesse::before{mix-blend-mode:normal}
+.epi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(253,251,245,.14);border:1px solid rgba(253,251,245,.14);border-radius:9px;overflow:hidden;margin-top:2.2rem}
+@media(max-width:820px){.epi-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.epi-grid{grid-template-columns:1fr}}
+.epi-c{padding:1.3rem 1.2rem 1.35rem;background:var(--ink);position:relative}
+.epi-c::before{content:attr(data-i);position:absolute;top:.7rem;right:.85rem;font-family:var(--mono);font-size:10px;color:rgba(253,251,245,.2);letter-spacing:.08em}
+.epi-n{font-family:var(--mono);font-size:31px;font-weight:500;letter-spacing:-.05em;color:var(--pap);display:block;line-height:1;font-variant-numeric:tabular-nums}
+.epi-u{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--vt);margin-top:.45rem;display:block}
+.epi-k{font-size:12.5px;color:rgba(253,251,245,.5);margin-top:.6rem;padding-top:.6rem;border-top:1px solid rgba(253,251,245,.13);line-height:1.5}
 
-/* FINAL */
-.final-cta{background:var(--text);border-radius:24px;padding:4rem 2.5rem;text-align:center;position:relative;overflow:hidden;margin:1rem 0 4rem}
-.final-cta::before{content:'BidFlow';position:absolute;bottom:-55px;left:50%;transform:translateX(-50%);font-family:var(--display);font-size:190px;font-weight:900;font-style:italic;color:rgba(11,191,106,.07);pointer-events:none;white-space:nowrap}
-.final-cta h2{color:#fff;margin-bottom:.8rem}
-.final-cta p{color:rgba(255,255,255,.65);font-size:15px;font-weight:300;max-width:480px;margin:0 auto 1.8rem;line-height:1.7}
+.pil-stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--ln);background:#FBF8F1}
+.ps{padding:.7rem .5rem;text-align:center;border-right:1px solid var(--ln)}
+.ps:last-child{border-right:none}
+.ps-n{font-family:var(--mono);font-size:20px;font-weight:500;letter-spacing:-.04em;display:block;line-height:1;font-variant-numeric:tabular-nums}
+.ps-k{font-family:var(--mono);font-size:9px;letter-spacing:.11em;color:var(--faint);text-transform:uppercase;margin-top:.3rem;display:block}
 
-/* FOOTER */
-footer{border-top:1px solid var(--border);background:var(--card);padding:3rem 0 2rem;position:relative;overflow:hidden}
-footer::before{content:'BidFlow';position:absolute;bottom:-60px;right:-40px;font-family:var(--display);font-size:200px;font-weight:900;font-style:italic;color:rgba(0,0,0,.025);pointer-events:none;user-select:none;white-space:nowrap}
-.foot-grid{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap;margin-bottom:2rem;position:relative;z-index:1}
-.foot-col p,.foot-col a{font-size:13px;color:var(--muted);text-decoration:none;display:block;margin-bottom:.5rem;font-weight:300}
-.foot-col a:hover{color:var(--green)}
-.foot-col .ft{font-size:12px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.8rem}
-.foot-bottom{border-top:1px solid var(--border);padding-top:1.4rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-size:12px;color:var(--muted2);position:relative;z-index:1}
-.foot-bottom a{color:var(--muted2);text-decoration:none}
-.foot-bottom a:hover{color:var(--green)}
+.aussi{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+@media(max-width:860px){.aussi{grid-template-columns:1fr}}
+.au{background:var(--card);border:1.5px solid var(--ink);border-radius:10px;padding:1.4rem 1.3rem;box-shadow:var(--sh-hard);transition:transform .22s cubic-bezier(.2,.8,.2,1)}
+.au:hover{transform:translateY(-3px)}
+.au-k{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;color:var(--faint);text-transform:uppercase;display:block;padding-bottom:.7rem;border-bottom:1px solid var(--ln);margin-bottom:.85rem}
+.au h3 .promesse,.wc h3 .promesse{font-size:1.05em}
+.au h3{font-size:17px;font-weight:600;letter-spacing:-.028em;margin-bottom:.5rem}
+.au p{font-size:13.5px;color:var(--mid);line-height:1.6}
 
-/* MODALS */
-.modal-bg{position:fixed;inset:0;background:rgba(26,26,18,.5);z-index:500;display:none;align-items:center;justify-content:center;padding:1.5rem;backdrop-filter:blur(4px)}
-.modal-bg.show{display:flex}
-.modal{background:var(--card);border-radius:18px;max-width:640px;width:100%;max-height:80vh;overflow-y:auto;padding:2.2rem;position:relative}
-.modal h2{font-size:22px;margin-bottom:1.2rem}
-.modal h3{font-size:15px;font-weight:700;margin:1.2rem 0 .4rem}
-.modal p,.modal li{font-size:13.5px;color:var(--muted);line-height:1.7;font-weight:300}
-.modal ul{padding-left:1.2rem}
-.modal-close{position:absolute;top:1.2rem;right:1.4rem;background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted)}
+.who{background:var(--card);border-top:1px solid var(--ln);border-bottom:1px solid var(--ln)}
+.who-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2.2rem}
+@media(max-width:860px){.who-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.who-grid{grid-template-columns:1fr}}
+.wc{background:var(--pap);border:1.5px solid var(--ink);border-radius:10px;padding:1.35rem 1.25rem;box-shadow:var(--sh-hard);transition:transform .22s cubic-bezier(.2,.8,.2,1),background .22s}
+.wc:hover{transform:translateY(-3px);background:var(--pap2)}
+.wc-k{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;color:var(--faint);text-transform:uppercase;display:block;padding-bottom:.65rem;border-bottom:1px solid var(--ln);margin-bottom:.8rem}
+.wc h3{font-size:17px;font-weight:600;letter-spacing:-.028em;margin-bottom:.4rem}
+.wc p{font-size:13px;color:var(--mid);line-height:1.55}
 
-.reveal{opacity:0;transform:translateY(24px);transition:all .7s cubic-bezier(.16,1,.3,1)}
-.reveal.vis{opacity:1;transform:none}
-.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
+textarea}
+
+.price-grid{display:grid;grid-template-columns:repeat(2,minmax(0,400px));gap:1rem;justify-content:center;margin-top:2.2rem}
+@media(max-width:780px){.price-grid{grid-template-columns:1fr}}
+.pc{background:var(--card);border:1.5px solid var(--ln);border-radius:10px;padding:1.8rem;position:relative;transition:border-color .2s,box-shadow .2s,transform .2s cubic-bezier(.2,.8,.2,1)}
+.pc:hover{border-color:var(--ink);box-shadow:var(--sh-hard);transform:translateY(-3px)}
+.pc.reco{border:1.5px solid var(--ink);box-shadow:var(--sh-hard)}
+.pc-flag{position:absolute;top:-10px;left:1.8rem;background:var(--jau);color:#5C4700;font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.08em;padding:.22rem .6rem;border-radius:4px;border:1.5px solid var(--ink)}
+.pc-n{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
+.pc-p{font-family:var(--mono);font-size:36px;font-weight:500;letter-spacing:-.05em;margin:.5rem 0 .1rem;line-height:1}
+.pc-p s{text-decoration:none;font-size:12.5px;color:var(--faint)}
+.pc-d{font-size:13.5px;color:var(--mid);margin-bottom:1.2rem;line-height:1.5}
+.pc-l{list-style:none;margin-bottom:1.4rem}
+.pc-l li{display:flex;gap:.6rem;font-size:13.5px;color:var(--mid);padding:.3rem 0;line-height:1.5}
+.pc-l li::before{content:'✓';color:var(--vt-d);font-weight:700;flex-shrink:0}
+.pc .btn{width:100%;text-align:center}
+.price-note{text-align:center;font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:1.3rem}
+
+.faq{max-width:760px;border-top:1.5px solid var(--ink)}
+.fq{border-bottom:1px solid var(--ln)}
+.fq-q{width:100%;background:none;border:none;text-align:left;padding:1.1rem 0;font-size:16px;font-weight:600;color:var(--ink);cursor:pointer;font-family:var(--disp);display:flex;justify-content:space-between;align-items:center;gap:1rem;letter-spacing:-.02em;transition:color .18s}
+.fq-q:hover{color:var(--vt-d)}
+.fq-i{font-family:var(--mono);font-size:17px;color:var(--vt);transition:transform .3s cubic-bezier(.2,.8,.2,1);flex-shrink:0}
+.fq.open .fq-i{transform:rotate(45deg)}
+.fq-a{max-height:0;overflow:hidden;transition:max-height .35s ease;font-size:14.5px;color:var(--mid);line-height:1.7}
+.fq.open .fq-a{max-height:320px;padding-bottom:1.1rem}
+
+.final{background:var(--ink);border-radius:12px;padding:3.6rem 2.2rem;text-align:center;margin-bottom:4rem}
+.final h2{color:var(--pap);margin-bottom:.7rem}
+.final .promesse::before{mix-blend-mode:normal}
+.final p{color:rgba(253,251,245,.6);font-size:15px;max-width:44ch;margin:0 auto 1.5rem;line-height:1.6}
+footer{border-top:1px solid var(--ln);background:var(--card);padding:2.5rem 0 1.6rem}
+.foot{display:flex;justify-content:space-between;gap:2.2rem;flex-wrap:wrap;margin-bottom:1.8rem}
+.fcol p,.fcol a{font-size:13.5px;color:var(--mid);text-decoration:none;display:block;margin-bottom:.42rem;line-height:1.55}
+.fcol a:hover{color:var(--vt-d)}
+.fcol .ft{font-family:var(--mono);font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.75rem}
+.foot-b{border-top:1px solid var(--ln);padding-top:1.2rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)}
+.foot-b a{color:var(--faint);text-decoration:none}
+.foot-b a:hover{color:var(--vt-d)}
+
+.mb{position:fixed;inset:0;background:rgba(21,21,16,.5);z-index:500;display:none;align-items:center;justify-content:center;padding:1.5rem;backdrop-filter:blur(3px)}
+.mb.show{display:flex}
+.md{background:var(--card);border:1.5px solid var(--ink);border-radius:10px;max-width:620px;width:100%;max-height:82vh;overflow-y:auto;padding:1.9rem;position:relative}
+.md h2{font-size:22px;margin-bottom:1rem}
+.md h3{font-size:14px;font-weight:600;margin:1.15rem 0 .3rem;letter-spacing:-.02em}
+.md p,.md li{font-size:13.5px;color:var(--mid);line-height:1.7}
+.md ul{padding-left:1.1rem}
+.md-x{position:absolute;top:1rem;right:1.15rem;background:none;border:none;font-size:20px;cursor:pointer;color:var(--faint);line-height:1}
+
+.rv{opacity:0;transform:translateY(16px);transition:opacity .62s cubic-bezier(.2,.8,.2,1),transform .62s cubic-bezier(.2,.8,.2,1)}
+.rv.vis{opacity:1;transform:none}
+.rv.d1{transition-delay:.07s}
+
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--vt-d);outline-offset:2px;border-radius:4px}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .rv{opacity:1;transform:none}
+  .fait{clip-path:none}
+  .promesse::before{transform:rotate(-.6deg) scaleX(1)}
+  .hl{background-size:100% 100%}
+  .mnote{opacity:1;transform:none}
+  .chrono{display:none}
+}
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="nav-inner">
+  <div class="nav-in">
     <a href="/" class="logo">Bid<em>Flow</em></a>
-    <div class="nav-links">
-      <a href="#pour-qui">Pour qui</a>
-      <a href="#fonctions">Ce que ça fait</a>
-      <a href="#demo">Démo live</a>
+    <div class="nav-l">
+      <a href="#dossier">Le dossier</a>
+      
       <a href="#tarifs">Tarifs</a>
       <a href="#faq">FAQ</a>
-      <a href="/app/login.html" class="nav-login">S'identifier</a>
-      <a href="/app/login.html" class="nav-cta">Essai gratuit →</a>
+      <a href="/app/login.html" class="btn btn-line">S'identifier</a>
+      <a href="/app/login.html" class="btn btn-ink">Essai gratuit</a>
     </div>
   </div>
 </nav>
 
-<!-- HERO -->
+<div class="chrono" id="chrono">
+  <span class="k">Temps sur ce dossier</span>
+  <span class="v" id="chrono-v">3 h 00</span>
+  <span class="d" id="chrono-d"></span>
+</div>
+
+<main>
+
 <section class="hero">
-  <div class="hero-deco">AO</div>
   <div class="wrap">
     <div class="hero-grid">
       <div>
-        <div class="hero-tag"><span class="pulse"></span>L'assistant appels d'offres des PME françaises</div>
-        <h1>Gérez et gagnez vos appels d'offres, <em>sans bureau d'études.</em></h1>
-        <p class="hero-sub">BidFlow <strong>pilote tous vos AO</strong>, <strong>décode chaque DCE en 2 minutes</strong>, <strong>audite vos mémoires avant dépôt</strong> et <strong>surveille vos attestations</strong>. Vous décidez plus vite, vous répondez mieux, vous ne ratez plus une échéance.</p>
+        <span class="tag">Assistant appels d'offres — PME françaises</span>
+        <h1><span class="fait" data-d="250">62 pages</span> de DCE.<br><span class="promesse" data-d="750">Deux minutes</span> pour décider.</h1>
+        <p class="lede">BidFlow surligne ce qui compte : les critères et leur pondération, les <b>attentes que l'acheteur n'écrit jamais</b>, les clauses qui coûtent cher. Puis il pilote vos dossiers jusqu'au dépôt.</p>
         <div class="hero-ctas">
-          <a href="/app/login.html" class="btn-primary">Analyser mon 1er AO gratuitement →</a>
-          <a href="#demo" class="btn-ghost">Voir la démo live</a>
+          <a href="/app/login.html" class="btn btn-vt">Analyser mon premier AO</a>
+          <a href="#dossier" class="btn btn-line btn-lg">Suivre un dossier réel</a>
         </div>
-        <p class="hero-rea"><b>Sans carte bancaire</b> · 1 analyse offerte · Résiliable en 1 clic</p>
+        <p class="hero-meta"><b>Sans carte bancaire</b>. 1 analyse offerte, résiliable en 1 clic</p>
       </div>
-
-      <!-- MOCKUP PILOTAGE -->
-      <div class="mockup">
-        <div class="mk-head">
-          <span class="mk-title">Mon pilotage — 4 AO en cours</span>
+      <div>
+        <div class="R" id="hero-R">
+          <div class="R-h"><span class="ref">DCE-2026-0471 · 62 pages</span><span class="ach">CHU DE LYON — GARDIENNAGE</span></div>
+          <div class="R-v">
+            <div class="R-vtop"><span class="R-score"><span style="font-size:15px;color:var(--faint)">≈ </span><span id="sa">0</span><u style="text-decoration:none;font-size:10.5px;color:var(--faint);margin-left:.4em">62–74</u> <s>/ 100</s></span><span class="R-dec">GO CONDITIONNEL</span></div>
+            <p class="R-why">Votre technique tient, mais le sortant est en place depuis 6 ans et la continuité de service pèse 25 % — c'est là que se joue le marché.</p>
+          </div>
+          <div class="R-facts">
+            <div class="R-f"><div class="R-fk">Remise</div><div class="R-fv urg">J-9</div><div class="R-fs">30/09 · 12h00</div></div>
+            <div class="R-f"><div class="R-fk">Budget</div><div class="R-fv">95 k€</div><div class="R-fs">/ an · 3 ans</div></div>
+            <div class="R-f"><div class="R-fk">Procédure</div><div class="R-fv">AO ouv.</div><div class="R-fs">reconductible</div></div>
+            <div class="R-f"><div class="R-fk">Questions</div><div class="R-fv urg">J-4</div><div class="R-fs">date limite</div></div>
+          </div>
+          <div class="R-sec">
+            <div class="R-lbl"><span>Critères de notation</span><span>Note estimée / 20</span></div>
+            <div class="R-c"><span class="R-cn">Valeur technique</span><span class="R-cp">70 %</span><span class="R-cv" style="color:var(--vt-d)">15<u>14–16</u></span><span class="R-bar"><i data-w="76%" style="background:var(--vt)"></i></span></div>
+            <div class="R-c"><span class="R-cn sub">dont continuité de service</span><span class="R-cp">25 %</span><span class="R-cv" style="color:var(--cor)">10,5<u>9–12</u></span><span class="R-bar"><i data-w="52%" style="background:var(--cor)"></i></span></div>
+            <div class="R-c"><span class="R-cn sub">dont moyens humains</span><span class="R-cp">20 %</span><span class="R-cv" style="color:var(--vt-d)">16<u>15–17</u></span><span class="R-bar"><i data-w="80%" style="background:var(--vt)"></i></span></div>
+            <div class="R-c"><span class="R-cn">Prix</span><span class="R-cp">30 %</span><span class="R-cv" style="color:var(--amb-d)">12<u>11–13</u></span><span class="R-bar"><i data-w="60%" style="background:var(--amb)"></i></span></div>
+          </div>
+          <div class="R-find"><span class="R-tag R-t-att">ATTENTE</span><div><div class="R-ft">Site hospitalier occupé + titulaire sortant depuis 6 ans</div><div class="R-fd">L'acheteur attend un plan de reprise sans rupture et une amélioration mesurable. Jamais écrit au CCTP, presque toujours noté.</div></div></div>
+          <div class="R-find"><span class="R-tag R-t-cla">CCAP 8.2</span><div><div class="R-ft">Pénalités de retard non plafonnées</div><div class="R-fd">Aucun plafond contractuel : exposition illimitée sur un marché à 95 k€. À faire préciser avant J-4.</div></div></div>
+          <div class="R-act"><span class="R-ak">À faire</span><span class="R-av">Rédiger le plan de continuité (§3.2) : c'est le poste où vous perdez le plus de points.</span></div>
         </div>
-        <div class="mk-stats">
-          <div class="mk-stat"><div class="n">4</div><div class="l">Actifs</div></div>
-          <div class="mk-stat"><div class="n" style="color:var(--red)">2</div><div class="l">Urgents</div></div>
-          <div class="mk-stat"><div class="n" style="color:var(--green-dark)">38%</div><div class="l">Réussite</div></div>
-        </div>
-        <div class="mk-line">
-          <div><div class="obj">SIRH · Agglo Val de Saône</div><div class="ach">280 k€ · technique 60%</div></div>
-          <div style="text-align:right"><span class="mk-dl" style="color:var(--red)">J-3</span><br><span class="mk-st" style="background:var(--blue-light);color:var(--blue)">Rédaction</span></div>
-        </div>
-        <div class="mk-line">
-          <div><div class="obj">Maintenance · Roanne</div><div class="ach">380 k€/an · 3 ans</div></div>
-          <div style="text-align:right"><span class="mk-dl" style="color:var(--amber)">J-8</span><br><span class="mk-st" style="background:var(--green-light);color:var(--green-dark)">GO</span></div>
-        </div>
-        <div class="mk-line">
-          <div><div class="obj">Gardiennage · CHU Lyon</div><div class="ach">95 k€/an · reconductible</div></div>
-          <div style="text-align:right"><span class="mk-dl" style="color:var(--muted)">J-21</span><br><span class="mk-st" style="background:var(--bg2);color:var(--muted)">À décider</span></div>
-        </div>
-        <div class="mk-alert">⚠️ Attestation URSSAF expire dans 12 jours — 2 AO concernés</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- TICKER -->
-<div class="ticker-wrap">
-  <div class="ticker">
-    <span><b>Pilotage multi-AO</b> · Alertes d'échéance · <b>Brief DCE en 2 min</b> · Attentes implicites · <b>Clauses CCAP à risque</b> · Simulateur de note prix · <b>Audit de mémoire</b> · Coffre-fort d'attestations · <b>Analyse des pertes</b> · Brouillon de mémoire · <b>Export Word</b> ·&nbsp;</span>
-    <span><b>Pilotage multi-AO</b> · Alertes d'échéance · <b>Brief DCE en 2 min</b> · Attentes implicites · <b>Clauses CCAP à risque</b> · Simulateur de note prix · <b>Audit de mémoire</b> · Coffre-fort d'attestations · <b>Analyse des pertes</b> · Brouillon de mémoire · <b>Export Word</b> ·&nbsp;</span>
+<div class="strip">
+  <div class="strip-t">
+    <span><b>Pilotage multi-AO</b> · Alertes d'échéance · <b>Brief DCE</b> · Attentes implicites · <b>Clauses CCAP</b> · Simulateur de note prix · <b>Audit de mémoire</b> · Coffre-fort d'attestations · <b>Analyse des pertes</b> · Export Word ·</span>
+    <span><b>Pilotage multi-AO</b> · Alertes d'échéance · <b>Brief DCE</b> · Attentes implicites · <b>Clauses CCAP</b> · Simulateur de note prix · <b>Audit de mémoire</b> · Coffre-fort d'attestations · <b>Analyse des pertes</b> · Export Word ·</span>
   </div>
 </div>
 
-<!-- PROBLEM -->
-<section class="problem">
+<section class="sec" id="dossier" style="padding-bottom:.5rem">
   <div class="wrap">
-    <h2 class="reveal">Répondre aux AO, c'est un métier. <em style="color:var(--green)">Vous n'avez pas le temps de l'exercer.</em></h2>
-    <p class="psub reveal d1">Entre votre activité et les dossiers, voilà ce qui vous coûte des marchés — sans que vous le voyiez.</p>
-    <div class="problem-grid">
-      <div class="pcard reveal"><div class="pico">⏳</div><h3>3 heures par DCE</h3><p>Lire un cahier des charges de 60 pages pour décider si ça vaut le coup de répondre. Souvent pour renoncer.</p></div>
-      <div class="pcard reveal d1"><div class="pico">🎯</div><h3>Les mauvais AO</h3><p>Vous répondez à des marchés que vous n'aviez aucune chance de gagner, et vous ratez ceux qui étaient faits pour vous.</p></div>
-      <div class="pcard reveal d2"><div class="pico">📅</div><h3>L'échéance ratée</h3><p>Une date limite oubliée, une attestation périmée — et un dossier solide finit à la poubelle pour un détail administratif.</p></div>
+    <div class="sec-head rv">
+      <span class="tag">Un dossier réel, du début à la fin</span>
+      <h2>Lundi 8 h. Un DCE de <span class="fait">62 pages</span> arrive dans votre boîte.</h2>
+      <p class="lede">Gardiennage du CHU de Lyon, 95 000 € par an sur trois ans. Remise dans neuf jours. Vous avez une activité à faire tourner et pas de bureau d'études. <b>Voilà ce qui se passe, étape par étape.</b></p>
     </div>
   </div>
 </section>
 
-<!-- FONCTIONS — bénéfices -->
-<section class="sec" id="fonctions">
+<section class="chap" data-chrono="180" data-label="sans BidFlow : 3 h de lecture">
   <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="sec-tag">Ce que BidFlow fait pour vous</div>
-      <h2>Cinq façons de <em>gagner plus de marchés</em>, moins de temps perdu.</h2>
-      <p class="sub">Chaque fonctionnalité résout un problème concret que vous vivez à chaque appel d'offres.</p>
+    <div class="chap-mark">
+      <span class="chap-n">Étape 01 — 8 h 05</span>
+      <span class="chap-t spent">Sans BidFlow : 3 h</span>
+      <span class="chap-t saved">Avec BidFlow : 2 min</span>
     </div>
-
-    <!-- 1 PILOTAGE -->
-    <div class="brow reveal">
+    <div class="chap-grid">
       <div>
-        <div class="bnum"><span class="n">1</span>Pilotage</div>
-        <h3>Ne ratez plus jamais une échéance.</h3>
-        <p class="bdesc">Tous vos appels d'offres dans un seul tableau : statut, date limite, score, montant. BidFlow vous alerte quand une échéance approche et calcule votre taux de réussite. Fini l'Excel qui traîne et les dates limites oubliées.</p>
-        <div class="bgain">✓ Vous ouvrez BidFlow chaque matin, tout est sous contrôle</div>
+        <h3>Ce dossier vaut-il <span class="promesse">vos trois jours</span> ?</h3>
+        <p class="lede">Vous avez quatre AO ouverts en même temps. Le vrai coût n'est pas de perdre un marché : c'est d'en préparer un que vous n'aviez aucune chance de gagner. BidFlow note chaque dossier <b>selon votre profil réel</b> : vos certifications, vos références, vos moyens.</p>
+        <span class="gain">Vous éliminez 2 dossiers sur 4 en dix minutes</span>
         <ul class="blist">
-          <li>Suivi du statut : à décider, GO, en rédaction, déposé, gagné/perdu</li>
-          <li>Compte à rebours automatique sur chaque date limite</li>
-          <li>Taux de réussite et statistiques de votre activité AO</li>
+          <li>Score de pertinence en fourchette, jamais une fausse précision</li>
+          <li>Comparaison directe entre tous les dossiers ouverts</li>
+          <li>La décision est motivée en une phrase, pas un chiffre nu</li>
         </ul>
       </div>
-      <div class="bvisual">
-        <div class="v-lbl">Mes dossiers</div>
-        <div class="mk-line"><div><div class="obj">SIRH · Val de Saône</div></div><span class="mk-dl" style="color:var(--red)">J-3</span></div>
-        <div class="mk-line"><div><div class="obj">Maintenance · Roanne</div></div><span class="mk-dl" style="color:var(--amber)">J-8</span></div>
-        <div class="mk-line"><div><div class="obj">Nettoyage · Béziers</div></div><span class="mk-dl" style="color:var(--muted)">J-24</span></div>
-        <div class="v-alert" style="background:var(--green-light);border:1px solid rgba(11,191,106,.2)"><span>📊</span><div><div class="tt" style="color:var(--green-dark)">Taux de réussite : 38%</div><div class="tx">6 marchés gagnés sur 16 décidés cette année</div></div></div>
-      </div>
-    </div>
-
-    <!-- 2 BRIEF -->
-    <div class="brow rev reveal">
-      <div>
-        <div class="bnum"><span class="n">2</span>Brief DCE</div>
-        <h3>Décidez go / no-go en 2 minutes, pas en 3 heures.</h3>
-        <p class="bdesc">Déposez votre DCE (PDF ou Word) : BidFlow en extrait les critères pondérés, les dates clés, le budget, et simule votre note par critère. Il détecte même les <strong>attentes implicites</strong> de l'acheteur — ces exigences jamais écrites mais presque toujours notées.</p>
-        <div class="bgain">✓ 2h30 gagnées sur chaque dossier</div>
-        <ul class="blist">
-          <li>Score de pertinence en fourchette, honnête et directionnel</li>
-          <li>Attentes implicites : site occupé, école à proximité, marché récurrent…</li>
-          <li>Import direct de vos PDF et Word, extraction locale et confidentielle</li>
-        </ul>
-      </div>
-      <div class="bvisual">
-        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.8rem">
-          <div style="font-family:var(--display);font-size:30px;font-weight:900;color:var(--green-dark)">62–74<span style="font-size:11px;color:var(--muted2);font-family:var(--body);font-weight:400"> / 100</span></div>
-          <span style="font-size:12px;font-weight:800;background:var(--amber-light);color:var(--amber);padding:4px 12px;border-radius:13px">GO CONDITIONNEL</span>
+      <div class="chap-vis">
+        <div class="stack" id="stack">
+          <div class="sc"><div class="sc-t">Nettoyage de locaux</div><div class="sc-s">MAIRIE DE SÈTE · 34 k€/an</div><div class="sc-b"><span class="sc-v" style="color:var(--cor)">18–29</span><span class="chip c-cor">NO-GO</span></div></div>
+          <div class="sc"><div class="sc-t">Infogérance parc IT</div><div class="sc-s">DÉPARTEMENT 34 · 210 k€</div><div class="sc-b"><span class="sc-v" style="color:var(--cor)">24–36</span><span class="chip c-cor">NO-GO</span></div></div>
+          <div class="sc"><div class="sc-t">Maintenance équipements</div><div class="sc-s">SITE DE ROANNE · 380 k€/an</div><div class="sc-b"><span class="sc-v" style="color:var(--vt-d)">71–83</span><span class="chip c-vt">GO</span></div></div>
+          <div class="sc"><div class="sc-t">Gardiennage CHU</div><div class="sc-s">CHU DE LYON · 95 k€/an</div><div class="sc-b"><span class="sc-v" style="color:var(--vt-d)">62–74</span><span class="chip c-jau">GO COND.</span></div></div>
         </div>
-        <div class="v-row"><span class="k">Valeur technique · 60%</span><span class="v-range" style="color:var(--green-dark)">14–16/20</span></div>
-        <div class="v-row"><span class="k">Prix · 40%</span><span class="v-range" style="color:var(--amber)">11–13/20</span></div>
-        <div class="v-alert" style="background:var(--amber-light);border:1px solid rgba(201,123,16,.25)"><span>⚡</span><div><div class="tt" style="color:var(--amber)">Attente implicite</div><div class="tx">Site hospitalier occupé — plan de continuité de service attendu, jamais exigé au CCTP.</div></div></div>
-      </div>
-    </div>
-
-    <!-- 3 SIMULATEUR PRIX -->
-    <div class="brow reveal">
-      <div>
-        <div class="bnum"><span class="n">3</span>Simulateur de prix</div>
-        <h3>Fixez le bon prix, sans jouer à la loterie.</h3>
-        <p class="bdesc">BidFlow lit la formule de notation du prix dans le règlement de consultation, puis vous laisse tester plusieurs hypothèses. Vous voyez en direct combien de points chaque prix vous rapporte — et vous arbitrez entre marge et compétitivité en connaissance de cause.</p>
-        <div class="bgain">✓ Vous ne laissez plus de points prix sur la table</div>
-        <ul class="blist">
-          <li>Formule extraite directement du RC (inverse-proportionnelle, linéaire…)</li>
-          <li>Trois hypothèses de prix comparées en temps réel</li>
-          <li>Note prix estimée sur 20 pour chaque scénario</li>
-        </ul>
-      </div>
-      <div class="bvisual">
-        <div class="v-lbl">Simulateur de note prix · pondération 40%</div>
-        <div class="v-price"><span>Offre agressive · 250 k€</span><span class="pn" style="color:var(--green-dark)">20 /20</span></div>
-        <div class="v-price"><span>Offre médiane · 275 k€</span><span class="pn" style="color:var(--amber)">18,2 /20</span></div>
-        <div class="v-price" style="border:none"><span>Offre haute · 300 k€</span><span class="pn" style="color:var(--red)">16,7 /20</span></div>
-        <div style="font-size:11.5px;color:var(--muted2);margin-top:.7rem;line-height:1.5">Basé sur la formule du RC et le moins-disant estimé.</div>
-      </div>
-    </div>
-
-    <!-- 4 AUDIT -->
-    <div class="brow rev reveal">
-      <div>
-        <div class="bnum"><span class="n">4</span>Audit de mémoire</div>
-        <h3>Corrigez votre mémoire avant le jury, pas après.</h3>
-        <p class="bdesc">Vous avez rédigé votre mémoire ? Déposez-le avec le RC : BidFlow joue le rôle de la commission et vous dit où vous perdez des points. Manques critiques, incohérences, exigences non traitées, attentes non couvertes — avec un plan d'actions concret avant dépôt.</p>
-        <div class="bgain">✓ Le relecteur expert que vous n'avez pas en interne</div>
-        <ul class="blist">
-          <li>Note simulée sur conformité, pertinence, clarté, différenciation</li>
-          <li>Liste des manques qui coûtent des points ou risquent l'élimination</li>
-          <li>Détecte quand vous oubliez de valoriser vos propres atouts</li>
-        </ul>
-      </div>
-      <div class="bvisual">
-        <div class="v-lbl">Audit — verdict</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.7rem">
-          <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:.6rem;text-align:center"><div style="font-family:var(--display);font-size:18px;font-weight:900;color:var(--green-dark)">78–88%</div><div style="font-size:10px;color:var(--muted);font-weight:600">Conformité</div></div>
-          <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:.6rem;text-align:center"><div style="font-family:var(--display);font-size:18px;font-weight:900;color:var(--amber)">52–64%</div><div style="font-size:10px;color:var(--muted);font-weight:600">Différenciation</div></div>
-        </div>
-        <div class="v-alert" style="background:var(--red-light);border:1px solid rgba(217,79,79,.2)"><span>✕</span><div><div class="tt" style="color:var(--red)">Manque critique</div><div class="tx">Aucun planning détaillé par phase — critère méthodologie sous-noté.</div></div></div>
-      </div>
-    </div>
-
-    <!-- 5 ATTESTATIONS + PERTES -->
-    <div class="brow reveal">
-      <div>
-        <div class="bnum"><span class="n">5</span>Coffre-fort & pertes</div>
-        <h3>Zéro élimination administrative. Et vous progressez à chaque échec.</h3>
-        <p class="bdesc">BidFlow surveille vos attestations (URSSAF, décennale, qualifications) et vous alerte 30 jours avant expiration. Et quand vous perdez un marché, il capitalise : au bout de quelques dossiers, il vous dit sur quel critère vous décrochez systématiquement.</p>
-        <div class="bgain">✓ Plus jamais recalé sur une pièce périmée</div>
-        <ul class="blist">
-          <li>Alerte automatique avant expiration de chaque attestation</li>
-          <li>Analyse de vos pertes : votre point faible récurrent identifié</li>
-          <li>Votre profil entreprise réutilisé dans chaque brouillon de mémoire</li>
-        </ul>
-      </div>
-      <div class="bvisual">
-        <div class="v-lbl">Coffre-fort</div>
-        <div class="v-row"><span class="k">🛡️ Assurance décennale</span><span class="v-chip" style="background:var(--green-light);color:var(--green-dark);margin:0">Valide</span></div>
-        <div class="v-row"><span class="k">🧾 Attestation URSSAF</span><span class="v-chip" style="background:var(--amber-light);color:var(--amber);margin:0">J-12</span></div>
-        <div class="v-row"><span class="k">🏅 Qualibat 1552</span><span class="v-chip" style="background:var(--red-light);color:var(--red);margin:0">Expirée</span></div>
-        <div class="v-alert" style="background:var(--amber-light);border:1px solid rgba(201,123,16,.25)"><span>📉</span><div><div class="tt" style="color:var(--amber)">Analyse des pertes</div><div class="tx">Sur vos 4 derniers échecs, vous décrochez 3 fois sur le critère environnemental.</div></div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- POUR QUI -->
-<section class="who" id="pour-qui">
+<section class="chap" data-chrono="12" data-label="le DCE est lu">
   <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="sec-tag">Pour qui</div>
-      <h2>Fait pour les PME qui répondent <em>régulièrement</em> aux marchés.</h2>
-      <p class="sub">Si vous répondez à plus de 3 AO par mois sans équipe dédiée, BidFlow est fait pour vous.</p>
+    <div class="chap-mark">
+      <span class="chap-n">Étape 02 — 8 h 12</span>
+      <span class="chap-t">Le DCE passe au surligneur</span>
     </div>
-    <div class="who-grid">
-      <div class="who-card reveal"><div class="who-ico">💻</div><h3>ESN & IT</h3><p>Marchés publics informatiques, SIRH, infogérance, développement.</p></div>
-      <div class="who-card reveal d1"><div class="who-ico">🏗️</div><h3>BTP & Construction</h3><p>Travaux, rénovation, VRD, second œuvre, marchés de collectivités.</p></div>
-      <div class="who-card reveal d2"><div class="who-ico">🔧</div><h3>Maintenance</h3><p>Maintenance industrielle, multitechnique, contrats pluriannuels.</p></div>
-      <div class="who-card reveal d3"><div class="who-ico">🛡️</div><h3>Sécurité & Services</h3><p>Gardiennage, propreté, espaces verts, prestations récurrentes.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- DEMO -->
-<section class="sec" id="demo">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="sec-tag">Démo live</div>
-      <h2>Testez sur un <em>vrai extrait</em> d'AO. Maintenant.</h2>
-      <p class="sub">Pas de rendez-vous commercial, pas d'email à laisser. Collez un extrait — ou chargez un exemple — et jugez sur pièce.</p>
-    </div>
-    <div class="demo-box reveal">
-      <div style="margin-bottom:1.25rem">
-        <div class="demo-lbl">Profil de votre entreprise (optionnel)</div>
-        <div class="demo-row">
-          <input class="demo-inp" id="d-secteur" placeholder="Secteur d'activité">
-          <input class="demo-inp" id="d-effectif" placeholder="Effectif" style="max-width:180px">
-        </div>
-        <input class="demo-inp" id="d-refs" placeholder="Références clés (chantiers, certifications...)" style="width:100%">
-      </div>
+    <div class="chap-grid rev">
       <div>
-        <div class="demo-lbl">Extrait d'appel d'offres</div>
-        <div class="ex-btns">
-          <span style="font-size:12px;color:var(--muted2)">Exemples :</span>
-          <button class="ex-btn" onclick="loadEx('esn')">ESN · SI RH</button>
-          <button class="ex-btn" onclick="loadEx('maintenance')">Maintenance</button>
-          <button class="ex-btn" onclick="loadEx('securite')">Sécurité</button>
+        <h3>Ce que vous auriez lu <span class="promesse">en diagonale</span>.</h3>
+        <p class="lede">Les critères sont noyés page 23, la clause qui fait mal est page 51, et l'information la plus rentable n'est écrite nulle part : le <b>titulaire sortant est en place depuis six ans</b>. BidFlow lit tout et marque ce qui décide du résultat.</p>
+        <span class="gain">2 h 48 récupérées sur ce seul dossier</span>
+        <ul class="blist">
+          <li>Déposez le PDF ou le Word : <b>l'extraction est locale, le fichier ne quitte jamais votre navigateur</b></li>
+          <li>Critères et pondérations extraits, sous-critères compris</li>
+          <li>Attentes implicites déduites du contexte réel du marché</li>
+          <li>Clauses à risque du CCAP, classées par gravité</li>
+        </ul>
+      </div>
+      <div class="chap-vis">
+        <div class="dce" id="dce">
+          <div class="dce-h"><span>DCE-0471.pdf — page 23 / 62</span><span>Extraction locale</span></div>
+          <div class="dce-b">
+            <p>Article 6 — Jugement des offres. Les offres seront analysées et classées selon les critères pondérés suivants : <span class="hl j" data-k="0">valeur technique 70 %</span>, décomposée en méthodologie d'exécution 25 %, <span class="hl j" data-k="0">continuité de service 25 %</span> et moyens humains 20 %, ainsi que le <span class="hl j" data-k="0">prix des prestations 30 %</span>.</p>
+            <p>Le pouvoir adjudicateur se réserve la faculté de négocier avec les trois candidats les mieux classés à l'issue de la première analyse.</p>
+            <p>Article 7 — Conditions d'exécution. Les prestations seront réalisées sur <span class="hl v" data-k="1">un site hospitalier en activité continue</span>, comportant un service d'urgences ouvert vingt-quatre heures sur vingt-quatre. Le présent marché fait suite à un marché de même objet, <span class="hl v" data-k="1">le titulaire sortant assurant la prestation depuis six années</span>.</p>
+            <p>Article 8.2 — Pénalités. En cas de manquement constaté, il sera fait application d'une pénalité de <span class="hl c" data-k="2">500 € par heure d'absence de poste, sans plafonnement</span>, sans mise en demeure préalable.</p>
+            <p>Article 9 — Les candidats devront joindre à leur offre un mémoire technique détaillant l'organisation proposée…</p>
+          </div>
+          <div class="dce-margin">
+            <div class="mnote" data-k="0"><span class="k R-t-att">CRITÈRES</span><span class="v"><b>La continuité de service pèse 25 %</b>, autant que la méthodologie. C'est le poste le plus rentable du dossier.</span></div>
+            <div class="mnote" data-k="1"><span class="k" style="background:#9BF0C6;color:#0A3D23">ATTENTE</span><span class="v">Site occupé + sortant depuis 6 ans : <b>l'acheteur attend un plan de reprise sans rupture</b> et une amélioration mesurable. Jamais écrit, presque toujours noté.</span></div>
+            <div class="mnote" data-k="2"><span class="k R-t-cla">CCAP 8.2</span><span class="v"><b>Pénalités non plafonnées</b> : exposition illimitée sur un marché à 95 k€/an. À faire préciser avant la date limite des questions.</span></div>
+          </div>
         </div>
-        <textarea class="demo-inp" id="d-ao" placeholder="Collez ici un extrait de votre AO — objet, critères, budget, délais..."></textarea>
-        <p style="font-size:11px;color:var(--muted2);margin-top:.5rem">Données non stockées · Analyse confidentielle</p>
       </div>
-      <div style="display:flex;justify-content:flex-end;margin-top:.75rem">
-        <button class="btn-primary" id="d-btn" onclick="analyze()" style="border:none;cursor:pointer">Analyser cet extrait →</button>
-      </div>
-      <div class="status-bar" id="d-status"></div>
-      <div id="d-err" style="color:var(--red);font-size:13px;padding:.5rem 0"></div>
-      <div id="d-result"></div>
     </div>
   </div>
 </section>
 
-<!-- TARIFS -->
-<section class="sec" id="tarifs" style="background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+<section class="chap" data-chrono="8" data-label="le prix est arbitré">
   <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="sec-tag">Tarifs</div>
-      <h2>Un abonnement clair. <em>Sans devis</em>, sans rendez-vous.</h2>
-      <p class="sub">Sans engagement, résiliable en un clic. Votre première analyse est offerte — jugez avant de payer.</p>
+    <div class="chap-mark">
+      <span class="chap-n">Étape 03 — jeudi, 14 h</span>
+      <span class="chap-t">Le prix se décide sur une formule</span>
     </div>
-    <div class="pricing-grid">
-      <div class="price-card reveal">
-        <div class="price-name">Starter</div>
-        <div class="price-val">299 <span>€ HT / mois</span></div>
-        <p class="price-desc">Pour les PME qui répondent à quelques AO par mois.</p>
-        <ul class="price-list">
+    <div class="chap-grid">
+      <div>
+        <h3>Combien coûte votre marge, <span class="promesse">en points</span> ?</h3>
+        <p class="lede">La formule de notation du prix est écrite noir sur blanc dans le règlement, et presque personne ne l'exploite. BidFlow l'extrait, puis vous laisse <b>déplacer votre prix et voir la note bouger</b>. Essayez, le curseur est réel.</p>
+        <span class="gain">Vous arbitrez marge contre points, chiffres en main</span>
+        <ul class="blist">
+          <li>Formule extraite du RC : inverse-proportionnelle ou linéaire</li>
+          <li>Note prix recalculée en direct sur 20</li>
+          <li>Impact sur la note globale, pondération comprise</li>
+        </ul>
+      </div>
+      <div class="chap-vis">
+        <div class="sim">
+          <div class="sim-h"><span>Simulateur de note prix</span><span>Pondération 30 %</span></div>
+          <div class="sim-b">
+            <div class="sim-f">
+              <div class="k">Formule extraite du RC — art. 6.3</div>
+              <div class="v">note = (offre mini ÷ votre offre) × 20</div>
+            </div>
+            <div class="sim-out">
+              <div class="sim-o" id="o-prix"><div class="sim-ok">Note prix</div><div class="sim-ov" id="v-prix">18,2</div><div class="sim-os">sur 20</div></div>
+              <div class="sim-o" id="o-glob"><div class="sim-ok">Note globale</div><div class="sim-ov" id="v-glob">14,8</div><div class="sim-os">technique + prix</div></div>
+            </div>
+            <div class="sim-lbl"><span class="k">Votre offre</span><span class="v" id="v-offre">275 000 €</span></div>
+            <input type="range" id="slider" min="240000" max="320000" step="2500" value="275000" aria-label="Votre offre en euros">
+            <div class="sim-scale"><span>240 k€</span><span>moins-disant estimé 250 k€</span><span>320 k€</span></div>
+            <div class="sim-verdict" id="verdict"></div>
+            <p class="sim-hint">↔ Déplacez le curseur</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="chap" data-chrono="6" data-label="la page blanche est remplie">
+  <div class="wrap">
+    <div class="chap-mark">
+      <span class="chap-n">Étape 04 — vendredi, 9 h</span>
+      <span class="chap-t">La page blanche</span>
+    </div>
+    <div class="chap-grid rev">
+      <div>
+        <h3>Vous ne partez plus <span class="promesse">d'une page vide</span>.</h3>
+        <p class="lede">BidFlow génère un brouillon <b>aligné sur les critères du RC</b> et nourri de votre profil entreprise : vos certifications, vos références, vos moyens réels. Il liste aussi les pièces à joindre et les questions à poser à l'acheteur avant la date limite.</p>
+        <span class="gain">Une trame structurée, pas un texte générique</span>
+        <ul class="blist">
+          <li>Introduction, méthodologie, équipe projet, positionnement prix</li>
+          <li>Checklist des pièces : DC1, DC2, DUME, attestations, mémoire</li>
+          <li>Questions à poser à l'acheteur avant J-4</li>
+          <li>Export Word éditable, vous reprenez la main sur le fond</li>
+        </ul>
+      </div>
+      <div class="chap-vis">
+        <div class="fiche">
+          <div class="fh"><span>Brouillon de mémoire</span><span>Généré · export .docx</span></div>
+          <div class="fb">
+            <div style="font-family:var(--mono);font-size:9px;letter-spacing:.11em;color:var(--faint);text-transform:uppercase;margin-bottom:.35rem">§1 — Introduction</div>
+            <p style="font-size:12px;line-height:1.7;color:var(--mid);margin-bottom:.8rem">Titulaire de la certification CNAPS et fort de trois références en milieu hospitalier occupé, notre société propose une organisation conçue pour garantir la continuité absolue du service de sûreté du CHU…</p>
+            <div style="font-family:var(--mono);font-size:9px;letter-spacing:.11em;color:var(--faint);text-transform:uppercase;margin-bottom:.35rem">§3.2 — Continuité de service</div>
+            <p style="font-size:12px;line-height:1.7;color:var(--mid)">La reprise s'effectuera selon un phasage en trois temps, avec doublure des postes durant les quinze premiers jours afin d'éviter toute rupture…</p>
+          </div>
+          <div class="ffoot f-vt" style="margin-bottom:.5rem">
+            <div><div class="k">CHECKLIST DES PIÈCES</div><div class="v">DC1 · DC2 · DUME · attestation URSSAF · attestation fiscale · carte CNAPS · mémoire technique · BPU</div></div>
+          </div>
+          <div class="ffoot f-att" style="margin-top:0">
+            <div><div class="k">QUESTION À POSER — AVANT J-4</div><div class="v">« Les pénalités de l'article 8.2 font-elles l'objet d'un plafonnement global ? »</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="chap" data-chrono="4" data-label="le mémoire est relu">
+  <div class="wrap">
+    <div class="chap-mark">
+      <span class="chap-n">Étape 05 — lundi, veille du dépôt</span>
+      <span class="chap-t">Le mémoire passe devant la commission</span>
+    </div>
+    <div class="chap-grid rev">
+      <div>
+        <h3>Le jury dira ce que vous ne voulez pas entendre. <span class="promesse">Autant l'entendre avant</span>.</h3>
+        <p class="lede">Votre mémoire est rédigé. Il vous paraît solide. Ils paraissent tous solides la veille du dépôt. BidFlow le confronte au règlement et vous dit <b>où vous perdez des points, pendant qu'il est encore temps</b>.</p>
+        <span class="gain">4 corrections la veille, pas 4 regrets un mois après</span>
+        <ul class="blist">
+          <li>Notes simulées : conformité, pertinence, clarté, différenciation</li>
+          <li>Manques critiques, incohérences internes, exigences oubliées</li>
+          <li>Signale les atouts que vous aviez et n'avez pas valorisés</li>
+        </ul>
+      </div>
+      <div class="chap-vis">
+        <div class="fiche">
+          <div class="fh"><span>Audit du mémoire</span><span>Veille du dépôt</span></div>
+          <div class="fb">
+            <div class="gauge"><div class="gauge-top"><span class="gauge-k">Conformité</span><span class="gauge-v" style="color:var(--vt-d)">83<u>78–88</u> %</span></div><div class="gauge-tr"><span class="gauge-fl" data-w="83%" style="background:var(--vt)"></span></div></div>
+            <div class="gauge"><div class="gauge-top"><span class="gauge-k">Pertinence</span><span class="gauge-v" style="color:var(--vt-d)">75<u>70–80</u> %</span></div><div class="gauge-tr"><span class="gauge-fl" data-w="75%" style="background:var(--vt)"></span></div></div>
+            <div class="gauge"><div class="gauge-top"><span class="gauge-k">Clarté</span><span class="gauge-v" style="color:var(--amb-d)">67<u>62–72</u> %</span></div><div class="gauge-tr"><span class="gauge-fl" data-w="67%" style="background:var(--amb)"></span></div></div>
+            <div class="gauge"><div class="gauge-top"><span class="gauge-k">Différenciation</span><span class="gauge-v" style="color:var(--cor)">58<u>52–64</u> %</span></div><div class="gauge-tr"><span class="gauge-fl" data-w="58%" style="background:var(--cor)"></span></div></div>
+          </div>
+          <div class="ffoot f-cor" style="margin-bottom:.5rem"><div><div class="k">MANQUE CRITIQUE</div><div class="v">Aucun plan de continuité de service détaillé, sur un critère qui pèse 25 %.</div></div></div>
+          <div class="ffoot f-att" style="margin-top:0"><div><div class="k">ATOUT NON VALORISÉ</div><div class="v">Votre certification CNAPS et vos 3 références hospitalières ne sont mentionnées nulle part.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="chap" data-chrono="0" data-label="rien n'est oublié">
+  <div class="wrap">
+    <div class="chap-mark">
+      <span class="chap-n">Étape 06 — jour du dépôt</span>
+      <span class="chap-t">Le détail qui élimine</span>
+    </div>
+    <div class="chap-grid">
+      <div>
+        <h3>Un dossier parfait, écarté pour <span class="fait">1 pièce</span> périmée.</h3>
+        <p class="lede">C'est la façon la plus stupide de perdre un marché, et c'est celle qui arrive le plus souvent. BidFlow surveille vos attestations et vous prévient trente jours avant. <b>Et quand vous perdez, il retient pourquoi.</b></p>
+        <span class="gain">Plus jamais recalé sur un motif administratif</span>
+        <ul class="blist">
+          <li>Alerte automatique avant expiration de chaque pièce</li>
+          <li>Analyse de vos pertes : le critère qui vous coûte, chiffré</li>
+          <li>Profil entreprise réutilisé dans chaque brouillon</li>
+        </ul>
+      </div>
+      <div class="chap-vis">
+        <div class="fiche">
+          <div class="fh"><span>Coffre-fort</span><span>3 pièces suivies</span></div>
+          <div class="fb">
+            <div class="fl"><div class="fl-t">Assurance décennale</div><span class="chip c-vt">VALIDE</span></div>
+            <div class="fl"><div class="fl-t">Attestation URSSAF</div><span class="chip c-jau">J-12</span></div>
+            <div class="fl"><div class="fl-t">Carte CNAPS</div><span class="chip c-cor">EXPIRE J-3</span></div>
+          </div>
+          <div class="ffoot f-cor" style="margin-bottom:.5rem"><div><div class="k">BLOQUANT</div><div class="v">La carte CNAPS est exigée au règlement. Sans renouvellement, l'offre est écartée sans être lue.</div></div></div>
+          <div class="ffoot f-att" style="margin-top:0"><div><div class="k">ANALYSE DES PERTES</div><div class="v">Sur vos 4 derniers échecs, vous décrochez 3 fois sur le critère environnemental.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:1rem 0 0">
+  <div class="wrap">
+    <div class="epi rv">
+      <span class="tag" style="color:rgba(253,251,245,.5)">Six semaines plus tard</span>
+      <h2>Marché attribué. <span class="promesse">Vous l'avez.</span></h2>
+      <p style="color:rgba(253,251,245,.62);font-size:15.5px;max-width:52ch;line-height:1.65">Le plan de continuité a fait la différence sur le critère à 25 %. La clause de pénalités a été plafonnée après votre question. Et vous y avez passé trente minutes au lieu de trois jours.</p>
+      <div class="epi-grid">
+        <div class="epi-c" data-i="01">
+          <span class="epi-n"><span data-count="30">0</span> min</span>
+          <span class="epi-u">au total</span>
+          <div class="epi-k">contre 3 jours de travail sur le dossier</div>
+        </div>
+        <div class="epi-c" data-i="02">
+          <span class="epi-n"><span data-count="2">0</span> dossiers</span>
+          <span class="epi-u">écartés</span>
+          <div class="epi-k">avant d'y engager la moindre heure</div>
+        </div>
+        <div class="epi-c" data-i="03">
+          <span class="epi-n"><span data-count="285">0</span> k€</span>
+          <span class="epi-u">de marché</span>
+          <div class="epi-k">95 k€ par an sur trois ans</div>
+        </div>
+        <div class="epi-c" data-i="04">
+          <span class="epi-n"><span data-count="60">0</span>×</span>
+          <span class="epi-u">l'abonnement</span>
+          <div class="epi-k">remboursé par ce seul marché</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" style="padding:3.6rem 0 0">
+  <div class="wrap">
+    <div class="chap-mark rv">
+      <span class="chap-n">Pendant tout ce temps</span>
+      <span class="chap-t">Les quatorze autres dossiers</span>
+    </div>
+    <div class="chap-grid" style="align-items:center">
+      <div>
+        <h3>Un dossier, c'est facile. <span class="promesse">Quinze en parallèle</span>, non.</h3>
+        <p class="lede">Vous venez de suivre un appel d'offres en détail. Dans la vraie vie, vous en avez quatorze autres ouverts, chacun à un stade différent, chacun avec sa date limite. <b>C'est là que les dossiers se perdent</b> — pas dans l'analyse, dans le suivi.</p>
+        <span class="gain">Vous ouvrez BidFlow le matin, tout est à jour</span>
+        <ul class="blist">
+          <li>Statut réel de chaque dossier : à décider, GO, en rédaction, déposé, gagné, perdu</li>
+          <li>Compte à rebours automatique, du plus urgent au plus lointain</li>
+          <li>Taux de réussite calculé sur vos dossiers décidés, pas sur une impression</li>
+          <li>Chaque analyse rejoint le pilotage en un clic</li>
+        </ul>
+      </div>
+      <div class="chap-vis">
+        <div class="fiche">
+          <div class="fh"><span>Mon pilotage</span><span>5 dossiers actifs</span></div>
+          <div class="pil-stats">
+            <div class="ps"><span class="ps-n" data-count="5">0</span><span class="ps-k">actifs</span></div>
+            <div class="ps"><span class="ps-n" style="color:var(--cor)" data-count="2">0</span><span class="ps-k">urgents</span></div>
+            <div class="ps"><span class="ps-n" style="color:var(--vt-d)" data-count="6">0</span><span class="ps-k">gagnés</span></div>
+            <div class="ps"><span class="ps-n" data-count="38">0</span><span class="ps-k">% réussite</span></div>
+          </div>
+          <div class="fb" style="padding-top:.5rem">
+            <div class="fl"><div><div class="fl-t">Gardiennage CHU</div><div class="fl-s">CHU DE LYON · 95 k€/an</div></div><div style="text-align:right"><span class="jr" style="color:var(--vt-d)">DÉPOSÉ</span><br><span class="chip c-vt">GAGNÉ</span></div></div>
+            <div class="fl"><div><div class="fl-t">Refonte SIRH</div><div class="fl-s">AGGLO VAL DE SAÔNE · 280 k€</div></div><div style="text-align:right"><span class="jr" style="color:var(--cor)">J-3</span><br><span class="chip c-bleu">RÉDACTION</span></div></div>
+            <div class="fl"><div><div class="fl-t">Maintenance équipements</div><div class="fl-s">SITE DE ROANNE · 380 k€/an</div></div><div style="text-align:right"><span class="jr" style="color:var(--cor)">J-6</span><br><span class="chip c-vt">GO</span></div></div>
+            <div class="fl"><div><div class="fl-t">Espaces verts</div><div class="fl-s">VILLE DE BÉZIERS · 62 k€/an</div></div><div style="text-align:right"><span class="jr" style="color:var(--amb-d)">J-14</span><br><span class="chip c-n">À DÉCIDER</span></div></div>
+            <div class="fl"><div><div class="fl-t">Sûreté site industriel</div><div class="fl-s">GROUPE AGRO · 140 k€/an</div></div><div style="text-align:right"><span class="jr" style="color:var(--mid)">J-28</span><br><span class="chip c-n">À DÉCIDER</span></div></div>
+          </div>
+          <div class="ffoot f-cor" style="margin-top:0"><div><div class="k">2 ÉCHÉANCES SOUS 7 JOURS</div><div class="v">Refonte SIRH (J-3) et Maintenance équipements (J-6). Le premier est en rédaction, le second attend son mémoire.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" style="padding:3.4rem 0 1rem">
+  <div class="wrap">
+    <div class="sec-head rv" style="margin-bottom:1.6rem">
+      <span class="tag">Et aussi</span>
+      <h2>Ce qui travaille <span class="promesse">en arrière-plan</span>.</h2>
+      <p class="lede">Trois fonctions qui ne se voient pas dans le récit d'un dossier, mais qui comptent à partir du deuxième.</p>
+    </div>
+    <div class="aussi rv d1">
+      <div class="au">
+        <span class="au-k">Profil entreprise</span>
+        <h3>Renseigné <span class="promesse">une fois</span>, utilisé partout</h3>
+        <p>Certifications, références chiffrées, moyens matériels, équipe clé. Chaque analyse et chaque brouillon s'appuient dessus : c'est ce qui rend vos mémoires spécifiques au lieu de génériques.</p>
+      </div>
+      <div class="au">
+        <span class="au-k">Export Word</span>
+        <h3>Un .docx <span class="promesse">propre</span>, pas un copier-coller</h3>
+        <p>Brief complet ou brouillon de mémoire exportés en Word éditable, mis en page. Vous reprenez le document dans vos outils et vous le finalisez à votre main.</p>
+      </div>
+      <div class="au">
+        <span class="au-k">Historique</span>
+        <h3>Tous vos dossiers, <span class="promesse">gardés</span></h3>
+        <p>Chaque analyse et chaque audit sont conservés et consultables. Les ré-analyses d'un même dossier ne consomment pas votre quota : itérez autant que nécessaire avant le dépôt.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec who" id="secteurs">
+  <div class="wrap">
+    <div class="sec-head rv" style="margin-bottom:0">
+      <span class="tag">Pour qui</span>
+      <h2>Pour les PME qui répondent <span class="promesse">régulièrement</span> aux marchés.</h2>
+      <p class="lede">Plus de trois AO par mois, pas d'équipe dédiée : c'est exactement le profil.</p>
+    </div>
+    <div class="who-grid rv">
+      <div class="wc"><span class="wc-k">Secteur 01</span><h3>ESN & IT</h3><p>Marchés informatiques publics, SIRH, infogérance, développement.</p></div>
+      <div class="wc"><span class="wc-k">Secteur 02</span><h3>BTP & Construction</h3><p>Travaux, rénovation, VRD, second œuvre, marchés de collectivités.</p></div>
+      <div class="wc"><span class="wc-k">Secteur 03</span><h3>Maintenance</h3><p>Maintenance industrielle, multitechnique, contrats pluriannuels.</p></div>
+      <div class="wc"><span class="wc-k">Secteur 04</span><h3>Sécurité & Services</h3><p>Gardiennage, propreté, espaces verts, prestations récurrentes.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="tarifs" style="background:var(--card);border-top:1px solid var(--ln);border-bottom:1px solid var(--ln)">
+  <div class="wrap">
+    <div class="sec-head rv" style="margin-left:auto;margin-right:auto;text-align:center">
+      <span class="tag">Tarifs</span>
+      <h2>Un abonnement clair. <span class="promesse">Sans devis</span>, sans rendez-vous.</h2>
+      <p class="lede" style="margin:0 auto">Sans engagement, résiliable en un clic. La première analyse est offerte : jugez avant de payer.</p>
+    </div>
+    <div class="price-grid">
+      <div class="pc rv">
+        <span class="pc-n">Starter</span>
+        <div class="pc-p">299 <s>€ HT / mois</s></div>
+        <p class="pc-d">Pour les PME qui répondent à quelques AO par mois.</p>
+        <ul class="pc-l">
           <li>5 dossiers analysés par mois</li>
           <li>Ré-analyses du même dossier gratuites</li>
-          <li>Pilotage multi-AO & alertes d'échéance</li>
+          <li>Pilotage multi-AO et alertes d'échéance</li>
           <li>Coffre-fort des attestations</li>
-          <li>Brief DCE + audit de mémoire</li>
+          <li>Brief DCE et audit de mémoire</li>
           <li>Simulateur de note prix</li>
         </ul>
-        <a href="https://buy.stripe.com/5kQ4gzeKobzC5aE6GYdZ600" target="_blank" class="btn-ghost" style="width:100%;text-align:center">Choisir Starter</a>
+        <a href="https://buy.stripe.com/5kQ4gzeKobzC5aE6GYdZ600" target="_blank" rel="noopener" class="btn btn-line btn-lg">Choisir Starter</a>
       </div>
-      <div class="price-card featured reveal d1">
-        <div class="price-pop">Recommandé</div>
-        <div class="price-name">Pro</div>
-        <div class="price-val">399 <span>€ HT / mois</span></div>
-        <p class="price-desc">Pour les équipes qui suivent les AO chaque semaine.</p>
-        <ul class="price-list">
+      <div class="pc reco rv d1">
+        <span class="pc-flag">RECOMMANDÉ</span>
+        <span class="pc-n">Pro</span>
+        <div class="pc-p">399 <s>€ HT / mois</s></div>
+        <p class="pc-d">Pour les équipes qui suivent des AO chaque semaine.</p>
+        <ul class="pc-l">
           <li>Dossiers illimités</li>
           <li>Tout le plan Starter inclus</li>
-          <li>Analyse de vos pertes (capitalisation)</li>
-          <li>Brouillon de mémoire technique généré</li>
+          <li>Analyse de vos pertes</li>
+          <li>Brouillon de mémoire technique</li>
           <li>Export Word professionnel</li>
-          <li>Historique complet & support prioritaire</li>
+          <li>Historique complet et support prioritaire</li>
         </ul>
-        <a href="https://buy.stripe.com/8x200j31G1Z21YsghydZ602" target="_blank" class="btn-primary" style="width:100%;text-align:center">Choisir Pro</a>
+        <a href="https://buy.stripe.com/8x200j31G1Z21YsghydZ602" target="_blank" rel="noopener" class="btn btn-vt" style="display:block">Choisir Pro</a>
       </div>
     </div>
-    <p class="price-note">Essai gratuit : 1 analyse offerte à l'inscription, sans carte bancaire. Un seul marché gagné rembourse l'année.</p>
+    <p class="price-note">1 analyse offerte à l'inscription, sans carte bancaire. Un seul marché gagné rembourse l'année</p>
   </div>
 </section>
 
-<!-- FAQ -->
 <section class="sec" id="faq">
   <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="sec-tag">Questions fréquentes</div>
-      <h2>Ce que vous vous demandez <em>sûrement.</em></h2>
+    <div class="sec-head rv">
+      <span class="tag">Questions fréquentes</span>
+      <h2>Ce que vous vous demandez <span class="promesse">sûrement</span>.</h2>
     </div>
-    <div class="faq-list">
-      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Concrètement, qu'est-ce que BidFlow me fait gagner ? <span class="faq-icon">+</span></button><div class="faq-a">Du temps et des marchés. Vous décidez go/no-go en 2 minutes au lieu de 3 heures, vous ne ratez plus une échéance ni une attestation, vous fixez le bon prix et vous corrigez vos mémoires avant dépôt. Résultat : vous répondez à plus d'AO, mieux ciblés, avec des dossiers plus solides.</div></div>
-      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Est-ce que BidFlow rédige mon mémoire à ma place ? <span class="faq-icon">+</span></button><div class="faq-a">Non — et c'est volontaire. BidFlow vous donne un brouillon structuré aligné sur les critères, et audite votre mémoire pour vous dire où vous perdez des points. Vous gardez la main sur le fond. C'est un assistant expert et un accélérateur, pas un remplaçant.</div></div>
-      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">L'IA invente-t-elle des informations ? <span class="faq-icon">+</span></button><div class="faq-a">Non. Règle absolue : si une information n'est pas dans vos documents, BidFlow indique "Non précisé dans l'AO". Aucune date, aucun budget, aucun critère n'est inventé. Les notes sont des fourchettes directionnelles, jamais présentées comme des certitudes.</div></div>
-      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Je peux importer mes fichiers PDF et Word ? <span class="faq-icon">+</span></button><div class="faq-a">Oui. Déposez votre DCE ou votre mémoire en PDF ou Word : l'extraction se fait localement dans votre navigateur, le fichier ne quitte jamais votre ordinateur. Sur les gros dossiers, BidFlow priorise automatiquement les sections clés (RC, critères, CCAP).</div></div>
-      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Quels appels d'offres sont couverts ? <span class="faq-icon">+</span></button><div class="faq-a">Tous les marchés français : marchés publics (BOAMP, PLACE, JOUE, profils acheteurs), appels d'offres privés, MAPA. Tous secteurs : IT/ESN, BTP, maintenance, sécurité, propreté, services.</div></div>
-      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Engagement, résiliation, essai ? <span class="faq-icon">+</span></button><div class="faq-a">Sans engagement, résiliable en un clic depuis votre espace. Votre première analyse est offerte à l'inscription, sans carte bancaire. Vous jugez sur pièce avant de payer.</div></div>
+    <div class="faq rv d1">
+      <div class="fq"><button class="fq-q" onclick="fq(this)">Concrètement, qu'est-ce que ça me fait gagner ?<span class="fq-i">+</span></button><div class="fq-a">Du temps et des marchés. Vous décidez en deux minutes au lieu de trois heures, vous ne ratez plus une échéance ni une attestation, vous chiffrez sur une formule au lieu du feeling, et vous corrigez vos mémoires avant dépôt. Vous répondez à plus d'AO, mieux ciblés, avec des dossiers plus solides.</div></div>
+      <div class="fq"><button class="fq-q" onclick="fq(this)">Est-ce que BidFlow rédige mon mémoire à ma place ?<span class="fq-i">+</span></button><div class="fq-a">Non, et c'est volontaire. BidFlow produit un brouillon structuré aligné sur les critères, puis audite votre mémoire pour vous dire où vous perdez des points. Vous gardez la main sur le fond. C'est un relecteur expert et un accélérateur, pas un remplaçant.</div></div>
+      <div class="fq"><button class="fq-q" onclick="fq(this)">L'IA invente-t-elle des informations ?<span class="fq-i">+</span></button><div class="fq-a">Non. Règle absolue : si une information n'est pas dans vos documents, BidFlow écrit « Non précisé dans l'AO ». Aucune date, aucun budget, aucun critère n'est inventé. Les notes sont des fourchettes directionnelles, jamais présentées comme des certitudes.</div></div>
+      <div class="fq"><button class="fq-q" onclick="fq(this)">Je peux importer mes PDF et mes fichiers Word ?<span class="fq-i">+</span></button><div class="fq-a">Oui. Déposez votre DCE ou votre mémoire : l'extraction se fait localement dans votre navigateur, le fichier ne quitte jamais votre ordinateur. Sur les gros dossiers, BidFlow priorise automatiquement les sections qui comptent : RC, critères, CCAP.</div></div>
+      <div class="fq"><button class="fq-q" onclick="fq(this)">Quels appels d'offres sont couverts ?<span class="fq-i">+</span></button><div class="fq-a">Tous les marchés français : marchés publics via BOAMP, PLACE, JOUE et profils acheteurs, appels d'offres privés, MAPA. Tous secteurs : IT, BTP, maintenance, sécurité, propreté, services.</div></div>
+      <div class="fq"><button class="fq-q" onclick="fq(this)">Engagement, résiliation, essai ?<span class="fq-i">+</span></button><div class="fq-a">Sans engagement, résiliable en un clic depuis votre espace. La première analyse est offerte à l'inscription, sans carte bancaire. Vous jugez sur pièce avant de payer.</div></div>
     </div>
   </div>
 </section>
 
-<!-- FINAL -->
-<section class="sec" style="padding-bottom:0">
+<section style="padding-top:1rem">
   <div class="wrap">
-    <div class="final-cta reveal">
-      <h2>Votre prochain marché <em>commence ici.</em></h2>
-      <p>Créez votre compte, collez votre DCE en cours, et jugez sur pièce. Première analyse offerte, sans carte bancaire.</p>
-      <a href="/app/login.html" class="btn-primary">Analyser mon 1er AO gratuitement →</a>
+    <div class="final rv">
+      <h2>Votre prochain dossier <span class="promesse">commence ici</span>.</h2>
+      <p>Créez votre compte, collez le DCE en cours, et jugez sur pièce. Première analyse offerte, sans carte bancaire.</p>
+      <a href="/app/login.html" class="btn btn-vt">Analyser mon premier AO</a>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
+</main>
+
 <footer>
   <div class="wrap">
-    <div class="foot-grid">
-      <div class="foot-col" style="max-width:290px">
-        <a href="/" class="logo" style="font-size:20px;margin-bottom:.7rem;display:inline-block">Bid<em>Flow</em></a>
-        <p>L'assistant appels d'offres des PME françaises. Pilotez, décidez, répondez, gagnez — sans bureau d'études.</p>
-        <p style="font-size:12px;color:var(--muted2)">🇫🇷 Données hébergées en Europe · RGPD</p>
+    <div class="foot">
+      <div class="fcol" style="max-width:290px">
+        <a href="/" class="logo" style="font-size:19px;margin-bottom:.7rem;display:inline-block">Bid<em>Flow</em></a>
+        <p>L'assistant appels d'offres des PME françaises. Piloter, décider, répondre, gagner, sans bureau d'études.</p>
+        <p style="font-family:var(--mono);font-size:11px;color:var(--faint)">Données hébergées en Europe · RGPD</p>
       </div>
-      <div class="foot-col">
+      <div class="fcol">
         <div class="ft">Produit</div>
-        <a href="#fonctions">Ce que ça fait</a>
-        <a href="#pour-qui">Pour qui</a>
-        <a href="#demo">Démo live</a>
+        <a href="#dossier">Le dossier</a>
+        <a href="#secteurs">Pour qui</a>
+        
         <a href="#tarifs">Tarifs</a>
       </div>
-      <div class="foot-col">
+      <div class="fcol">
         <div class="ft">Compte</div>
         <a href="/app/login.html">S'identifier</a>
         <a href="/app/login.html">Créer un compte</a>
         <a href="mailto:contact@bidflow.fr">Support</a>
       </div>
-      <div class="foot-col">
+      <div class="fcol">
         <div class="ft">Contact</div>
         <a href="mailto:contact@bidflow.fr">contact@bidflow.fr</a>
       </div>
     </div>
-    <div class="foot-bottom">
-      <span>© 2026 BidFlow. Tous droits réservés.</span>
+    <div class="foot-b">
+      <span>© 2026 BidFlow</span>
       <span>
-        <a href="#" onclick="openModal('modal-cgu');return false">CGU</a> ·
-        <a href="#" onclick="openModal('modal-conf');return false">Confidentialité</a> ·
-        <a href="#" onclick="openModal('modal-mentions');return false">Mentions légales</a>
+        <a href="#" onclick="mo('m-cgu');return false">CGU</a> ·
+        <a href="#" onclick="mo('m-conf');return false">Confidentialité</a> ·
+        <a href="#" onclick="mo('m-ml');return false">Mentions légales</a>
       </span>
     </div>
   </div>
 </footer>
 
-<!-- MODALS -->
-<div class="modal-bg" id="modal-cgu" onclick="if(event.target===this)closeModal('modal-cgu')">
-  <div class="modal"><button class="modal-close" onclick="closeModal('modal-cgu')">×</button>
-    <h2>Conditions Générales d'Utilisation</h2>
-    <h3>1. Objet</h3><p>Les présentes CGU régissent l'utilisation du service BidFlow, outil d'aide à la gestion et à l'analyse des appels d'offres par intelligence artificielle.</p>
-    <h3>2. Description du service</h3><p>BidFlow est un outil d'aide à la décision. Les résultats fournis sont indicatifs et ne constituent pas un conseil juridique, commercial ou stratégique.</p>
-    <h3>3. Propriété intellectuelle</h3><p>L'utilisateur conserve la propriété des données qu'il soumet. BidFlow et ses composants sont protégés par le droit de la propriété intellectuelle.</p>
-    <h3>4. Données personnelles</h3><p>BidFlow traite les données conformément au RGPD. Les documents soumis lors des analyses ne sont pas conservés au-delà de la session en cours.</p>
-    <h3>5. Limitation de responsabilité</h3><p>BidFlow ne saurait être tenu responsable des décisions prises sur la base des analyses générées.</p>
-  </div>
-</div>
-<div class="modal-bg" id="modal-conf" onclick="if(event.target===this)closeModal('modal-conf')">
-  <div class="modal"><button class="modal-close" onclick="closeModal('modal-conf')">×</button>
-    <h2>Politique de confidentialité</h2>
-    <h3>1. Données collectées</h3><ul><li>Données de compte : nom, email, entreprise</li><li>Facturation : traitée par Stripe (non stockée par BidFlow)</li><li>Utilisation : nombre d'analyses, dossiers, attestations</li></ul>
-    <h3>2. Utilisation</h3><p>Les données servent uniquement au fonctionnement du service, à la facturation et au support. Aucune revente à des tiers.</p>
-    <h3>3. Documents d'AO</h3><p>Les textes et fichiers soumis à l'analyse ne sont pas conservés au-delà de la session et ne servent jamais à entraîner des modèles. L'extraction des fichiers se fait localement dans votre navigateur.</p>
-    <h3>4. Vos droits</h3><p>Conformément au RGPD : droit d'accès, de rectification, d'effacement et de portabilité. Contact : contact@bidflow.fr</p>
-  </div>
-</div>
-<div class="modal-bg" id="modal-mentions" onclick="if(event.target===this)closeModal('modal-mentions')">
-  <div class="modal"><button class="modal-close" onclick="closeModal('modal-mentions')">×</button>
-    <h2>Mentions légales</h2>
-    <p><strong>Éditeur :</strong> BidFlow<br><strong>Email :</strong> contact@bidflow.fr</p>
-    <p><strong>Hébergement :</strong> Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA</p>
-    <p>BidFlow est un outil d'aide à la décision. Les analyses générées ne constituent pas des conseils juridiques ou commerciaux.</p>
-  </div>
-</div>
+<div class="mb" id="m-cgu" onclick="if(event.target===this)mc('m-cgu')"><div class="md"><button class="md-x" onclick="mc('m-cgu')">×</button>
+  <h2>Conditions Générales d'Utilisation</h2>
+  <h3>1. Objet</h3><p>Les présentes CGU régissent l'utilisation du service BidFlow, outil d'aide à la gestion et à l'analyse des appels d'offres par intelligence artificielle.</p>
+  <h3>2. Description du service</h3><p>BidFlow est un outil d'aide à la décision. Les résultats fournis sont indicatifs et ne constituent pas un conseil juridique, commercial ou stratégique.</p>
+  <h3>3. Propriété intellectuelle</h3><p>L'utilisateur conserve la propriété des données qu'il soumet. BidFlow et ses composants sont protégés par le droit de la propriété intellectuelle.</p>
+  <h3>4. Données personnelles</h3><p>BidFlow traite les données conformément au RGPD. Les documents soumis lors des analyses ne sont pas conservés au-delà de la session en cours.</p>
+  <h3>5. Limitation de responsabilité</h3><p>BidFlow ne saurait être tenu responsable des décisions prises sur la base des analyses générées.</p>
+</div></div>
+<div class="mb" id="m-conf" onclick="if(event.target===this)mc('m-conf')"><div class="md"><button class="md-x" onclick="mc('m-conf')">×</button>
+  <h2>Politique de confidentialité</h2>
+  <h3>1. Données collectées</h3><ul><li>Compte : nom, email, entreprise</li><li>Facturation : traitée par Stripe, non stockée par BidFlow</li><li>Utilisation : nombre d'analyses, dossiers, attestations</li></ul>
+  <h3>2. Utilisation</h3><p>Les données servent uniquement au fonctionnement du service, à la facturation et au support. Aucune revente à des tiers.</p>
+  <h3>3. Documents d'appel d'offres</h3><p>Les textes et fichiers soumis à l'analyse ne sont pas conservés au-delà de la session et ne servent jamais à entraîner des modèles. L'extraction des fichiers est réalisée localement dans votre navigateur.</p>
+  <h3>4. Vos droits</h3><p>Conformément au RGPD : droit d'accès, de rectification, d'effacement et de portabilité. Contact : contact@bidflow.fr</p>
+</div></div>
+<div class="mb" id="m-ml" onclick="if(event.target===this)mc('m-ml')"><div class="md"><button class="md-x" onclick="mc('m-ml')">×</button>
+  <h2>Mentions légales</h2>
+  <p><strong>Éditeur :</strong> BidFlow<br><strong>Email :</strong> contact@bidflow.fr</p>
+  <p><strong>Hébergement :</strong> Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA</p>
+  <p>BidFlow est un outil d'aide à la décision. Les analyses générées ne constituent pas des conseils juridiques ou commerciaux.</p>
+</div></div>
 
 <script>
-const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); io.unobserve(e.target); } }), { threshold: .12 });
-document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-function toggleFaq(btn) { btn.parentElement.classList.toggle('open'); }
-function openModal(id) { document.getElementById(id).classList.add('show'); }
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const EX = {
-  esn: `Objet : Refonte du système d'information RH\nPouvoir adjudicateur : Communauté d'Agglomération du Val de Saône\nCritères : Valeur technique 60% (méthodologie 30%, moyens humains 20%, planning 10%) — Prix 40%\nBudget : 280 000 € HT — Durée : 18 mois\nRemise des offres : 15/09/2026 à 12h00\nLe titulaire devra assurer la reprise des données de l'ancien SIRH et la formation de 45 agents.`,
-  maintenance: `Objet : Maintenance préventive et curative des équipements de production\nDonneur d'ordre : Groupe agroalimentaire, site de Roanne (site en exploitation continue)\nCritères : Valeur technique 50% — Prix 50%\nBudget : 380 000 € HT/an — Durée : 3 ans reconductibles\nAstreinte 24/7 exigée, intervention sous 4h\nPénalités de retard : 500 €/heure de dépassement`,
-  securite: `Objet : Prestations de gardiennage et surveillance\nPouvoir adjudicateur : CHU de Lyon (site hospitalier occupé)\nCritères : Valeur technique 70% (dont continuité de service 25%) — Prix 30%\nBudget : 95 000 € HT/an — Marché reconductible, titulaire sortant en place depuis 6 ans\nCarte professionnelle CNAPS exigée pour tous les agents\nRemise des offres : 30/09/2026`
-};
-function loadEx(k) { document.getElementById('d-ao').value = EX[k]; }
-function esc(s) { return String(s ?? '').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-function bc(s) { return s >= 65 ? 'var(--green-dark)' : s >= 40 ? 'var(--amber)' : 'var(--red)'; }
-
-async function analyze() {
-  const ao = document.getElementById('d-ao').value.trim();
-  if (!ao) { document.getElementById('d-ao').style.borderColor = 'var(--red)'; setTimeout(() => document.getElementById('d-ao').style.borderColor = '', 1500); return; }
-  const btn = document.getElementById('d-btn'), statusEl = document.getElementById('d-status'), errEl = document.getElementById('d-err');
-  btn.disabled = true; document.getElementById('d-result').innerHTML = ''; errEl.textContent = '';
-  const steps = ["Lecture du DCE...", "Extraction des critères...", "Détection des attentes implicites...", "Analyse des clauses...", "Simulation de note..."];
-  let si = 0; statusEl.style.display = 'block'; statusEl.innerHTML = `<span class="spinner"></span>${steps[0]}`;
-  const t = setInterval(() => { si = Math.min(si + 1, steps.length - 1); statusEl.innerHTML = `<span class="spinner"></span>${steps[si]}`; }, 3500);
-  try {
-    const res = await fetch('/api/analyze', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ao, secteur: document.getElementById('d-secteur').value, effectif: document.getElementById('d-effectif').value, refs: document.getElementById('d-refs').value }) });
-    clearInterval(t);
-    const r = await res.json();
-    if (!res.ok) throw new Error(r.error || 'Erreur serveur');
-    statusEl.style.display = 'none';
-    renderDemo(r);
-  } catch (e) { clearInterval(t); statusEl.style.display = 'none'; errEl.textContent = 'Erreur : ' + e.message; }
-  btn.disabled = false;
+function countUp(el){
+  const to = parseFloat(el.dataset.count);
+  if(RM){ el.textContent = to; return; }
+  const t0 = performance.now();
+  (function s(t){const p=Math.min(1,(t-t0)/850);el.textContent=Math.round(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(s);})(performance.now());
 }
 
-function renderDemo(r) {
-  const scMin = r.score_min ?? r.score ?? 50, scMax = r.score_max ?? r.score ?? 50, scAvg = Math.round((scMin + scMax) / 2);
-  const decColor = r.decision === 'GO' ? 'var(--green-dark)' : (r.decision || '').includes('CONDITIONNEL') ? 'var(--amber)' : 'var(--red)';
-  const decBg = r.decision === 'GO' ? 'var(--green-light)' : (r.decision || '').includes('CONDITIONNEL') ? 'var(--amber-light)' : 'var(--red-light)';
-  const crits = (r.criteres || []).slice(0, 4).map(c => {
-    const col = (c.note_max ?? 0) >= 14 ? 'var(--green-dark)' : (c.note_max ?? 0) >= 10 ? 'var(--amber)' : 'var(--red)';
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid var(--border);font-size:13px"><span style="color:var(--text);font-weight:600">${esc(c.nom)} ${c.ponderation ? `<span style="font-size:11px;color:var(--muted2);font-weight:400">· ${esc(c.ponderation)}</span>` : ''}</span><span style="font-family:var(--display);font-weight:900;color:${col}">${c.note_min ?? '—'}–${c.note_max ?? '—'} / 20</span></div>`;
-  }).join('');
-  const imp = (r.attentes_implicites || [])[0], clause = (r.clauses_vigilance || [])[0];
-  document.getElementById('d-result').innerHTML = `
-    <div class="d-res-card">
-      <div style="display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;margin-bottom:.9rem">
-        <div style="font-family:var(--display);font-size:32px;font-weight:900;color:${bc(scAvg)};letter-spacing:-.02em">${scMin}–${scMax}<span style="font-size:12px;color:var(--muted2);font-family:var(--body);font-weight:400"> / 100</span></div>
-        <span style="font-size:13px;font-weight:800;background:${decBg};color:${decColor};padding:4px 14px;border-radius:14px">${esc(r.decision)}</span>
-      </div>
-      <div style="font-size:14px;color:var(--text);line-height:1.65;margin-bottom:1rem">${esc(r.decision_raison)}</div>
-      ${crits ? `<div class="d-lbl">Simulation de note par critère</div>${crits}` : ''}
-      ${imp ? `<div style="display:flex;gap:8px;align-items:flex-start;background:var(--amber-light);border:1px solid rgba(201,123,16,.25);border-radius:10px;padding:.7rem .85rem;margin-top:1rem"><span>⚡</span><div><div style="font-size:12px;font-weight:700;color:var(--amber)">Attente implicite — ${esc(imp.signal)}</div><div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.55">${esc(imp.attente)}</div></div></div>` : ''}
-      ${clause ? `<div style="display:flex;gap:8px;align-items:flex-start;background:var(--red-light);border:1px solid rgba(217,79,79,.2);border-radius:10px;padding:.7rem .85rem;margin-top:.5rem"><span>⚠</span><div><div style="font-size:12px;font-weight:700;color:var(--red)">Clause de vigilance — ${esc(clause.gravite || 'moyenne')}</div><div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.55">${esc(clause.clause)}</div></div></div>` : ''}
-      <div class="demo-upsell"><p>Ceci est un aperçu. L'analyse complète inclut les priorités, la checklist des pièces, le simulateur de prix, le brouillon de mémoire et le suivi du dossier.</p><a href="/app/login.html" class="btn-primary" style="border:none">Débloquer l'analyse complète →</a></div>
-    </div>`;
+const io = new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting) return;
+  const el = e.target;
+  el.classList.add('vis');
+  el.querySelectorAll('[data-count]').forEach(countUp);
+  el.querySelectorAll('.gauge-fl').forEach((f,i)=>setTimeout(()=>f.style.width=f.dataset.w,i*90));
+  el.querySelectorAll('.fait,.promesse').forEach((m,i)=>setTimeout(()=>m.classList.add('on'),i*110));
+  io.unobserve(el);
+}),{threshold:.2});
+document.querySelectorAll('.rv,.chap h3,.chap .fiche,.sec-head h2,.epi,.final h2,.au,.wc,.chap-grid h3,.pil-stats').forEach(el=>io.observe(el));
+
+addEventListener('load',()=>{
+  document.querySelectorAll('.hero .fait,.hero .promesse').forEach(m=>setTimeout(()=>m.classList.add('on'),RM?0:+m.dataset.d));
+  document.querySelectorAll('#hero-R .R-bar i').forEach((b,i)=>setTimeout(()=>b.style.width=b.dataset.w,RM?0:1100+i*110));
+  const a=document.getElementById('sa');
+  setTimeout(()=>{
+    if(RM){a.textContent=68;return;}
+    const t0=performance.now();
+    (function s(t){const p=Math.min(1,(t-t0)/900),k=1-Math.pow(1-p,3);
+      a.textContent=Math.round(68*k);if(p<1)requestAnimationFrame(s);})(performance.now());
+  },RM?0:900);
+});
+
+/* compteur de temps */
+const chrono=document.getElementById('chrono'), cv=document.getElementById('chrono-v'), cd=document.getElementById('chrono-d');
+const nav=document.querySelector('nav');
+const chaps=[...document.querySelectorAll('.chap')];
+const epi=document.querySelector('.epi');
+function fmt(m){ return m>=60 ? `${Math.floor(m/60)} h ${String(m%60).padStart(2,'0')}` : `${m} min`; }
+
+function placeChrono(){
+  if(matchMedia('(max-width:700px)').matches){ chrono.style.top=''; return; }
+  chrono.style.top = (nav.getBoundingClientRect().height + 12) + 'px';
 }
+placeChrono();
+addEventListener('resize', placeChrono, {passive:true});
+
+let lastKey = null;
+function updateChrono(){
+  if(!chaps.length) return;
+  const mid = innerHeight * 0.5;
+
+  // masqué avant le 1er chapitre et à partir de l'épilogue
+  const first = chaps[0].getBoundingClientRect();
+  const eb = epi ? epi.getBoundingClientRect() : null;
+  if(first.top > mid || (eb && eb.top < innerHeight * 0.62)){
+    chrono.classList.remove('show');
+    return;
+  }
+
+  // chapitre dont le centre est le plus proche du centre de l'écran
+  let best = chaps[0], bestD = Infinity;
+  for(const c of chaps){
+    const r = c.getBoundingClientRect();
+    const d = Math.abs((r.top + r.bottom)/2 - mid);
+    if(r.top < innerHeight && r.bottom > 0 && d < bestD){ bestD = d; best = c; }
+  }
+
+  chrono.classList.add('show');
+  const key = best.dataset.chrono + '|' + best.dataset.label;
+  if(key === lastKey) return;
+  lastKey = key;
+
+  const mins = +best.dataset.chrono;
+  cv.textContent = mins === 0 ? '30 min' : fmt(mins);
+  cv.style.color = mins >= 60 ? '#F0857A' : mins > 0 ? 'var(--jau)' : 'var(--vt)';
+  cd.textContent = best.dataset.label;
+  cd.classList.add('on');
+}
+
+let ticking = false;
+addEventListener('scroll', () => {
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(() => { updateChrono(); ticking = false; });
+}, {passive:true});
+addEventListener('resize', updateChrono, {passive:true});
+updateChrono();
+
+/* pile qui se trie */
+const stack=document.getElementById('stack');
+const cards=[...stack.querySelectorAll('.sc')];
+cards.forEach((c,i)=>{ c.style.transform=`translateX(-50%) translateY(${20+i*15}px) rotate(${(i-1.5)*1.7}deg)`; c.style.zIndex=10-i; });
+new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting) return;
+  const pos=['translateX(-96%) translateY(2px) rotate(-4deg)','translateX(-96%) translateY(118px) rotate(-2deg)','translateX(-4%) translateY(2px) rotate(2deg)','translateX(-4%) translateY(118px) rotate(4deg)'];
+  cards.forEach((c,i)=>setTimeout(()=>{ c.style.transform=pos[i]; if(i<2) c.style.opacity='.45'; },220+i*150));
+}),{threshold:.4}).observe(stack);
+
+/* DCE qui se surligne */
+const dce=document.getElementById('dce');
+new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting) return;
+  [0,1,2].forEach(k=>setTimeout(()=>{
+    dce.querySelectorAll(`.hl[data-k="${k}"]`).forEach(h=>h.classList.add('on'));
+    setTimeout(()=>dce.querySelector(`.mnote[data-k="${k}"]`)?.classList.add('on'),380);
+  },300+k*1150));
+}),{threshold:.35}).observe(dce);
+
+/* simulateur jouable */
+const MINI=250000, NMAX=20, POND=.30, TECH=13.4;
+const slider=document.getElementById('slider');
+function sim(){
+  const p=+slider.value;
+  const np=Math.max(0,Math.min(NMAX,(MINI/p)*NMAX));
+  const gl=TECH*(1-POND)+np*POND;
+  document.getElementById('v-offre').textContent=p.toLocaleString('fr-FR')+' €';
+  document.getElementById('v-prix').textContent=np.toFixed(1).replace('.',',');
+  document.getElementById('v-glob').textContent=gl.toFixed(1).replace('.',',');
+  document.getElementById('v-prix').style.color=np>=18.5?'var(--vt-d)':np>=17?'var(--amb-d)':'var(--cor)';
+  document.getElementById('v-glob').style.color=gl>=14.5?'var(--vt-d)':gl>=13.5?'var(--amb-d)':'var(--cor)';
+  document.getElementById('o-prix').classList.toggle('hot',np>=18.5);
+  document.getElementById('o-glob').classList.toggle('hot',gl>=14.5);
+  slider.style.setProperty('--p',((p-slider.min)/(slider.max-slider.min)*100)+'%');
+  const marge=p-MINI, perte=20-np, v=document.getElementById('verdict');
+  if(p<=252500){
+    v.style.background='var(--vt-w)'; v.style.color='#0A3D23';
+    v.innerHTML='Note prix maximale, mais vous êtes au niveau du moins-disant estimé. Marge quasi nulle.';
+  } else if(np>=17.5){
+    v.style.background='var(--jau-w)'; v.style.color='var(--jau-d)';
+    v.innerHTML=`<b>+${marge.toLocaleString('fr-FR')} €</b> de marge vous coûtent <b>${perte.toFixed(1).replace('.',',')} point</b> sur le prix. Rentable si votre technique tient au-dessus de 14/20.`;
+  } else {
+    v.style.background='var(--cor-w)'; v.style.color='var(--cor-d)';
+    v.innerHTML=`<b>−${perte.toFixed(1).replace('.',',')} points</b> sur le prix : l'écart devient difficile à rattraper sur la technique, même à 16/20.`;
+  }
+}
+slider.addEventListener('input',sim);
+sim();
+
+function fq(b){ b.parentElement.classList.toggle('open'); }
+function mo(id){ document.getElementById(id).classList.add('show'); }
+function mc(id){ document.getElementById(id).classList.remove('show'); }
+addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.mb.show').forEach(m=>m.classList.remove('show')); });
+
 </script>
 </body>
 </html>
