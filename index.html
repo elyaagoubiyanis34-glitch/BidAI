@@ -36,11 +36,16 @@ h3{font-size:clamp(20px,2.3vw,27px);letter-spacing:-.036em}
 .lede b{color:var(--ink);font-weight:600}
 
 .fait{font-family:var(--mono);font-weight:500;font-size:.86em;letter-spacing:-.02em;display:inline-block;border:2.5px solid var(--ink);border-radius:5px;padding:.02em .2em .08em;line-height:1.05;white-space:nowrap;vertical-align:.04em;clip-path:inset(0 100% 0 0)}
-.fait.on{animation:draw .5s cubic-bezier(.3,.9,.3,1) forwards}
+.fait.on{animation:draw .68s cubic-bezier(.3,.9,.3,1) forwards}
 @keyframes draw{to{clip-path:inset(0 0 0 0)}}
-.promesse{font-family:var(--serif);font-style:italic;font-weight:400;font-size:1.13em;letter-spacing:-.015em;position:relative;display:inline-block;white-space:nowrap}
-.promesse::before{content:'';position:absolute;left:-.11em;right:-.11em;top:.13em;bottom:.09em;background:var(--jau);mix-blend-mode:multiply;z-index:-1;border-radius:3px 9px 5px 8px;transform:rotate(-.6deg) scaleX(0);transform-origin:left}
-.promesse.on::before{animation:swipe .58s cubic-bezier(.25,.9,.3,1) forwards}
+.promesse{font-family:var(--serif);font-style:italic;font-weight:400;font-size:1.13em;letter-spacing:-.015em;position:relative;display:inline-block;white-space:nowrap;z-index:0;isolation:isolate}
+.promesse::before{content:'';position:absolute;left:-.11em;right:-.11em;top:.13em;bottom:.09em;background:var(--jau);z-index:-1;border-radius:3px 9px 5px 8px;transform:rotate(-.6deg) scaleX(0);transform-origin:left}
+.promesse.on::before{animation:swipe .82s cubic-bezier(.22,.85,.3,1) forwards}
+.epi .promesse,.final .promesse{color:var(--ink)}
+
+/* « Et aussi » : le surlignage se pose au survol de la carte */
+.au .promesse::before,.au .promesse.on::before{animation:none;transition:transform .42s cubic-bezier(.25,.9,.3,1);transform:rotate(-.6deg) scaleX(0)}
+.au:hover .promesse::before,.au:focus-within .promesse::before{transform:rotate(-.6deg) scaleX(1)}
 @keyframes swipe{to{transform:rotate(-.6deg) scaleX(1)}}
 .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.15em;color:var(--faint);text-transform:uppercase;display:inline-block}
 
@@ -53,7 +58,6 @@ nav{position:sticky;top:0;z-index:300;background:rgba(253,251,245,.9);backdrop-f
 .nav-l a:hover{color:var(--ink)}
 .btn{font-family:var(--disp);font-weight:600;text-decoration:none;display:inline-block;cursor:pointer;border:none;border-radius:6px;transition:transform .16s cubic-bezier(.2,.8,.2,1),background .18s,box-shadow .18s,border-color .18s}
 .btn:active{transform:translateY(1px)}
-.btn-ink{background:var(--ink);color:var(--pap);padding:.5rem 1.05rem;font-size:13.5px}
 .btn-line{border:1.5px solid var(--ln2);color:var(--ink);padding:.48rem 1rem;font-size:13.5px;background:transparent}
 .btn-line:hover{border-color:var(--ink)}
 .btn-vt{background:var(--vt);color:#04250F;box-shadow:0 3px 0 var(--vt-d);padding:.85rem 1.65rem;font-size:15px;font-weight:700}
@@ -145,8 +149,8 @@ nav{position:sticky;top:0;z-index:300;background:rgba(253,251,245,.9);backdrop-f
 .chap .lede{margin-bottom:1.1rem}
 .gain{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--vt-d);background:var(--vt-w);border:1px solid rgba(11,191,106,.22);padding:.34rem .68rem;border-radius:5px;margin-bottom:1rem}
 .blist{list-style:none}
-.blist li{display:flex;gap:.65rem;font-size:14px;color:var(--mid);padding:.26rem 0;line-height:1.55}
-.blist li::before{content:'—';color:var(--ln2);flex-shrink:0}
+.blist li{position:relative;padding:.26rem 0 .26rem 1.3rem;font-size:14px;color:var(--mid);line-height:1.55}
+.blist li::before{content:'—';position:absolute;left:0;top:.26rem;color:var(--ln2)}
 
 .dce{background:var(--card);border:1.5px solid var(--ink);border-radius:10px;overflow:hidden;box-shadow:var(--sh-hard)}
 .dce-h{padding:.65rem .95rem;border-bottom:1px solid var(--ln);background:#FBF8F1;font-family:var(--mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--mid);display:flex;justify-content:space-between;gap:1rem}
@@ -227,7 +231,6 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 
 .epi{background:var(--ink);color:var(--pap);padding:3.4rem 2rem;border-radius:12px;margin-top:2rem}
 .epi h2{color:var(--pap);margin:.8rem 0}
-.epi .promesse::before{mix-blend-mode:normal}
 .epi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(253,251,245,.14);border:1px solid rgba(253,251,245,.14);border-radius:9px;overflow:hidden;margin-top:2.2rem}
 @media(max-width:820px){.epi-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:480px){.epi-grid{grid-template-columns:1fr}}
@@ -262,22 +265,21 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .wc h3{font-size:17px;font-weight:600;letter-spacing:-.028em;margin-bottom:.4rem}
 .wc p{font-size:13px;color:var(--mid);line-height:1.55}
 
-textarea}
 
-.price-grid{display:grid;grid-template-columns:repeat(2,minmax(0,400px));gap:1rem;justify-content:center;margin-top:2.2rem}
-@media(max-width:780px){.price-grid{grid-template-columns:1fr}}
-.pc{background:var(--card);border:1.5px solid var(--ln);border-radius:10px;padding:1.8rem;position:relative;transition:border-color .2s,box-shadow .2s,transform .2s cubic-bezier(.2,.8,.2,1)}
+.price-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;max-width:830px;margin:2.2rem auto 0}
+@media(max-width:460px){.price-grid{grid-template-columns:1fr;max-width:400px}}
+.pc{background:var(--card);border:1.5px solid var(--ln);border-radius:10px;padding:clamp(.85rem,2.6vw,1.8rem);position:relative;transition:border-color .2s,box-shadow .2s,transform .2s cubic-bezier(.2,.8,.2,1)}
 .pc:hover{border-color:var(--ink);box-shadow:var(--sh-hard);transform:translateY(-3px)}
 .pc.reco{border:1.5px solid var(--ink);box-shadow:var(--sh-hard)}
-.pc-flag{position:absolute;top:-10px;left:1.8rem;background:var(--jau);color:#5C4700;font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.08em;padding:.22rem .6rem;border-radius:4px;border:1.5px solid var(--ink)}
+.pc-flag{position:absolute;top:-10px;left:clamp(.85rem,2.6vw,1.8rem);background:var(--jau);color:#5C4700;font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.08em;padding:.22rem .6rem;border-radius:4px;border:1.5px solid var(--ink)}
 .pc-n{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
-.pc-p{font-family:var(--mono);font-size:36px;font-weight:500;letter-spacing:-.05em;margin:.5rem 0 .1rem;line-height:1}
+.pc-p{font-family:var(--mono);font-size:clamp(23px,4.2vw,36px);font-weight:500;letter-spacing:-.05em;margin:.5rem 0 .1rem;line-height:1}
 .pc-p s{text-decoration:none;font-size:12.5px;color:var(--faint)}
-.pc-d{font-size:13.5px;color:var(--mid);margin-bottom:1.2rem;line-height:1.5}
+.pc-d{font-size:clamp(12px,1.5vw,13.5px);color:var(--mid);margin-bottom:1.2rem;line-height:1.5}
 .pc-l{list-style:none;margin-bottom:1.4rem}
-.pc-l li{display:flex;gap:.6rem;font-size:13.5px;color:var(--mid);padding:.3rem 0;line-height:1.5}
-.pc-l li::before{content:'✓';color:var(--vt-d);font-weight:700;flex-shrink:0}
-.pc .btn{width:100%;text-align:center}
+.pc-l li{position:relative;padding:.3rem 0 .3rem 1.15rem;font-size:clamp(11.5px,1.45vw,13px);color:var(--mid);line-height:1.5}
+.pc-l li::before{content:'✓';position:absolute;left:0;top:.3rem;color:var(--vt-d);font-weight:700}
+.pc .btn{width:100%;text-align:center;padding-left:.5rem;padding-right:.5rem;font-size:clamp(13px,1.6vw,15px)}
 .price-note{text-align:center;font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:1.3rem}
 
 .faq{max-width:760px;border-top:1.5px solid var(--ink)}
@@ -291,7 +293,6 @@ textarea}
 
 .final{background:var(--ink);border-radius:12px;padding:3.6rem 2.2rem;text-align:center;margin-bottom:4rem}
 .final h2{color:var(--pap);margin-bottom:.7rem}
-.final .promesse::before{mix-blend-mode:normal}
 .final p{color:rgba(253,251,245,.6);font-size:15px;max-width:44ch;margin:0 auto 1.5rem;line-height:1.6}
 footer{border-top:1px solid var(--ln);background:var(--card);padding:2.5rem 0 1.6rem}
 .foot{display:flex;justify-content:space-between;gap:2.2rem;flex-wrap:wrap;margin-bottom:1.8rem}
@@ -320,7 +321,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
   .rv{opacity:1;transform:none}
   .fait{clip-path:none}
-  .promesse::before{transform:rotate(-.6deg) scaleX(1)}
+  .promesse::before,.au .promesse::before{transform:rotate(-.6deg) scaleX(1)!important}
   .hl{background-size:100% 100%}
   .mnote{opacity:1;transform:none}
   .chrono{display:none}
@@ -338,7 +339,6 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
       <a href="#tarifs">Tarifs</a>
       <a href="#faq">FAQ</a>
       <a href="/app/login.html" class="btn btn-line">S'identifier</a>
-      <a href="/app/login.html" class="btn btn-ink">Essai gratuit</a>
     </div>
   </div>
 </nav>
@@ -356,7 +356,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
     <div class="hero-grid">
       <div>
         <span class="tag">Assistant appels d'offres — PME françaises</span>
-        <h1><span class="fait" data-d="250">62 pages</span> de DCE.<br><span class="promesse" data-d="750">Deux minutes</span> pour décider.</h1>
+        <h1><span class="fait" data-d="420">62 pages</span> de DCE.<br><span class="promesse" data-d="1050">Deux minutes</span> pour décider.</h1>
         <p class="lede">BidFlow surligne ce qui compte : les critères et leur pondération, les <b>attentes que l'acheteur n'écrit jamais</b>, les clauses qui coûtent cher. Puis il pilote vos dossiers jusqu'au dépôt.</p>
         <div class="hero-ctas">
           <a href="/app/login.html" class="btn btn-vt">Analyser mon premier AO</a>
@@ -369,7 +369,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
           <div class="R-h"><span class="ref">DCE-2026-0471 · 62 pages</span><span class="ach">CHU DE LYON — GARDIENNAGE</span></div>
           <div class="R-v">
             <div class="R-vtop"><span class="R-score"><span style="font-size:15px;color:var(--faint)">≈ </span><span id="sa">0</span><u style="text-decoration:none;font-size:10.5px;color:var(--faint);margin-left:.4em">62–74</u> <s>/ 100</s></span><span class="R-dec">GO CONDITIONNEL</span></div>
-            <p class="R-why">Votre technique tient, mais le sortant est en place depuis 6 ans et la continuité de service pèse 25 % — c'est là que se joue le marché.</p>
+            <p class="R-why">Votre technique tient, mais le sortant est en place depuis 6 ans et la continuité de service pèse 25 % : c'est là que se joue le marché.</p>
           </div>
           <div class="R-facts">
             <div class="R-f"><div class="R-fk">Remise</div><div class="R-fv urg">J-9</div><div class="R-fs">30/09 · 12h00</div></div>
@@ -386,7 +386,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
           </div>
           <div class="R-find"><span class="R-tag R-t-att">ATTENTE</span><div><div class="R-ft">Site hospitalier occupé + titulaire sortant depuis 6 ans</div><div class="R-fd">L'acheteur attend un plan de reprise sans rupture et une amélioration mesurable. Jamais écrit au CCTP, presque toujours noté.</div></div></div>
           <div class="R-find"><span class="R-tag R-t-cla">CCAP 8.2</span><div><div class="R-ft">Pénalités de retard non plafonnées</div><div class="R-fd">Aucun plafond contractuel : exposition illimitée sur un marché à 95 k€. À faire préciser avant J-4.</div></div></div>
-          <div class="R-act"><span class="R-ak">À faire</span><span class="R-av">Rédiger le plan de continuité (§3.2) : c'est le poste où vous perdez le plus de points.</span></div>
+          <div class="R-act"><span class="R-ak">À faire</span><span class="R-av">Rédiger le plan de continuité (section 3.2) : c'est le poste où vous perdez le plus de points.</span></div>
         </div>
       </div>
     </div>
@@ -542,9 +542,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
         <div class="fiche">
           <div class="fh"><span>Brouillon de mémoire</span><span>Généré · export .docx</span></div>
           <div class="fb">
-            <div style="font-family:var(--mono);font-size:9px;letter-spacing:.11em;color:var(--faint);text-transform:uppercase;margin-bottom:.35rem">§1 — Introduction</div>
+            <div style="font-family:var(--mono);font-size:9px;letter-spacing:.11em;color:var(--faint);text-transform:uppercase;margin-bottom:.35rem">Section 1 — Introduction</div>
             <p style="font-size:12px;line-height:1.7;color:var(--mid);margin-bottom:.8rem">Titulaire de la certification CNAPS et fort de trois références en milieu hospitalier occupé, notre société propose une organisation conçue pour garantir la continuité absolue du service de sûreté du CHU…</p>
-            <div style="font-family:var(--mono);font-size:9px;letter-spacing:.11em;color:var(--faint);text-transform:uppercase;margin-bottom:.35rem">§3.2 — Continuité de service</div>
+            <div style="font-family:var(--mono);font-size:9px;letter-spacing:.11em;color:var(--faint);text-transform:uppercase;margin-bottom:.35rem">Section 3.2 — Continuité de service</div>
             <p style="font-size:12px;line-height:1.7;color:var(--mid)">La reprise s'effectuera selon un phasage en trois temps, avec doublure des postes durant les quinze premiers jours afin d'éviter toute rupture…</p>
           </div>
           <div class="ffoot f-vt" style="margin-bottom:.5rem">
@@ -667,7 +667,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
     <div class="chap-grid" style="align-items:center">
       <div>
         <h3>Un dossier, c'est facile. <span class="promesse">Quinze en parallèle</span>, non.</h3>
-        <p class="lede">Vous venez de suivre un appel d'offres en détail. Dans la vraie vie, vous en avez quatorze autres ouverts, chacun à un stade différent, chacun avec sa date limite. <b>C'est là que les dossiers se perdent</b> — pas dans l'analyse, dans le suivi.</p>
+        <p class="lede">Vous venez de suivre un appel d'offres en détail. Dans la vraie vie, vous en avez quatorze autres ouverts, chacun à un stade différent, chacun avec sa date limite. <b>C'est là que les dossiers se perdent</b>, pas dans l'analyse mais dans le suivi.</p>
         <span class="gain">Vous ouvrez BidFlow le matin, tout est à jour</span>
         <ul class="blist">
           <li>Statut réel de chaque dossier : à décider, GO, en rédaction, déposé, gagné, perdu</li>
@@ -710,7 +710,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
       <div class="au">
         <span class="au-k">Profil entreprise</span>
         <h3>Renseigné <span class="promesse">une fois</span>, utilisé partout</h3>
-        <p>Certifications, références chiffrées, moyens matériels, équipe clé. Chaque analyse et chaque brouillon s'appuient dessus : c'est ce qui rend vos mémoires spécifiques au lieu de génériques.</p>
+        <p>Certifications, références chiffrées, moyens matériels, équipe clé. Chaque analyse et chaque brouillon s'appuient dessus. C'est ce qui rend vos mémoires spécifiques au lieu de génériques.</p>
       </div>
       <div class="au">
         <span class="au-k">Export Word</span>
@@ -747,7 +747,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
     <div class="sec-head rv" style="margin-left:auto;margin-right:auto;text-align:center">
       <span class="tag">Tarifs</span>
       <h2>Un abonnement clair. <span class="promesse">Sans devis</span>, sans rendez-vous.</h2>
-      <p class="lede" style="margin:0 auto">Sans engagement, résiliable en un clic. La première analyse est offerte : jugez avant de payer.</p>
+      <p class="lede" style="margin:0 auto">Sans engagement, résiliable en un clic. La première analyse est offerte. Jugez avant de payer.</p>
     </div>
     <div class="price-grid">
       <div class="pc rv">
@@ -888,9 +888,9 @@ const io = new IntersectionObserver(es=>es.forEach(e=>{
   el.classList.add('vis');
   el.querySelectorAll('[data-count]').forEach(countUp);
   el.querySelectorAll('.gauge-fl').forEach((f,i)=>setTimeout(()=>f.style.width=f.dataset.w,i*90));
-  el.querySelectorAll('.fait,.promesse').forEach((m,i)=>setTimeout(()=>m.classList.add('on'),i*110));
+  el.querySelectorAll('.fait,.promesse').forEach((m,i)=>setTimeout(()=>m.classList.add('on'),320+i*150));
   io.unobserve(el);
-}),{threshold:.2});
+}),{threshold:.32,rootMargin:'0px 0px -14% 0px'});
 document.querySelectorAll('.rv,.chap h3,.chap .fiche,.sec-head h2,.epi,.final h2,.au,.wc,.chap-grid h3,.pil-stats').forEach(el=>io.observe(el));
 
 addEventListener('load',()=>{
