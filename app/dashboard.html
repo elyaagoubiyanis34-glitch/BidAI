@@ -671,6 +671,20 @@ async function init() {
   await loadMetrics();
   applyPermissions();
   showView('pilotage');
+  envoyerBienvenue();   // une seule fois par compte, en arrière-plan
+}
+
+/* Email de bienvenue : déclenché à la première ouverture du dashboard.
+   Le serveur vérifie lui-même qu'il n'a pas déjà été envoyé. */
+async function envoyerBienvenue() {
+  if (userProfile?.welcome_sent) return;
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    await fetch('/api/welcome', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + session.access_token }
+    });
+  } catch (e) { /* silencieux : ne doit jamais gêner l'utilisateur */ }
 }
 
 async function loadOrg() {
