@@ -1,4 +1,13 @@
-<!DOCTYPE html>
+const { createClient } = require('@supabase/supabase-js');
+
+const sb = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
+const EXPEDITEUR = 'BidRay <contact@getbidray.com>';
+
+const HTML = `<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -32,7 +41,7 @@
                   Votre compte est actif 🎉
                 </h1>
                 <p style="margin:0;font-size:15px;color:#067A43;font-weight:400">
-                  Bienvenue sur BidRay — l'IA qui analyse vos appels d'offres en 30 secondes.
+                  Bienvenue sur BidRay — l'assistant qui décode vos appels d'offres et pilote vos dossiers.
                 </p>
               </div>
 
@@ -42,7 +51,7 @@
                   <td>
 
                     <p style="margin:0 0 24px;font-size:15px;color:#6E6C60;line-height:1.7;font-weight:400">
-                      Vous disposez d'<strong style="color:#151510;font-weight:600">1 analyse gratuite</strong> pour découvrir la puissance de l'outil. Voici comment démarrer en 3 étapes :
+                      Vous disposez d'<strong style="color:#151510;font-weight:600">1 analyse offerte</strong> pour juger sur pièce. Voici comment démarrer :
                     </p>
 
                     <!-- Steps -->
@@ -66,8 +75,8 @@
                             <tr>
                               <td style="width:32px;height:32px;background:#151510;border-radius:8px;text-align:center;vertical-align:middle;font-size:14px;font-weight:700;color:#0BBF6A">2</td>
                               <td style="padding-left:14px">
-                                <div style="font-size:14px;font-weight:600;color:#151510">Collez votre appel d'offres</div>
-                                <div style="font-size:13px;color:#9B998D;margin-top:2px">Depuis BOAMP, PLACE ou tout autre source</div>
+                                <div style="font-size:14px;font-weight:600;color:#151510">Déposez votre DCE</div>
+                                <div style="font-size:13px;color:#9B998D;margin-top:2px">PDF ou Word — l'extraction reste dans votre navigateur</div>
                               </td>
                             </tr>
                           </table>
@@ -79,8 +88,8 @@
                             <tr>
                               <td style="width:32px;height:32px;background:#151510;border-radius:8px;text-align:center;vertical-align:middle;font-size:14px;font-weight:700;color:#0BBF6A">3</td>
                               <td style="padding-left:14px">
-                                <div style="font-size:14px;font-weight:600;color:#151510">Recevez votre analyse en 30 secondes</div>
-                                <div style="font-size:13px;color:#9B998D;margin-top:2px">Score, risques, brouillon de réponse généré</div>
+                                <div style="font-size:14px;font-weight:600;color:#151510">Décidez en deux minutes</div>
+                                <div style="font-size:13px;color:#9B998D;margin-top:2px">Critères pondérés, attentes implicites, clauses à risque</div>
                               </td>
                             </tr>
                           </table>
@@ -134,3 +143,64 @@
   </table>
 </body>
 </html>
+`;
+
+module.exports = async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  // ── Authentification : seul le titulaire du compte déclenche son propre email ──
+  const token = (req.headers.authorization || '').replace('Bearer ', '');
+  if (!token) return res.status(401).json({ error: 'Connexion requise' });
+  const { data: { user }, error: authError } = await sb.auth.getUser(token);
+  if (authError || !user) return res.status(401).json({ error: 'Session expirée' });
+
+  if (!process.env.RESEND_API_KEY) {
+    return res.status(500).json({ error: 'RESEND_API_KEY absente des variables d\'environnement' });
+  }
+
+  try {
+    // ── Un seul envoi par compte ──
+    const { data: profil } = await sb.from('profiles')
+      .select('welcome_sent').eq('id', user.id).maybeSingle();
+    if (profil?.welcome_sent) {
+      return res.status(200).json({ deja_envoye: true });
+    }
+
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + process.env.RESEND_API_KEY,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: EXPEDITEUR,
+        to: [user.email],
+        reply_to: 'contact@getbidray.com',
+        subject: 'Bienvenue sur BidRay — votre analyse offerte vous attend',
+        html: HTML
+      })
+    });
+
+    const reponse = await r.json();
+
+    if (!r.ok) {
+      // 403 typique : le domaine n'est pas encore vérifié chez Resend
+      return res.status(502).json({
+        error: reponse.message || "L'envoi a échoué",
+        detail: reponse
+      });
+    }
+
+    // marque le compte pour ne pas renvoyer l'email
+    await sb.from('profiles').update({ welcome_sent: true }).eq('id', user.id);
+
+    return res.status(200).json({ envoye: true, id: reponse.id });
+
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+};
