@@ -1,3 +1,10 @@
+const { createClient } = require('@supabase/supabase-js');
+
+const sb = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
 const ipCache = new Map();
 
 function isRateLimited(ip) {
@@ -30,6 +37,13 @@ module.exports = async function handler(req, res) {
   if (isRateLimited(ip)) {
     return res.status(429).json({ error: 'Trop de requêtes — réessayez dans une heure.' });
   }
+
+  // Authentification requise
+  const token = (req.headers.authorization || '').replace('Bearer ', '');
+  if (!token) return res.status(401).json({ error: 'Connexion requise' });
+  const { data: { user }, error: authError } = await sb.auth.getUser(token);
+  if (authError || !user) return res.status(401).json({ error: 'Session expirée — reconnectez-vous.' });
+
 
   const { memoire, rc, secteur, effectif, refs, entreprise } = req.body;
   if (!memoire) return res.status(400).json({ error: 'Mémoire technique manquant' });
