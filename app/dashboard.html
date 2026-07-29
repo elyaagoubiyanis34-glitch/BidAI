@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BidFlow — Mon espace</title>
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="theme-color" content="#151510">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Familjen+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -33,8 +35,9 @@ body{font-family:var(--body);background:var(--bg);color:var(--text)}
 /* SIDEBAR */
 .sidebar{width:240px;flex-shrink:0;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;overflow-y:auto;overflow-x:hidden}
 .sidebar-logo{padding:1.5rem 1.25rem 1rem;border-bottom:1px solid var(--border);flex-shrink:0}
-.logo{font-family:var(--display);font-size:21px;font-weight:700;letter-spacing:-.05em;color:var(--text);text-decoration:none;display:block}
-.logo em{color:var(--green-dark);font-style:normal}
+.logo{font-family:var(--display);font-size:21px;font-weight:700;letter-spacing:-.05em;line-height:1;color:var(--text);text-decoration:none;display:inline-block;position:relative;z-index:0;isolation:isolate;white-space:nowrap}
+.logo::before{content:'';position:absolute;left:-.06em;right:-.06em;top:.235em;height:.30em;background:var(--jau);border-radius:.03em .09em .05em .08em;transform:rotate(-2.2deg);z-index:-1}
+.logo::after{content:attr(data-logo);position:absolute;left:0;top:0;color:var(--green);clip-path:polygon(-5% 32%,105% 26%,105% 58%,-5% 64%)}
 .nav-section{padding:1rem .75rem;flex:1}
 .nav-label{font-family:var(--mono);font-size:9px;font-weight:500;color:var(--muted2);text-transform:uppercase;letter-spacing:.13em;padding:.5rem .75rem;margin-bottom:.25rem}
 .nav-item{display:flex;align-items:center;gap:10px;padding:.65rem .75rem;border-radius:10px;font-size:14px;color:var(--muted);cursor:pointer;transition:all .2s;font-weight:500;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:var(--body)}
@@ -323,7 +326,7 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
 <div class="layout">
 
   <aside class="sidebar">
-    <div class="sidebar-logo"><a href="/" class="logo">Bid<em>Flow</em></a></div>
+    <div class="sidebar-logo"><a href="/" class="logo" data-logo="BidFlow">BidFlow</a></div>
     <nav class="nav-section">
       <div class="nav-label">Menu</div>
       <button class="nav-item active" id="nav-pilotage" onclick="showView('pilotage')">
