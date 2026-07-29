@@ -1,13 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BidFlow — Activation en cours…</title>
+<title>BidRay — Activation en cours…</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Familjen+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -67,7 +63,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 </head>
 <body>
 <div class="card">
-  <a href="/" class="logo" data-logo="BidFlow">BidFlow</a>
+  <a href="/" class="logo" data-logo="BidRay">BidRay</a>
 
   <!-- État : chargement -->
   <div id="state-loading">
@@ -84,7 +80,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
   <!-- État : succès -->
   <div id="state-success" style="display:none">
     <div class="success-icon" id="success-icon" style="display:flex">✓</div>
-    <div class="title">Bienvenue sur <em>BidFlow</em> !</div>
+    <div class="title">Bienvenue sur <em>BidRay</em> !</div>
     <div class="sub" id="success-msg">Votre plan est activé. Vous allez être redirigé vers votre dashboard.</div>
     <a href="/app/dashboard.html" class="btn">Accéder au dashboard →</a>
     <div class="countdown" id="countdown">Redirection dans 3 secondes…</div>
@@ -94,8 +90,8 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
   <div id="state-error" style="display:none">
     <div class="error-icon" id="error-icon" style="display:flex">!</div>
     <div class="title">Une erreur est survenue</div>
-    <div class="sub" id="error-msg">Votre paiement a bien été enregistré mais l'activation a échoué. Contactez-nous à contact@bidflow.fr</div>
-    <a href="mailto:contact@bidflow.fr" class="btn btn-err">Contacter le support</a>
+    <div class="sub" id="error-msg">Votre paiement a bien été enregistré mais l'activation a échoué. Contactez-nous à contact@getbidray.com</div>
+    <a href="mailto:contact@getbidray.com" class="btn btn-err">Contacter le support</a>
   </div>
 </div>
 
@@ -175,7 +171,7 @@ async function activate() {
 function showError(msg) {
   document.getElementById('state-loading').style.display = 'none';
   document.getElementById('state-error').style.display = 'block';
-  document.getElementById('error-msg').textContent = msg + ' — contact@bidflow.fr';
+  document.getElementById('error-msg').textContent = msg + ' — contact@getbidray.com';
 }
 
 activate();
