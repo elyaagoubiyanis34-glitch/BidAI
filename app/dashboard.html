@@ -3,11 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BidFlow — Mon espace</title>
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
+<title>BidRay — Mon espace</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta name="theme-color" content="#151510">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -328,7 +326,7 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
 <div class="layout">
 
   <aside class="sidebar">
-    <div class="sidebar-logo"><a href="/" class="logo" data-logo="BidFlow">BidFlow</a></div>
+    <div class="sidebar-logo"><a href="/" class="logo" data-logo="BidRay">BidRay</a></div>
     <nav class="nav-section">
       <div class="nav-label">Menu</div>
       <button class="nav-item active" id="nav-pilotage" onclick="showView('pilotage')">
@@ -370,7 +368,7 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
       <div class="counter-sub" id="sb-analyses-sub">—</div>
     </div>
     <div class="sidebar-links">
-      <a href="mailto:contact@bidflow.fr" class="sidebar-link">
+      <a href="mailto:contact@getbidray.com" class="sidebar-link">
         <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l7 5 7-5M5 6h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg>
         Support
       </a>
@@ -570,7 +568,7 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
           <div class="section-title">Coffre-fort des attestations</div>
           <button class="btn-upgrade" data-need="attestations" onclick="openAttestation()">+ Ajouter</button>
         </div>
-        <p style="font-size:13.5px;color:var(--muted);font-weight:300;line-height:1.7;margin-bottom:1.25rem">Ne perdez plus un marché sur une attestation périmée. BidFlow surveille les dates d'expiration et vous alerte avant qu'une pièce ne devienne bloquante.</p>
+        <p style="font-size:13.5px;color:var(--muted);font-weight:300;line-height:1.7;margin-bottom:1.25rem">Ne perdez plus un marché sur une attestation périmée. BidRay surveille les dates d'expiration et vous alerte avant qu'une pièce ne devienne bloquante.</p>
         <div id="att-content"></div>
       </div>
     </div>
@@ -686,7 +684,7 @@ async function loadOrg() {
         <div class="section-title" style="margin-bottom:.6rem">Compte non rattaché</div>
         <p style="font-size:14px;color:var(--muted);font-weight:300;line-height:1.7">
           Aucune organisation n'est associée à ce compte. Contactez
-          <a href="mailto:contact@bidflow.fr" style="color:var(--green)">contact@bidflow.fr</a>.
+          <a href="mailto:contact@getbidray.com" style="color:var(--green)">contact@getbidray.com</a>.
         </p>
       </div>`;
     return false;
@@ -1267,7 +1265,7 @@ async function exportWord() {
   const blob = await res.blob();
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'BidFlow-Analyse.docx'; a.click();
+  a.href = url; a.download = 'BidRay-Analyse.docx'; a.click();
   URL.revokeObjectURL(url);
 }
 
@@ -1843,7 +1841,7 @@ function openInvite() {
         <option value="admin">Administrateur — tous les droits</option>
       </select>
     </div>
-    <p style="font-size:12.5px;color:var(--muted);font-weight:300;line-height:1.6">La personne rejoindra automatiquement votre équipe en créant son compte sur BidFlow avec cette adresse. Vous pourrez ensuite ajuster ses droits un par un.</p>
+    <p style="font-size:12.5px;color:var(--muted);font-weight:300;line-height:1.6">La personne rejoindra automatiquement votre équipe en créant son compte sur BidRay avec cette adresse. Vous pourrez ensuite ajuster ses droits un par un.</p>
     <div id="iv-msg" style="font-size:13px;padding:.5rem 0"></div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;margin-top:.5rem">
       <button class="btn-portal" onclick="closeBfModal()">Annuler</button>
