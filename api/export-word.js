@@ -178,14 +178,14 @@ module.exports = async function handler(req, res) {
   children.push(new Paragraph({
     spacing: { before: 400 },
     alignment: AlignmentType.CENTER,
-    children: [new TextRun({ text: 'Document généré par BidFlow — bidflow.fr — Analyse indicative, ne constitue pas un conseil juridique.', size: 16, color: MUTED, italics: true })]
+    children: [new TextRun({ text: 'Document généré par BidRay — getbidray.com — Analyse indicative, ne constitue pas un conseil juridique.', size: 16, color: MUTED, italics: true })]
   }));
 
   try {
     const doc = new Document({ sections: [{ children }] });
     const buffer = await Packer.toBuffer(doc);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-    res.setHeader('Content-Disposition', 'attachment; filename=BidFlow-Analyse.docx');
+    res.setHeader('Content-Disposition', 'attachment; filename=BidRay-Analyse.docx');
     return res.status(200).send(buffer);
   } catch (e) {
     return res.status(500).json({ error: e.message });
