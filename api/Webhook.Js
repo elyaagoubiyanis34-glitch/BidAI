@@ -6,10 +6,10 @@ const sb = createClient(
 );
 
 /* Offre unique : tout abonnement actif donne le même accès.
-   Aucun identifiant de prix n'est codé ici, donc créer un nouveau
-   tarif dans Stripe ne casse plus rien. */
+   Aucun identifiant de prix n'est codé ici, donc créer ou modifier
+   un tarif dans Stripe ne casse rien. */
 const ACCES_PAYANT = { plan: 'pro', analyses_limit: -1 };
-const ACCES_LIBRE   = { plan: 'free', analyses_limit: 1 };
+const ACCES_LIBRE  = { plan: 'free', analyses_limit: 1 };
 
 const STATUTS_ACTIFS = ['active', 'trialing', 'past_due'];
 
@@ -40,7 +40,8 @@ module.exports = async function handler(req, res) {
   const obj = event.data.object;
   console.log('Webhook event:', event.type);
 
-  async function profilDe(customerId) {
+  /* Retrouve un profil à partir de l'identifiant client Stripe. */
+  async function profilParClient(customerId) {
     if (!customerId) return null;
     const { data } = await sb
       .from('profiles')
@@ -50,14 +51,58 @@ module.exports = async function handler(req, res) {
     return data || null;
   }
 
+  /* Retrouve un compte à partir de l'email saisi au paiement.
+     Sert uniquement au premier paiement, quand le lien entre le
+     client Stripe et le profil n'existe pas encore. */
+  async function profilParEmail(email) {
+    if (!email) return null;
+    try {
+      const { data, error } = await sb.auth.admin.listUsers({ page: 1, perPage: 1000 });
+      if (error) { console.error('listUsers error:', error.message); return null; }
+      const cible = email.trim().toLowerCase();
+      const user = (data.users || []).find(u => (u.email || '').toLowerCase() === cible);
+      return user ? { id: user.id } : null;
+    } catch (err) {
+      console.error('Recherche par email impossible:', err.message);
+      return null;
+    }
+  }
+
   try {
 
-    // ── Abonnement créé ou modifié ──
-    // Mensuel ou annuel, peu importe : c'est la même offre.
+    // ── Paiement confirmé : c'est ici que l'accès s'ouvre ──
+    if (event.type === 'checkout.session.completed') {
+      if (obj.payment_status !== 'paid') {
+        console.log('Session terminée mais non payée, ignorée');
+        return res.status(200).json({ received: true });
+      }
+
+      const email = obj.customer_details && obj.customer_details.email;
+      let profile = await profilParClient(obj.customer);
+      if (!profile) profile = await profilParEmail(email);
+
+      if (profile) {
+        await sb.from('profiles').update({
+          plan: ACCES_PAYANT.plan,
+          analyses_limit: ACCES_PAYANT.analyses_limit,
+          analyses_used: 0,
+          stripe_customer_id: obj.customer,
+          stripe_subscription_id: obj.subscription || null,
+          updated_at: new Date().toISOString()
+        }).eq('id', profile.id);
+        console.log('Acces ouvert pour', email, '-> profil', profile.id);
+      } else {
+        // Le client a payé sans compte BidRay au même email.
+        console.error('PAIEMENT SANS PROFIL - a rattacher a la main :', email, obj.customer);
+      }
+    }
+
+    // ── Changement d'état de l'abonnement ──
+    // Résiliation programmée, impayé, reprise après échec.
     if (event.type === 'customer.subscription.created' ||
         event.type === 'customer.subscription.updated') {
 
-      const profile = await profilDe(obj.customer);
+      const profile = await profilParClient(obj.customer);
       if (profile) {
         const actif = STATUTS_ACTIFS.includes(obj.status);
         const acces = actif ? ACCES_PAYANT : ACCES_LIBRE;
@@ -69,15 +114,13 @@ module.exports = async function handler(req, res) {
           updated_at: new Date().toISOString()
         }).eq('id', profile.id);
 
-        console.log('Abonnement', obj.status, '→ plan', acces.plan, 'pour', obj.customer);
-      } else {
-        console.log('Aucun profil lié au customer', obj.customer);
+        console.log('Abonnement', obj.status, '-> plan', acces.plan);
       }
     }
 
-    // ── Résiliation ──
+    // ── Résiliation effective ──
     if (event.type === 'customer.subscription.deleted') {
-      const profile = await profilDe(obj.customer);
+      const profile = await profilParClient(obj.customer);
       if (profile) {
         await sb.from('profiles').update({
           plan: ACCES_LIBRE.plan,
@@ -86,19 +129,19 @@ module.exports = async function handler(req, res) {
           stripe_subscription_id: null,
           updated_at: new Date().toISOString()
         }).eq('id', profile.id);
-        console.log('Résiliation, retour free pour', obj.customer);
+        console.log('Resiliation, retour free pour', obj.customer);
       }
     }
 
-    // ── Renouvellement payé : on remet le compteur à zéro ──
+    // ── Renouvellement payé : compteur remis à zéro ──
     if (event.type === 'invoice.payment_succeeded') {
-      const profile = await profilDe(obj.customer);
+      const profile = await profilParClient(obj.customer);
       if (profile) {
         await sb.from('profiles').update({
           analyses_used: 0,
           updated_at: new Date().toISOString()
         }).eq('id', profile.id);
-        console.log('Compteur remis à 0 pour', obj.customer);
+        console.log('Compteur remis a 0 pour', obj.customer);
       }
     }
 
