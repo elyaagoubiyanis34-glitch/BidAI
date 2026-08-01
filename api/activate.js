@@ -7,10 +7,9 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-const PLAN_LIMITS = {
-  'price_1TDWSoHG45lr2heeQ5lOjBHe': { plan: 'starter', analyses_limit: 5 },
-  'price_1TFGL7HC1Gx8dtyGB92yQFqL':     { plan: 'pro',     analyses_limit: -1 },
-};
+/* Offre unique : un paiement confirmé donne l'accès complet,
+   que l'abonnement soit mensuel ou annuel. */
+const ACCES_PAYANT = { plan: 'pro', analyses_limit: -1 };
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -27,24 +26,23 @@ module.exports = async function handler(req, res) {
   try {
     // Vérifie le paiement auprès de Stripe
     const session = await stripe.checkout.sessions.retrieve(session_id, {
-      expand: ['subscription', 'subscription.items.data.price']
+      expand: ['subscription']
     });
 
     if (session.payment_status !== 'paid') {
       return res.status(400).json({ error: 'Paiement non confirmé' });
     }
 
-    // Récupère l'ID du prix pour déterminer le plan
-    const priceId = session.subscription?.items?.data[0]?.price?.id;
-    const planInfo = PLAN_LIMITS[priceId] || { plan: 'starter', analyses_limit: 5 };
+    const abonnement = session.subscription || null;
+    const abonnementId = typeof abonnement === 'string' ? abonnement : (abonnement?.id || null);
 
     // Met à jour le profil dans Supabase
     const { error } = await sb.from('profiles').update({
-      plan: planInfo.plan,
-      analyses_limit: planInfo.analyses_limit,
+      plan: ACCES_PAYANT.plan,
+      analyses_limit: ACCES_PAYANT.analyses_limit,
       analyses_used: 0,
       stripe_customer_id: session.customer,
-      stripe_subscription_id: session.subscription?.id || null,
+      stripe_subscription_id: abonnementId,
       updated_at: new Date().toISOString()
     }).eq('id', user_id);
 
@@ -55,8 +53,8 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      plan: planInfo.plan,
-      analyses_limit: planInfo.analyses_limit
+      plan: ACCES_PAYANT.plan,
+      analyses_limit: ACCES_PAYANT.analyses_limit
     });
 
   } catch (err) {
