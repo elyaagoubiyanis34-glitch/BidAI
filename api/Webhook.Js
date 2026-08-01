@@ -5,10 +5,13 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-const PLAN_LIMITS = {
-  'price_1TDWSoHG45lr2heeQ5lOjBHe': { plan: 'starter', analyses_limit: 5 },
-  'price_1TFGL7HC1Gx8dtyGB92yQFqL': { plan: 'pro',     analyses_limit: -1 },
-};
+/* Offre unique : tout abonnement actif donne le même accès.
+   Aucun identifiant de prix n'est codé ici, donc créer un nouveau
+   tarif dans Stripe ne casse plus rien. */
+const ACCES_PAYANT = { plan: 'pro', analyses_limit: -1 };
+const ACCES_LIBRE   = { plan: 'free', analyses_limit: 1 };
+
+const STATUTS_ACTIFS = ['active', 'trialing', 'past_due'];
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
@@ -37,56 +40,65 @@ module.exports = async function handler(req, res) {
   const obj = event.data.object;
   console.log('Webhook event:', event.type);
 
+  async function profilDe(customerId) {
+    if (!customerId) return null;
+    const { data } = await sb
+      .from('profiles')
+      .select('id')
+      .eq('stripe_customer_id', customerId)
+      .maybeSingle();
+    return data || null;
+  }
+
   try {
 
-    // ── Changement ou upgrade de plan ──
-    if (event.type === 'customer.subscription.updated') {
-      const customerId = obj.customer;
-      const priceId = obj.items?.data[0]?.price?.id;
-      const planInfo = PLAN_LIMITS[priceId];
+    // ── Abonnement créé ou modifié ──
+    // Mensuel ou annuel, peu importe : c'est la même offre.
+    if (event.type === 'customer.subscription.created' ||
+        event.type === 'customer.subscription.updated') {
 
-      if (!planInfo) {
-        console.log('Prix non reconnu:', priceId);
-        return res.status(200).json({ received: true });
-      }
-
-      const { data: profile } = await sb.from('profiles').select('id').eq('stripe_customer_id', customerId).maybeSingle();
+      const profile = await profilDe(obj.customer);
       if (profile) {
+        const actif = STATUTS_ACTIFS.includes(obj.status);
+        const acces = actif ? ACCES_PAYANT : ACCES_LIBRE;
+
         await sb.from('profiles').update({
-          plan: planInfo.plan,
-          analyses_limit: planInfo.analyses_limit,
+          plan: acces.plan,
+          analyses_limit: acces.analyses_limit,
+          stripe_subscription_id: actif ? obj.id : null,
           updated_at: new Date().toISOString()
         }).eq('id', profile.id);
-        console.log('Plan mis à jour:', planInfo.plan, 'pour customer:', customerId);
+
+        console.log('Abonnement', obj.status, '→ plan', acces.plan, 'pour', obj.customer);
+      } else {
+        console.log('Aucun profil lié au customer', obj.customer);
       }
     }
 
     // ── Résiliation ──
     if (event.type === 'customer.subscription.deleted') {
-      const customerId = obj.customer;
-      const { data: profile } = await sb.from('profiles').select('id').eq('stripe_customer_id', customerId).maybeSingle();
+      const profile = await profilDe(obj.customer);
       if (profile) {
         await sb.from('profiles').update({
-          plan: 'free',
-          analyses_limit: 1,
+          plan: ACCES_LIBRE.plan,
+          analyses_limit: ACCES_LIBRE.analyses_limit,
           analyses_used: 0,
           stripe_subscription_id: null,
           updated_at: new Date().toISOString()
         }).eq('id', profile.id);
-        console.log('Plan résilié, retour free pour customer:', customerId);
+        console.log('Résiliation, retour free pour', obj.customer);
       }
     }
 
-    // ── Reset mensuel à chaque renouvellement ──
+    // ── Renouvellement payé : on remet le compteur à zéro ──
     if (event.type === 'invoice.payment_succeeded') {
-      const customerId = obj.customer;
-      const { data: profile } = await sb.from('profiles').select('id').eq('stripe_customer_id', customerId).maybeSingle();
+      const profile = await profilDe(obj.customer);
       if (profile) {
         await sb.from('profiles').update({
           analyses_used: 0,
           updated_at: new Date().toISOString()
         }).eq('id', profile.id);
-        console.log('Compteur remis à 0 pour customer:', customerId);
+        console.log('Compteur remis à 0 pour', obj.customer);
       }
     }
 
