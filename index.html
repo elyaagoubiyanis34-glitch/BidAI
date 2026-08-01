@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BidRay — Gérez et gagnez vos appels d'offres, en toute simplicité</title>
-<meta name="description" content="Suivez un appel d'offres réel de sa réception à sa victoire. BidRay surligne ce qui compte dans vos DCE, chiffre vos offres, audite vos mémoires et pilote vos dossiers. Essai gratuit.">
+<meta name="description" content="Suivez un appel d'offres réel de sa réception à sa victoire. BidRay surligne ce qui compte dans vos DCE, chiffre vos offres, audite vos mémoires et pilote vos dossiers. Première analyse offerte.">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -192,6 +192,9 @@ nav{position:sticky;top:0;z-index:300;padding:.7rem 1.6rem .5rem;background:line
 .c-cor{background:var(--cor-w);color:var(--cor-d)}
 .c-jau{background:var(--jau-w);color:var(--jau-d)}
 .c-n{background:var(--pap2);color:var(--mid)}
+.c-bleu{background:var(--bleu-w);color:var(--bleu)}
+.jr{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.fl-s{font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-top:2px;letter-spacing:.01em}
 
 .sim{background:var(--card);border:1.5px solid var(--ink);border-radius:10px;overflow:hidden;box-shadow:var(--sh-hard)}
 .sim-h{padding:.65rem .95rem;border-bottom:1px solid var(--ln);background:#FBF8F1;font-family:var(--mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--mid);display:flex;justify-content:space-between;gap:1rem}
@@ -256,6 +259,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .ps:last-child{border-right:none}
 .ps-n{font-family:var(--mono);font-size:20px;font-weight:500;letter-spacing:-.04em;display:block;line-height:1;font-variant-numeric:tabular-nums}
 .ps-k{font-family:var(--mono);font-size:9px;letter-spacing:.11em;color:var(--faint);text-transform:uppercase;margin-top:.3rem;display:block}
+.fl-more{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--faint);padding:.6rem 0 .1rem;text-align:center}
 
 .aussi{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
 @media(max-width:860px){.aussi{grid-template-columns:1fr}}
@@ -277,21 +281,43 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .wc p{font-size:13px;color:var(--mid);line-height:1.55}
 
 
-.price-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;max-width:830px;margin:2.2rem auto 0}
-@media(max-width:460px){.price-grid{grid-template-columns:1fr;max-width:400px}}
-.pc{background:var(--card);border:1.5px solid var(--ln);border-radius:10px;padding:clamp(.85rem,2.6vw,1.8rem);position:relative;transition:border-color .2s,box-shadow .2s,transform .2s cubic-bezier(.2,.8,.2,1)}
-.pc:hover{border-color:var(--ink);box-shadow:var(--sh-hard);transform:translateY(-3px)}
-.pc.reco{border:1.5px solid var(--ink);box-shadow:var(--sh-hard)}
-.pc-flag{position:absolute;top:-10px;left:clamp(.85rem,2.6vw,1.8rem);background:var(--jau);color:#5C4700;font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.08em;padding:.22rem .6rem;border-radius:4px;border:1.5px solid var(--ink)}
-.pc-n{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
-.pc-p{font-family:var(--mono);font-size:clamp(23px,4.2vw,36px);font-weight:500;letter-spacing:-.05em;margin:.5rem 0 .1rem;line-height:1}
-.pc-p s{text-decoration:none;font-size:12.5px;color:var(--faint)}
-.pc-d{font-size:clamp(12px,1.5vw,13.5px);color:var(--mid);margin-bottom:1.2rem;line-height:1.5}
-.pc-l{list-style:none;margin-bottom:1.4rem}
-.pc-l li{position:relative;padding:.3rem 0 .3rem 1.15rem;font-size:clamp(11.5px,1.45vw,13px);color:var(--mid);line-height:1.5}
-.pc-l li::before{content:'✓';position:absolute;left:0;top:.3rem;color:var(--vt-d);font-weight:700}
-.pc .btn{width:100%;text-align:center;padding-left:.5rem;padding-right:.5rem;font-size:clamp(13px,1.6vw,15px)}
-.price-note{text-align:center;font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:1.3rem}
+.offre{display:grid;grid-template-columns:1.12fr .88fr;gap:1.1rem;max-width:980px;margin:2.2rem auto 0;align-items:start}
+@media(max-width:860px){.offre{grid-template-columns:1fr;max-width:520px}}
+.of{background:var(--card);border:1.5px solid var(--ink);border-radius:10px;box-shadow:var(--sh-hard);padding:clamp(1.15rem,2.6vw,1.9rem);position:relative}
+.of-flag{position:absolute;top:-10px;left:clamp(1.15rem,2.6vw,1.9rem);background:var(--jau);color:#5C4700;font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.08em;padding:.22rem .6rem;border-radius:4px;border:1.5px solid var(--ink)}
+.cyc{display:inline-flex;border:1.5px solid var(--ink);border-radius:7px;overflow:hidden;margin-bottom:1.2rem}
+.cyc button{font-family:var(--disp);font-size:12.5px;font-weight:600;letter-spacing:-.02em;background:var(--card);color:var(--mid);border:none;padding:.42rem .9rem .48rem;cursor:pointer;transition:background .16s,color .16s}
+.cyc button+button{border-left:1.5px solid var(--ink)}
+.cyc button b{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:-.01em;margin-left:.25em;color:var(--vt-d)}
+.cyc button[aria-pressed="true"] b{color:var(--jau)}
+.cyc button[aria-pressed="true"]{background:var(--ink);color:var(--pap)}
+.of-p{font-family:var(--mono);font-size:clamp(30px,5vw,44px);font-weight:500;letter-spacing:-.05em;line-height:1;margin-bottom:.35rem}
+.of-p s{text-decoration:none;font-size:13px;color:var(--faint);letter-spacing:-.02em}
+.of-sub{font-family:var(--mono);font-size:11.5px;color:var(--faint);min-height:1.2em;letter-spacing:-.01em}
+.of-two{border-top:1px solid var(--ln);border-bottom:1px solid var(--ln);margin:1.3rem 0 1.25rem;padding:1.05rem 0}
+.of-two p{font-size:clamp(19px,2.4vw,25px);font-weight:600;letter-spacing:-.04em;line-height:1.5}
+.of .btn{width:100%;text-align:center;display:block}
+.of-cta-note{font-size:12.5px;color:var(--mid);margin-top:.6rem;line-height:1.5;text-align:center}
+.of-fin{margin-top:1.6rem;padding-top:1.4rem;border-top:1px solid var(--ln)}
+.of-direct{text-align:center;margin-top:.75rem}
+.of-direct a{font-family:var(--mono);font-size:11px;letter-spacing:.02em;color:var(--faint);text-decoration:none;border-bottom:1px solid var(--ln2);padding-bottom:1px}
+.of-direct a:hover{color:var(--ink);border-color:var(--ink)}
+.of-k{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;color:var(--faint);text-transform:uppercase;display:block;margin:1.5rem 0 .6rem}
+.of-l{list-style:none}
+.of-l li{position:relative;padding:.28rem 0 .28rem 1.15rem;font-size:13.5px;color:var(--mid);line-height:1.55}
+.of-l li::before{content:'';position:absolute;left:0;top:.72em;width:7px;height:7px;border-radius:2px;background:var(--vt)}
+.of-l.sq li::before{background:var(--ink)}
+.side{background:var(--card);border:1.5px solid var(--ln2);border-radius:10px;padding:1.35rem 1.3rem 1.25rem}
+.side h3{font-size:17px;font-weight:600;letter-spacing:-.03em;line-height:1.3;margin-bottom:.75rem}
+.side p{font-size:13px;color:var(--mid);line-height:1.6}
+.side p+p{margin-top:.6rem}
+.side+.side{margin-top:1.1rem}
+.side.warn{background:var(--cor-w);border-color:#F5C6BC}
+.altl{display:grid;grid-template-columns:auto 1fr;gap:.75rem;align-items:baseline;padding:.6rem 0;border-bottom:1px solid rgba(240,78,55,.2)}
+.altl:last-of-type{border-bottom:none}
+.altl span{font-size:12.5px;color:var(--mid);line-height:1.45}
+.side .big{font-size:19px;font-weight:600;letter-spacing:-.035em;line-height:1.4;margin-bottom:.7rem}
+.price-note{text-align:center;font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:1.5rem}
 
 .faq{max-width:760px;border-top:1.5px solid var(--ink)}
 .fq{border-bottom:1px solid var(--ln)}
@@ -309,6 +335,8 @@ footer{border-top:1px solid var(--ln);background:var(--card);padding:2.5rem 0 1.
 .foot{display:flex;justify-content:space-between;gap:2.2rem;flex-wrap:wrap;margin-bottom:1.8rem}
 .fcol p,.fcol a{font-size:13.5px;color:var(--mid);text-decoration:none;display:block;margin-bottom:.42rem;line-height:1.55}
 .fcol a:hover{color:var(--vt-d)}
+.fcol a.logo{display:inline-block;color:var(--ink);font-size:19px;margin-bottom:.9rem;line-height:1}
+.fcol a.logo:hover{color:var(--ink)}
 .fcol .ft{font-family:var(--mono);font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.75rem}
 .foot-b{border-top:1px solid var(--ln);padding-top:1.2rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--faint)}
 .foot-b a{color:var(--faint);text-decoration:none}
@@ -336,6 +364,18 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   .hl{background-size:100% 100%}
   .mnote{opacity:1;transform:none}
   .chrono{display:none}
+}
+
+/* --- Curseur BidRay : flèche encre à ombre dure jaune -----------------
+   Le liseré papier autour de la flèche la garde lisible sur les fonds
+   encre (épilogue, bloc final) sans avoir à déclarer un second jeu.
+   Le corps jaune signale systématiquement un élément cliquable. */
+html{cursor:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'><path d='M5 4.5 L5 22.7 L9.7 18.4 L12.6 24.5 L15.9 23 L13.1 17.1 L19.5 16.9 Z' fill='%23FFE24D'/><path d='M2.5 2 L2.5 20.2 L7.2 15.9 L10.1 22 L13.4 20.5 L10.6 14.6 L17 14.4 Z' fill='%23151510' stroke='%23FDFBF5' stroke-width='1.4' stroke-linejoin='round'/></svg>") 2 2, auto}
+a,button,summary,label,.btn,.fq-q,.md-x,input[type=range]{cursor:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'><path d='M5 4.5 L5 22.7 L9.7 18.4 L12.6 24.5 L15.9 23 L13.1 17.1 L19.5 16.9 Z' fill='%23151510'/><path d='M2.5 2 L2.5 20.2 L7.2 15.9 L10.1 22 L13.4 20.5 L10.6 14.6 L17 14.4 Z' fill='%23FFE24D' stroke='%23151510' stroke-width='1.4' stroke-linejoin='round'/></svg>") 2 2, pointer}
+input[type=text],input[type=email],input[type=password],input[type=search],textarea{cursor:text}
+@media(hover:none){
+  html,a,button,summary,label,.btn,.fq-q,.md-x,input[type=range]{cursor:auto}
+  input[type=text],input[type=email],input[type=password],input[type=search],textarea{cursor:text}
 }
 </style>
 </head>
@@ -375,7 +415,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
           <a href="/app/login.html" class="btn btn-vt">Analyser mon premier AO</a>
           <a href="#dossier" class="btn btn-line btn-lg">Suivre un dossier réel</a>
         </div>
-        <p class="hero-meta"><b>Sans carte bancaire</b>. 1 analyse offerte, résiliable en 1 clic</p>
+        <p class="hero-meta"><b>Sans carte bancaire</b>. 1 analyse offerte sur un dossier réel</p>
       </div>
       <div>
         <div class="R" id="hero-R">
@@ -388,7 +428,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
             <div class="R-f"><div class="R-fk">Remise</div><div class="R-fv urg">J-9</div><div class="R-fs">30/09 · 12h00</div></div>
             <div class="R-f"><div class="R-fk">Budget</div><div class="R-fv">95 k€</div><div class="R-fs">/ an · 3 ans</div></div>
             <div class="R-f"><div class="R-fk">Procédure</div><div class="R-fv">AO ouv.</div><div class="R-fs">reconductible</div></div>
-            <div class="R-f"><div class="R-fk">Questions</div><div class="R-fv urg">J-4</div><div class="R-fs">date limite</div></div>
+            <div class="R-f"><div class="R-fk">Questions</div><div class="R-fv urg">J-5</div><div class="R-fs">date limite</div></div>
           </div>
           <div class="R-sec">
             <div class="R-lbl"><span>Critères de notation</span><span>Note estimée / 20</span></div>
@@ -398,7 +438,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
             <div class="R-c"><span class="R-cn">Prix</span><span class="R-cp">30 %</span><span class="R-cv" style="color:var(--amb-d)">12<u>11–13</u></span><span class="R-bar"><i data-w="60%" style="background:var(--amb)"></i></span></div>
           </div>
           <div class="R-find"><span class="R-tag R-t-att">ATTENTE</span><div><div class="R-ft">Site hospitalier occupé + titulaire sortant depuis 6 ans</div><div class="R-fd">L'acheteur attend un plan de reprise sans rupture et une amélioration mesurable. Jamais écrit au CCTP, presque toujours noté.</div></div></div>
-          <div class="R-find"><span class="R-tag R-t-cla">CCAP 8.2</span><div><div class="R-ft">Pénalités de retard non plafonnées</div><div class="R-fd">Aucun plafond contractuel : exposition illimitée sur un marché à 95 k€. À faire préciser avant J-4.</div></div></div>
+          <div class="R-find"><span class="R-tag R-t-cla">CCAP 8.2</span><div><div class="R-ft">Pénalités de retard non plafonnées</div><div class="R-fd">Aucun plafond contractuel : exposition illimitée sur un marché à 95 k€. À faire préciser avant J-5.</div></div></div>
           <div class="R-act"><span class="R-ak">À faire</span><span class="R-av">Rédiger le plan de continuité (section 3.2) : c'est le poste où vous perdez le plus de points.</span></div>
         </div>
       </div>
@@ -547,7 +587,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
         <ul class="blist">
           <li>Introduction, méthodologie, équipe projet, positionnement prix</li>
           <li>Checklist des pièces : DC1, DC2, DUME, attestations, mémoire</li>
-          <li>Questions à poser à l'acheteur avant J-4</li>
+          <li>Questions à poser à l'acheteur avant J-5</li>
           <li>Export Word éditable, vous reprenez la main sur le fond</li>
         </ul>
       </div>
@@ -564,7 +604,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
             <div><div class="k">CHECKLIST DES PIÈCES</div><div class="v">DC1 · DC2 · DUME · attestation URSSAF · attestation fiscale · carte CNAPS · mémoire technique · BPU</div></div>
           </div>
           <div class="ffoot f-att" style="margin-top:0">
-            <div><div class="k">QUESTION À POSER — AVANT J-4</div><div class="v">« Les pénalités de l'article 8.2 font-elles l'objet d'un plafonnement global ? »</div></div>
+            <div><div class="k">QUESTION À POSER — AVANT J-5</div><div class="v">« Les pénalités de l'article 8.2 font-elles l'objet d'un plafonnement global ? »</div></div>
           </div>
         </div>
       </div>
@@ -575,7 +615,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 <section class="chap" data-chrono="4" data-label="le mémoire est relu">
   <div class="wrap">
     <div class="chap-mark">
-      <span class="chap-n">Étape 05 — lundi, veille du dépôt</span>
+      <span class="chap-n">Étape 05 — mardi, veille du dépôt</span>
       <span class="chap-t">Le mémoire passe devant la commission</span>
     </div>
     <div class="chap-grid rev">
@@ -691,9 +731,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
       </div>
       <div class="chap-vis">
         <div class="fiche">
-          <div class="fh"><span>Mon pilotage</span><span>5 dossiers actifs</span></div>
+          <div class="fh"><span>Mon pilotage</span><span>15 dossiers actifs</span></div>
           <div class="pil-stats">
-            <div class="ps"><span class="ps-n" data-count="5">0</span><span class="ps-k">actifs</span></div>
+            <div class="ps"><span class="ps-n" data-count="15">0</span><span class="ps-k">actifs</span></div>
             <div class="ps"><span class="ps-n" style="color:var(--cor)" data-count="2">0</span><span class="ps-k">urgents</span></div>
             <div class="ps"><span class="ps-n" style="color:var(--vt-d)" data-count="6">0</span><span class="ps-k">gagnés</span></div>
             <div class="ps"><span class="ps-n" data-count="38">0</span><span class="ps-k">% réussite</span></div>
@@ -704,6 +744,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
             <div class="fl"><div><div class="fl-t">Maintenance équipements</div><div class="fl-s">SITE DE ROANNE · 380 k€/an</div></div><div style="text-align:right"><span class="jr" style="color:var(--cor)">J-6</span><br><span class="chip c-vt">GO</span></div></div>
             <div class="fl"><div><div class="fl-t">Espaces verts</div><div class="fl-s">VILLE DE BÉZIERS · 62 k€/an</div></div><div style="text-align:right"><span class="jr" style="color:var(--amb-d)">J-14</span><br><span class="chip c-n">À DÉCIDER</span></div></div>
             <div class="fl"><div><div class="fl-t">Sûreté site industriel</div><div class="fl-s">GROUPE AGRO · 140 k€/an</div></div><div style="text-align:right"><span class="jr" style="color:var(--mid)">J-28</span><br><span class="chip c-n">À DÉCIDER</span></div></div>
+            <div class="fl-more">et 10 autres dossiers suivis</div>
           </div>
           <div class="ffoot f-cor" style="margin-top:0"><div><div class="k">2 ÉCHÉANCES SOUS 7 JOURS</div><div class="v">Refonte SIRH (J-3) et Maintenance équipements (J-6). Le premier est en rédaction, le second attend son mémoire.</div></div></div>
         </div>
@@ -733,7 +774,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
       <div class="au">
         <span class="au-k">Historique</span>
         <h3>Tous vos dossiers, <span class="promesse">gardés</span></h3>
-        <p>Chaque analyse et chaque audit sont conservés et consultables. Les ré-analyses d'un même dossier ne consomment pas votre quota : itérez autant que nécessaire avant le dépôt.</p>
+        <p>Chaque analyse et chaque audit sont conservés et consultables. Vous reprenez un même dossier autant de fois que nécessaire avant le dépôt, sans que rien ne soit décompté.</p>
       </div>
     </div>
   </div>
@@ -744,7 +785,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
     <div class="sec-head rv" style="margin-bottom:0">
       <span class="tag">Pour qui</span>
       <h2>Pour les PME qui répondent <span class="promesse">régulièrement</span> aux marchés.</h2>
-      <p class="lede">Plus de trois AO par mois, pas d'équipe dédiée : c'est exactement le profil.</p>
+      <p class="lede">Plus de trois AO par mois, et plusieurs personnes qui y touchent sans que ce soit le métier d'aucune : c'est exactement le profil.</p>
     </div>
     <div class="who-grid rv">
       <div class="wc"><span class="wc-k">Secteur 01</span><h3>ESN & IT</h3><p>Marchés informatiques publics, SIRH, infogérance, développement.</p></div>
@@ -759,41 +800,71 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   <div class="wrap">
     <div class="sec-head rv" style="margin-left:auto;margin-right:auto;text-align:center">
       <span class="tag">Tarifs</span>
-      <h2>Un abonnement clair. <span class="promesse">Sans devis</span>, sans rendez-vous.</h2>
-      <p class="lede" style="margin:0 auto">Sans engagement, résiliable en un clic. La première analyse est offerte. Jugez avant de payer.</p>
+      <h2>Un prix. <span class="promesse">Publié</span>.</h2>
+      <p class="lede" style="margin:0 auto">Pas de devis, pas de rendez-vous obligatoire, pas de commercial à convaincre avant de connaître le montant. Il est écrit ci-dessous, et il ne dépend pas du nombre de personnes qui ouvrent le dossier.</p>
     </div>
-    <div class="price-grid">
-      <div class="pc rv">
-        <span class="pc-n">Starter</span>
-        <div class="pc-p">299 <s>€ HT / mois</s></div>
-        <p class="pc-d">Pour les PME qui répondent à quelques AO par mois.</p>
-        <ul class="pc-l">
-          <li>5 dossiers analysés par mois</li>
-          <li>Ré-analyses du même dossier gratuites</li>
-          <li>Pilotage multi-AO et alertes d'échéance</li>
-          <li>Coffre-fort des attestations</li>
-          <li>Brief DCE et audit de mémoire</li>
-          <li>Simulateur de note prix</li>
+
+    <div class="offre">
+
+      <div class="of rv">
+        <span class="of-flag">OFFRE UNIQUE</span>
+
+        <div class="cyc" role="group" aria-label="Cycle de facturation">
+          <button type="button" id="cyc-m" aria-pressed="true" onclick="cycle('m')">Mensuel</button>
+          <button type="button" id="cyc-a" aria-pressed="false" onclick="cycle('a')">Annuel <b>&minus;17 %</b></button>
+        </div>
+
+        <div class="of-p"><span id="of-prix">299</span> <s>€ HT / mois</s></div>
+        <p class="of-sub" id="of-sub">Sans engagement, résiliable en un clic</p>
+
+        <div class="of-two">
+          <p>Dossiers <span class="promesse">illimités</span>.</p>
+          <p>Utilisateurs <span class="promesse">illimités</span>.</p>
+        </div>
+
+        <span class="of-k">Les six moments d'un dossier</span>
+        <ul class="of-l">
+          <li>Le tri des appels d'offres, pour décider en deux minutes</li>
+          <li>La lecture du DCE, règlement de consultation, CCTP et CCAP compris</li>
+          <li>Le chiffrage du prix, calculé depuis la formule du règlement</li>
+          <li>La rédaction du mémoire, à partir de vos faits réels</li>
+          <li>L'audit avant dépôt, pour ce qui manque encore</li>
+          <li>Le suivi de tous les dossiers ouverts, avec leurs dates limites</li>
         </ul>
-        <a href="https://buy.stripe.com/5kQ4gzeKobzC5aE6GYdZ600" target="_blank" rel="noopener" class="btn btn-line btn-lg">Choisir Starter</a>
-      </div>
-      <div class="pc reco rv d1">
-        <span class="pc-flag">RECOMMANDÉ</span>
-        <span class="pc-n">Pro</span>
-        <div class="pc-p">399 <s>€ HT / mois</s></div>
-        <p class="pc-d">Pour les équipes qui suivent des AO chaque semaine.</p>
-        <ul class="pc-l">
-          <li>Dossiers illimités</li>
-          <li>Tout le plan Starter inclus</li>
-          <li>Analyse de vos pertes</li>
-          <li>Brouillon de mémoire technique</li>
-          <li>Export Word professionnel</li>
-          <li>Historique complet et support prioritaire</li>
+
+        <span class="of-k">Compris dans le prix</span>
+        <ul class="of-l sq">
+          <li>Toute l'équipe, sans supplément par personne</li>
+          <li>Les ré-analyses d'un même dossier, autant de fois que nécessaire</li>
+          <li>L'extraction de vos fichiers dans votre navigateur : ils ne quittent pas votre poste</li>
+          <li>L'hébergement en Europe, conforme au RGPD</li>
         </ul>
-        <a href="https://buy.stripe.com/8x200j31G1Z21YsghydZ602" target="_blank" rel="noopener" class="btn btn-vt" style="display:block">Choisir Pro</a>
+
+        <div class="of-fin">
+          <a href="/app/login.html" class="btn btn-vt">Analyser un dossier gratuitement</a>
+          <p class="of-cta-note">La première analyse est offerte à l'inscription, sans carte bancaire. Vous jugez sur pièce avant de payer.</p>
+          <p class="of-direct"><a href="https://buy.stripe.com/5kQ4gzeKobzC5aE6GYdZ600" target="_blank" rel="noopener" id="of-cta">ou souscrire directement</a></p>
+        </div>
       </div>
+
+      <div>
+        <div class="side warn rv">
+          <h3>Ce que coûte l'alternative</h3>
+          <div class="altl"><span class="fait">2 500 à 4 000 €</span><span>par dossier confié à un consultant en appels d'offres</span></div>
+          <div class="altl"><span class="fait">690 €</span><span>le dossier, en rédaction externalisée à l'acte</span></div>
+          <p style="margin-top:.85rem">Les plateformes comparables ne publient pas leur tarif : il faut demander un devis pour le connaître.</p>
+        </div>
+
+        <div class="side rv">
+          <p class="big">Le cinquième utilisateur coûte <span class="fait">0 €</span>.</p>
+          <p>Chez la plupart des outils, la personne qui chiffre, celle qui relit et celle qui monte les pièces comptent chacune pour une place. Trois places, et vous sortez de la grille publique.</p>
+          <p>Ici, la facture suit le volume de dossiers, jamais le nombre de personnes. Ajoutez qui vous voulez, le montant ne bouge pas.</p>
+        </div>
+      </div>
+
     </div>
-    <p class="price-note">1 analyse offerte à l'inscription, sans carte bancaire. Un seul marché gagné rembourse l'année</p>
+
+    <p class="price-note">Un seul marché gagné rembourse plusieurs années d'abonnement</p>
   </div>
 </section>
 
@@ -809,7 +880,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
       <div class="fq"><button class="fq-q" onclick="fq(this)">L'IA invente-t-elle des informations ?<span class="fq-i">+</span></button><div class="fq-a">Non. Règle absolue : si une information n'est pas dans vos documents, BidRay écrit « Non précisé dans l'AO ». Aucune date, aucun budget, aucun critère n'est inventé. Les notes sont des fourchettes directionnelles, jamais présentées comme des certitudes.</div></div>
       <div class="fq"><button class="fq-q" onclick="fq(this)">Je peux importer mes PDF et mes fichiers Word ?<span class="fq-i">+</span></button><div class="fq-a">Oui. Déposez votre DCE ou votre mémoire : l'extraction se fait localement dans votre navigateur, le fichier ne quitte jamais votre ordinateur. Sur les gros dossiers, BidRay priorise automatiquement les sections qui comptent : RC, critères, CCAP.</div></div>
       <div class="fq"><button class="fq-q" onclick="fq(this)">Quels appels d'offres sont couverts ?<span class="fq-i">+</span></button><div class="fq-a">Tous les marchés français : marchés publics via BOAMP, PLACE, JOUE et profils acheteurs, appels d'offres privés, MAPA. Tous secteurs : IT, BTP, maintenance, sécurité, propreté, services.</div></div>
-      <div class="fq"><button class="fq-q" onclick="fq(this)">Engagement, résiliation, essai ?<span class="fq-i">+</span></button><div class="fq-a">Sans engagement, résiliable en un clic depuis votre espace. La première analyse est offerte à l'inscription, sans carte bancaire. Vous jugez sur pièce avant de payer.</div></div>
+      <div class="fq"><button class="fq-q" onclick="fq(this)">Combien coûte une personne supplémentaire ?<span class="fq-i">+</span></button><div class="fq-a">Rien. Le nombre de comptes n'entre pas dans le calcul. Vous pouvez ouvrir un accès au dirigeant, au conducteur de travaux et à l'assistante qui monte les pièces, chacun avec ses propres droits, sans que le montant change.</div></div>
+      <div class="fq"><button class="fq-q" onclick="fq(this)">Engagement, résiliation, essai ?<span class="fq-i">+</span></button><div class="fq-a">La formule mensuelle est sans engagement, résiliable en un clic depuis votre espace. La formule annuelle est payée en une fois et couvre douze mois. Dans les deux cas, la première analyse est offerte à l'inscription, sans carte bancaire.</div></div>
     </div>
   </div>
 </section>
@@ -830,7 +902,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   <div class="wrap">
     <div class="foot">
       <div class="fcol" style="max-width:290px">
-        <a href="/" class="logo" data-logo="BidRay" style="font-size:19px;margin-bottom:.7rem">BidRay</a>
+        <a href="/" class="logo" data-logo="BidRay">BidRay</a>
         <p>L'assistant appels d'offres des PME françaises. Piloter, décider, répondre, gagner, sans bureau d'études.</p>
         <p style="font-family:var(--mono);font-size:11px;color:var(--faint)">Données hébergées en Europe · RGPD</p>
       </div>
@@ -1024,6 +1096,29 @@ function sim(){
 }
 slider.addEventListener('input',sim);
 sim();
+
+/* bascule mensuel / annuel */
+const LIEN_MENSUEL = 'https://buy.stripe.com/5kQ4gzeKobzC5aE6GYdZ600';
+const LIEN_ANNUEL  = ''; /* coller ici le Payment Link annuel ; tant qu'il est vide, le bouton bascule sur un email */
+const CYCLES = {
+  m:{ prix:'299', sub:'Sans engagement, résiliable en un clic' },
+  a:{ prix:'249', sub:'Facturé une fois par an, deux mois offerts' }
+};
+function cycle(c){
+  const d = CYCLES[c];
+  if(!d) return;
+  document.getElementById('of-prix').textContent = d.prix;
+  document.getElementById('of-sub').textContent = d.sub;
+  document.getElementById('cyc-m').setAttribute('aria-pressed', c==='m' ? 'true' : 'false');
+  document.getElementById('cyc-a').setAttribute('aria-pressed', c==='a' ? 'true' : 'false');
+  const cta = document.getElementById('of-cta');
+  if(c==='a'){
+    if(LIEN_ANNUEL){ cta.href = LIEN_ANNUEL; cta.target = '_blank'; }
+    else { cta.href = 'mailto:contact@getbidray.com?subject=Abonnement%20annuel%20BidRay'; cta.target = '_self'; }
+  } else {
+    cta.href = LIEN_MENSUEL; cta.target = '_blank';
+  }
+}
 
 function fq(b){ b.parentElement.classList.toggle('open'); }
 function mo(id){ document.getElementById(id).classList.add('show'); }
