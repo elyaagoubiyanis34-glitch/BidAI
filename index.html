@@ -294,6 +294,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .of-p{font-family:var(--mono);font-size:clamp(30px,5vw,44px);font-weight:500;letter-spacing:-.05em;line-height:1;margin-bottom:.35rem}
 .of-p s{text-decoration:none;font-size:13px;color:var(--faint);letter-spacing:-.02em}
 .of-sub{font-family:var(--mono);font-size:11.5px;color:var(--faint);min-height:1.2em;letter-spacing:-.01em}
+.of-tva{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:-.01em;margin-top:.45rem;line-height:1.5}
 .of-two{border-top:1px solid var(--ln);border-bottom:1px solid var(--ln);margin:1.3rem 0 1.25rem;padding:1.05rem 0}
 .of-two p{font-size:clamp(19px,2.4vw,25px);font-weight:600;letter-spacing:-.04em;line-height:1.5}
 .of .btn{width:100%;text-align:center;display:block}
@@ -816,6 +817,7 @@ input[type=text],input[type=email],input[type=password],input[type=search],texta
 
         <div class="of-p"><span id="of-prix">299</span> <s>€ HT / mois</s></div>
         <p class="of-sub" id="of-sub">Sans engagement, résiliable en un clic</p>
+        <p class="of-tva">TVA non applicable, article 293 B du CGI. Le montant facturé est celui affiché.</p>
 
         <div class="of-two">
           <p>Dossiers <span class="promesse">illimités</span>.</p>
@@ -843,7 +845,7 @@ input[type=text],input[type=email],input[type=password],input[type=search],texta
         <div class="of-fin">
           <a href="/app/login.html" class="btn btn-vt">Analyser un dossier gratuitement</a>
           <p class="of-cta-note">La première analyse est offerte à l'inscription, sans carte bancaire. Vous jugez sur pièce avant de payer.</p>
-          <p class="of-direct"><a href="https://buy.stripe.com/5kQ4gzeKobzC5aE6GYdZ600" target="_blank" rel="noopener" id="of-cta">ou souscrire directement</a></p>
+          <p class="of-direct"><a href="/app/login.html" rel="noopener" id="of-cta">ou souscrire directement</a></p>
         </div>
       </div>
 
@@ -881,6 +883,7 @@ input[type=text],input[type=email],input[type=password],input[type=search],texta
       <div class="fq"><button class="fq-q" onclick="fq(this)">Je peux importer mes PDF et mes fichiers Word ?<span class="fq-i">+</span></button><div class="fq-a">Oui. Déposez votre DCE ou votre mémoire : l'extraction se fait localement dans votre navigateur, le fichier ne quitte jamais votre ordinateur. Sur les gros dossiers, BidRay priorise automatiquement les sections qui comptent : RC, critères, CCAP.</div></div>
       <div class="fq"><button class="fq-q" onclick="fq(this)">Quels appels d'offres sont couverts ?<span class="fq-i">+</span></button><div class="fq-a">Tous les marchés français : marchés publics via BOAMP, PLACE, JOUE et profils acheteurs, appels d'offres privés, MAPA. Tous secteurs : IT, BTP, maintenance, sécurité, propreté, services.</div></div>
       <div class="fq"><button class="fq-q" onclick="fq(this)">Combien coûte une personne supplémentaire ?<span class="fq-i">+</span></button><div class="fq-a">Rien. Le nombre de comptes n'entre pas dans le calcul. Vous pouvez ouvrir un accès au dirigeant, au conducteur de travaux et à l'assistante qui monte les pièces, chacun avec ses propres droits, sans que le montant change.</div></div>
+      <div class="fq"><button class="fq-q" onclick="fq(this)">Y a-t-il de la TVA en plus ?<span class="fq-i">+</span></button><div class="fq-a">Non. BidRay bénéficie de la franchise en base de TVA : vous payez exactement le montant affiché, et vos factures portent la mention « TVA non applicable, article 293 B du CGI ». Il n'y a donc pas de TVA à récupérer sur cet abonnement.</div></div>
       <div class="fq"><button class="fq-q" onclick="fq(this)">Engagement, résiliation, essai ?<span class="fq-i">+</span></button><div class="fq-a">La formule mensuelle est sans engagement, résiliable en un clic depuis votre espace. La formule annuelle est payée en une fois et couvre douze mois. Dans les deux cas, la première analyse est offerte à l'inscription, sans carte bancaire.</div></div>
     </div>
   </div>
@@ -1098,8 +1101,14 @@ slider.addEventListener('input',sim);
 sim();
 
 /* bascule mensuel / annuel */
-const LIEN_MENSUEL = 'https://buy.stripe.com/5kQ4gzeKobzC5aE6GYdZ600';
-const LIEN_ANNUEL  = ''; /* coller ici le Payment Link annuel ; tant qu'il est vide, le bouton bascule sur un email */
+/* ─────────── LIENS DE PAIEMENT STRIPE ───────────
+   Seules ces deux lignes sont à modifier après avoir créé
+   les liens dans Stripe. Laissées vides, elles renvoient
+   vers l'inscription : rien ne casse. */
+const LIEN_MENSUEL = 'https://buy.stripe.com/dRm3cv8m06fi0Uo1mEdZ603';
+const LIEN_ANNUEL  = 'https://buy.stripe.com/14AaEX45KdHK32wd5mdZ604';
+/* ──────────────────────────────────────────────── */
+const REPLI = '/app/login.html';
 const CYCLES = {
   m:{ prix:'299', sub:'Sans engagement, résiliable en un clic' },
   a:{ prix:'249', sub:'Facturé une fois par an, deux mois offerts' }
@@ -1112,13 +1121,16 @@ function cycle(c){
   document.getElementById('cyc-m').setAttribute('aria-pressed', c==='m' ? 'true' : 'false');
   document.getElementById('cyc-a').setAttribute('aria-pressed', c==='a' ? 'true' : 'false');
   const cta = document.getElementById('of-cta');
-  if(c==='a'){
-    if(LIEN_ANNUEL){ cta.href = LIEN_ANNUEL; cta.target = '_blank'; }
-    else { cta.href = 'mailto:contact@getbidray.com?subject=Abonnement%20annuel%20BidRay'; cta.target = '_self'; }
+  const lien = (c === 'a') ? LIEN_ANNUEL : LIEN_MENSUEL;
+  if(lien){
+    cta.href = lien; cta.target = '_blank';
   } else {
-    cta.href = LIEN_MENSUEL; cta.target = '_blank';
+    cta.href = REPLI; cta.target = '_self';
   }
 }
+
+/* Applique le lien mensuel au chargement */
+document.addEventListener('DOMContentLoaded', function(){ cycle('m'); });
 
 function fq(b){ b.parentElement.classList.toggle('open'); }
 function mo(id){ document.getElementById(id).classList.add('show'); }
