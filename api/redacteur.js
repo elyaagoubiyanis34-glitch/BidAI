@@ -213,6 +213,31 @@ async function gh(chemin, methode, corps) {
 
 const b64 = txt => Buffer.from(txt, 'utf8').toString('base64');
 
+/* Extrait le premier objet JSON complet d'un texte, en comptant les accolades
+   et en ignorant celles qui se trouvent à l'intérieur d'une chaîne.
+   Une expression régulière gloutonne échoue dès que le modèle commente ses
+   recherches avant de répondre. */
+function extraireJson(txt) {
+  const debut = txt.indexOf('{');
+  if (debut === -1) return null;
+  let niveau = 0, dansChaine = false, echappe = false;
+  for (let i = debut; i < txt.length; i++) {
+    const c = txt[i];
+    if (echappe) { echappe = false; continue; }
+    if (c === '\\') { echappe = true; continue; }
+    if (c === '"') { dansChaine = !dansChaine; continue; }
+    if (dansChaine) continue;
+    if (c === '{') niveau++;
+    else if (c === '}') {
+      niveau--;
+      if (niveau === 0) {
+        try { return JSON.parse(txt.slice(debut, i + 1)); } catch { return null; }
+      }
+    }
+  }
+  return null;
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', BASE);
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -247,7 +272,7 @@ module.exports = async function handler(req, res) {
       },
       body: JSON.stringify({
         model: MODELE,
-        max_tokens: 8000,
+        max_tokens: 16000,
         tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 8 }],
         messages: [{ role: 'user', content: consignes(sujet, angle, dateFr, reperes) }]
       })
@@ -255,13 +280,35 @@ module.exports = async function handler(req, res) {
     if (!rep.ok) return res.status(502).json({ error: 'Erreur API Anthropic', detail: await rep.text() });
 
     const data = await rep.json();
-    const brut = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+    const blocs = (data.content || []).filter(b => b.type === 'text').map(b => b.text);
     const recherches = (data.content || []).filter(b => b.type === 'server_tool_use').length;
 
+    if (data.stop_reason === 'max_tokens') {
+      return res.status(500).json({
+        error: 'Réponse tronquée, l\'article était trop long',
+        conseil: 'Relancez. Si cela se répète, demandez un sujet plus étroit.',
+        recherches
+      });
+    }
+
+    // On tente le dernier bloc en premier, puis les précédents, puis l'ensemble.
     let article = null;
-    try { article = JSON.parse(brut.trim()); }
-    catch { const m = brut.match(/\{[\s\S]*\}/); if (m) { try { article = JSON.parse(m[0]); } catch {} } }
-    if (!article) return res.status(500).json({ error: 'Réponse non exploitable', brut: brut.slice(0, 600) });
+    for (const t of [...blocs].reverse().concat([blocs.join('\n')])) {
+      const propre = t.replace(/```json/gi, '').replace(/```/g, '');
+      article = extraireJson(propre);
+      if (article && article.corps) break;
+      article = null;
+    }
+
+    if (!article) {
+      const apercu = (blocs[blocs.length - 1] || blocs.join('\n') || '').slice(-1200);
+      return res.status(500).json({
+        error: 'Réponse non exploitable',
+        conseil: 'Le modèle n\'a pas renvoyé de JSON complet. Relancez : le résultat varie.',
+        recherches, blocs_texte: blocs.length, stop_reason: data.stop_reason,
+        apercu
+      });
+    }
 
     /* 2. Contrôles. Aucune pull request si un seul échoue. */
     const erreurs = valider(article, reperes);
