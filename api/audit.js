@@ -39,9 +39,9 @@ module.exports = async function handler(req, res) {
 ENTREPRISE CANDIDATE :
 ${entrepriseBlock}
 
-NOTE : si le mémoire n'exploite pas des atouts réels listés ci-dessus (certification pertinente non mentionnée, référence similaire absente), signale-le dans les recommandations — c'est un point facile à gagner.
+NOTE : si le mémoire n'exploite pas des atouts réels listés ci-dessus (certification pertinente non mentionnée, référence similaire absente), signale-le dans les recommandations, c'est un point facile à gagner.
 
-${rc ? `RÈGLEMENT DE CONSULTATION / DCE (référentiel de notation) :\n${rc}\n` : `AUCUN RC FOURNI — audite le mémoire selon les standards des commissions d'analyse des offres françaises (structure attendue, précision, preuves, personnalisation).`}
+${rc ? `RÈGLEMENT DE CONSULTATION / DCE (référentiel de notation) :\n${rc}\n` : `AUCUN RC FOURNI. Audite le mémoire selon les standards des commissions d'analyse des offres françaises (structure attendue, précision, preuves, personnalisation).`}
 
 MÉMOIRE TECHNIQUE À AUDITER :
 ${memoire}
@@ -73,13 +73,38 @@ Réponds UNIQUEMENT avec ce JSON valide, sans backticks ni texte avant/après :
 }
 
 RÈGLES ABSOLUES :
-1. Scores et notes TOUJOURS en fourchette — jamais une valeur unique.
+1. Scores et notes TOUJOURS en fourchette, jamais une valeur unique.
 2. N'invente RIEN : chaque manque, incohérence ou point fort doit être vérifiable dans les textes fournis. Si le RC n'est pas fourni, dis-le dans le verdict et audite sur les standards du métier.
 3. manques_critiques = uniquement ce qui coûte réellement des points ou crée un risque d'élimination. Pas de remplissage.
 4. Les recommandations sont classées par gravité et formulées comme des actions ("Ajouter un planning détaillé par phase avec jalons", pas "améliorer le planning").
-5. Si le mémoire est court ou incomplet, dis-le franchement dans le verdict — un audit complaisant ne sert à rien.
+5. Si le mémoire est court ou incomplet, dis-le franchement dans le verdict. Un audit complaisant ne sert à rien.
 6. attentes_non_couvertes : seulement si un signal contextuel réel est détectable. Sinon tableau vide.
-7. Tu parles à un dirigeant de PME : direct, concret, zéro jargon inutile.`;
+7. Tu parles à un dirigeant de PME : direct, concret, zéro jargon inutile.
+
+TYPOGRAPHIE ET STYLE, RÈGLES NON NÉGOCIABLES
+Ces textes sont lus par un dirigeant de PME, et les brouillons de mémoire sont remis
+tels quels à un acheteur public. Ils ne doivent jamais avoir l'air générés.
+
+A. Aucun tiret cadratin (—) ni demi-cadratin (–), nulle part, dans aucun champ.
+   Utilise la virgule, le point, ou la parenthèse. Le trait d'union normal reste permis
+   dans les mots composés.
+B. Les deux-points servent uniquement à introduire une énumération ou une citation.
+   Jamais pour relier deux propositions. "C'est une obligation : les critères figurent"
+   devient "C'est une obligation. Les critères figurent".
+C. Typographie française : espace avant ; ! ? et avant les deux-points. Guillemets
+   français « ». Pas d'apostrophe droite, utilise l'apostrophe courbe.
+D. Aucun formatage Markdown dans les champs de texte : ni **gras**, ni *italique*,
+   ni #titre, ni puces. Ces textes partent en document Word.
+E. Aucune formule creuse. Bannis notamment : "acteur incontournable", "solution
+   sur mesure", "nous mettons un point d'honneur", "à l'écoute de vos besoins",
+   "savoir-faire reconnu", "partenaire de confiance", "dans un souci de".
+F. Aucun adjectif valorisant sans fait derrière. "Une équipe expérimentée" est interdit ;
+   "une équipe de 4 agents, ancienneté moyenne 6 ans" est attendu.
+G. Pas d'enchaînement de connecteurs. Au maximum un "par ailleurs", "en effet" ou
+   "ainsi" par champ rédigé.
+H. Phrases courtes. Une idée par phrase. Si une phrase dépasse deux lignes, coupe-la.
+I. Dans les brouillons de mémoire, écris en paragraphes rédigés à la première personne
+   du pluriel, pas en liste à puces, sauf si le règlement de consultation impose une trame.`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
