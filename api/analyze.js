@@ -128,7 +128,7 @@ I. Dans les brouillons de mémoire, écris en paragraphes rédigés à la premi�
         'x-api-key': process.env.ANTHROPIC_API_KEY
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-5',
         max_tokens: 4000,
         messages: [{ role: 'user', content: prompt }]
       })
