@@ -7,7 +7,12 @@ const sb = createClient(
 
 /* Offre unique : tout abonnement actif donne le même accès.
    Aucun identifiant de prix n'est codé ici, donc créer ou modifier
-   un tarif dans Stripe ne casse rien. */
+   un tarif dans Stripe ne casse rien.
+
+   IMPORTANT : le quota est lu par l'application sur la table
+   « organisations ». Le plan doit donc y être écrit, pas seulement
+   sur « profiles ». Le profil ne sert qu'à retrouver l'organisation
+   et à conserver le lien avec le client Stripe. */
 const ACCES_PAYANT = { plan: 'pro', analyses_limit: -1 };
 const ACCES_LIBRE  = { plan: 'free', analyses_limit: 1 };
 
@@ -52,8 +57,8 @@ module.exports = async function handler(req, res) {
   }
 
   /* Retrouve un compte à partir de l'email saisi au paiement.
-     Sert uniquement au premier paiement, quand le lien entre le
-     client Stripe et le profil n'existe pas encore. */
+     Sert au premier paiement, quand le lien client Stripe / profil
+     n'existe pas encore. */
   async function profilParEmail(email) {
     if (!email) return null;
     try {
@@ -68,12 +73,47 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  /* Remonte du compte utilisateur vers son organisation. */
+  async function orgDe(userId) {
+    const { data } = await sb
+      .from('membres')
+      .select('org_id')
+      .eq('user_id', userId)
+      .maybeSingle();
+    return data && data.org_id ? data.org_id : null;
+  }
+
+  /* Applique un niveau d'accès : organisation d'abord, profil ensuite. */
+  async function appliquer(profileId, acces, extras) {
+    const orgId = await orgDe(profileId);
+
+    if (orgId) {
+      const majOrg = { plan: acces.plan, analyses_limit: acces.analyses_limit };
+      if (acces.reset) majOrg.analyses_used = 0;
+      const { error } = await sb.from('organisations').update(majOrg).eq('id', orgId);
+      if (error) console.error('MAJ organisation impossible:', error.message);
+      else console.log('Organisation', orgId, '->', acces.plan, acces.analyses_limit);
+    } else {
+      console.error('AUCUNE ORGANISATION pour le profil', profileId, '- a rattacher a la main');
+    }
+
+    const majProfil = Object.assign({
+      plan: acces.plan,
+      analyses_limit: acces.analyses_limit,
+      updated_at: new Date().toISOString()
+    }, extras || {});
+    if (acces.reset) majProfil.analyses_used = 0;
+
+    const { error } = await sb.from('profiles').update(majProfil).eq('id', profileId);
+    if (error) console.error('MAJ profil impossible:', error.message);
+  }
+
   try {
 
     // ── Paiement confirmé : c'est ici que l'accès s'ouvre ──
     if (event.type === 'checkout.session.completed') {
       if (obj.payment_status !== 'paid') {
-        console.log('Session terminée mais non payée, ignorée');
+        console.log('Session terminee mais non payee, ignoree');
         return res.status(200).json({ received: true });
       }
 
@@ -82,23 +122,17 @@ module.exports = async function handler(req, res) {
       if (!profile) profile = await profilParEmail(email);
 
       if (profile) {
-        await sb.from('profiles').update({
-          plan: ACCES_PAYANT.plan,
-          analyses_limit: ACCES_PAYANT.analyses_limit,
-          analyses_used: 0,
+        await appliquer(profile.id, Object.assign({ reset: true }, ACCES_PAYANT), {
           stripe_customer_id: obj.customer,
-          stripe_subscription_id: obj.subscription || null,
-          updated_at: new Date().toISOString()
-        }).eq('id', profile.id);
-        console.log('Acces ouvert pour', email, '-> profil', profile.id);
+          stripe_subscription_id: obj.subscription || null
+        });
+        console.log('Acces ouvert pour', email);
       } else {
-        // Le client a payé sans compte BidRay au même email.
         console.error('PAIEMENT SANS PROFIL - a rattacher a la main :', email, obj.customer);
       }
     }
 
-    // ── Changement d'état de l'abonnement ──
-    // Résiliation programmée, impayé, reprise après échec.
+    // ── Changement d'état : résiliation programmée, impayé, reprise ──
     if (event.type === 'customer.subscription.created' ||
         event.type === 'customer.subscription.updated') {
 
@@ -106,15 +140,10 @@ module.exports = async function handler(req, res) {
       if (profile) {
         const actif = STATUTS_ACTIFS.includes(obj.status);
         const acces = actif ? ACCES_PAYANT : ACCES_LIBRE;
-
-        await sb.from('profiles').update({
-          plan: acces.plan,
-          analyses_limit: acces.analyses_limit,
-          stripe_subscription_id: actif ? obj.id : null,
-          updated_at: new Date().toISOString()
-        }).eq('id', profile.id);
-
-        console.log('Abonnement', obj.status, '-> plan', acces.plan);
+        await appliquer(profile.id, acces, {
+          stripe_subscription_id: actif ? obj.id : null
+        });
+        console.log('Abonnement', obj.status, '->', acces.plan);
       }
     }
 
@@ -122,14 +151,10 @@ module.exports = async function handler(req, res) {
     if (event.type === 'customer.subscription.deleted') {
       const profile = await profilParClient(obj.customer);
       if (profile) {
-        await sb.from('profiles').update({
-          plan: ACCES_LIBRE.plan,
-          analyses_limit: ACCES_LIBRE.analyses_limit,
-          analyses_used: 0,
-          stripe_subscription_id: null,
-          updated_at: new Date().toISOString()
-        }).eq('id', profile.id);
-        console.log('Resiliation, retour free pour', obj.customer);
+        await appliquer(profile.id, Object.assign({ reset: true }, ACCES_LIBRE), {
+          stripe_subscription_id: null
+        });
+        console.log('Resiliation, retour free');
       }
     }
 
@@ -137,11 +162,12 @@ module.exports = async function handler(req, res) {
     if (event.type === 'invoice.payment_succeeded') {
       const profile = await profilParClient(obj.customer);
       if (profile) {
-        await sb.from('profiles').update({
-          analyses_used: 0,
-          updated_at: new Date().toISOString()
-        }).eq('id', profile.id);
-        console.log('Compteur remis a 0 pour', obj.customer);
+        const orgId = await orgDe(profile.id);
+        if (orgId) await sb.from('organisations').update({ analyses_used: 0 }).eq('id', orgId);
+        await sb.from('profiles')
+          .update({ analyses_used: 0, updated_at: new Date().toISOString() })
+          .eq('id', profile.id);
+        console.log('Compteur remis a 0');
       }
     }
 
