@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Rédacteur — BidRay</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pap:#FDFBF5; --card:#FFFFFF; --ink:#151510; --mid:#6E6C60; --faint:#9B998D;
+  --ln:#E4E0D4; --ln2:#CFCABA; --jau:#FFE24D; --jau-w:#FFF6D6; --jau-d:#8A6608;
+  --vt:#0BBF6A; --vt-d:#067A43; --vt-w:#E7F8EF; --cor:#F04E37; --cor-w:#FEEEEB; --cor-d:#9C2C1B;
+  --disp:'Familjen Grotesk',system-ui,sans-serif; --mono:'DM Mono',ui-monospace,monospace;
+  --sh:6px 6px 0 rgba(21,21,16,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pap);color:var(--ink);font-family:var(--disp);letter-spacing:-.042em;
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+  cursor:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'><path d='M5 4.5 L5 22.7 L9.7 18.4 L12.6 24.5 L15.9 23 L13.1 17.1 L19.5 16.9 Z' fill='%23FFE24D'/><path d='M2.5 2 L2.5 20.2 L7.2 15.9 L10.1 22 L13.4 20.5 L10.6 14.6 L17 14.4 Z' fill='%23151510' stroke='%23FDFBF5' stroke-width='1.4' stroke-linejoin='round'/></svg>") 2 2, auto}
+a,button,select{cursor:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'><path d='M5 4.5 L5 22.7 L9.7 18.4 L12.6 24.5 L15.9 23 L13.1 17.1 L19.5 16.9 Z' fill='%23151510'/><path d='M2.5 2 L2.5 20.2 L7.2 15.9 L10.1 22 L13.4 20.5 L10.6 14.6 L17 14.4 Z' fill='%23FFE24D' stroke='%23151510' stroke-width='1.4' stroke-linejoin='round'/></svg>") 2 2, pointer}
+input,textarea{cursor:text}
+@media(hover:none){body,a,button,select{cursor:auto}}
+
+.wrap{max-width:680px;margin:0 auto;padding:44px 22px 80px}
+.tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:10px}
+h1{font-size:32px;font-weight:700;letter-spacing:-.05em;line-height:1.08;margin-bottom:12px}
+.lede{font-size:15px;color:var(--mid);line-height:1.65;max-width:56ch}
+
+.carte{background:var(--card);border:1.5px solid var(--ink);border-radius:11px;box-shadow:var(--sh);padding:26px 24px 24px;margin-top:28px}
+label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:7px}
+input,textarea,select{width:100%;font-family:var(--disp);font-size:15px;letter-spacing:-.03em;color:var(--ink);
+  background:var(--pap);border:1.5px solid var(--ln2);border-radius:8px;padding:.62rem .8rem;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--ink)}
+textarea{resize:vertical;min-height:64px;line-height:1.5}
+.champ+.champ{margin-top:16px}
+.aide{font-size:12.5px;color:var(--faint);margin-top:6px;line-height:1.5}
+.mono{font-family:var(--mono);font-size:14px;letter-spacing:-.01em}
+
+.btn{width:100%;margin-top:22px;font-family:var(--disp);font-size:16px;font-weight:700;letter-spacing:-.03em;
+  background:var(--vt);color:#04250F;border:none;border-radius:9px;padding:.85rem 1rem;box-shadow:0 3px 0 var(--vt-d)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--vt-d)}
+.btn[disabled]{opacity:.55;box-shadow:0 3px 0 var(--vt-d)}
+
+.etat{margin-top:22px;border-radius:10px;padding:18px 20px;display:none}
+.etat.on{display:block}
+.etat h3{font-size:17px;font-weight:600;letter-spacing:-.035em;margin-bottom:8px}
+.etat p{font-size:14px;line-height:1.6}
+.etat ul{margin:10px 0 0 1.1rem}
+.etat li{font-size:13.5px;line-height:1.6;margin-bottom:5px}
+.att{background:var(--jau-w);border:1.5px solid var(--jau)}
+.att h3{color:var(--jau-d)}
+.ok{background:var(--vt-w);border:1.5px solid var(--vt)}
+.ok h3{color:var(--vt-d)}
+.ko{background:var(--cor-w);border:1.5px solid #F5C6BC}
+.ko h3{color:var(--cor-d)}
+.etat a{color:var(--ink);font-weight:600}
+.det{font-family:var(--mono);font-size:11.5px;color:var(--mid);white-space:pre-wrap;word-break:break-word;
+  background:rgba(21,21,16,.04);border-radius:6px;padding:10px 12px;margin-top:12px;max-height:220px;overflow:auto}
+.note{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:26px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="tag">Interne</span>
+  <h1>Rédacteur de Repères</h1>
+  <p class="lede">L'agent cherche ses sources, rédige, passe treize contrôles automatiques, puis ouvre une pull request sur GitHub. Rien n'est publié tant que vous ne l'avez pas fusionnée.</p>
+
+  <div class="carte">
+    <div class="champ">
+      <label for="secret">Secret de l'agent</label>
+      <input type="password" id="secret" class="mono" placeholder="AGENT_SECRET" autocomplete="off">
+      <p class="aide">Le mot de passe défini dans les variables Vercel. Il n'est ni enregistré ni transmis ailleurs.</p>
+    </div>
+
+    <div class="champ">
+      <label for="sujet">Sujet de l'article</label>
+      <select id="preset">
+        <option value="">— choisir un sujet prévu, ou écrire le vôtre —</option>
+        <option value="Les procédures : MAPA, appel d'offres ouvert, appel d'offres restreint|les-procedures">Les procédures de passation</option>
+        <option value="Où trouver les appels d'offres publics : BOAMP, JOUE, PLACE et profils d'acheteurs|ou-trouver-les-appels-d-offres">Où trouver les appels d'offres</option>
+        <option value="L'allotissement : répondre à un lot ou à tous|allotissement-repondre-a-un-lot">L'allotissement</option>
+        <option value="Le sourcing avant publication : ce que la loi autorise|le-sourcing-avant-publication">Le sourcing avant publication</option>
+        <option value="Comprendre son procès-verbal de rejet et en tirer parti|comprendre-son-proces-verbal-de-rejet">Le procès-verbal de rejet</option>
+        <option value="Les seuils de la commande publique et ce qui change à chaque palier|les-seuils-de-la-commande-publique">Les seuils</option>
+      </select>
+      <textarea id="sujet" style="margin-top:10px" placeholder="Ex. : Les procédures : MAPA, appel d'offres ouvert, appel d'offres restreint"></textarea>
+    </div>
+
+    <div class="champ">
+      <label for="slug">Adresse de la page</label>
+      <input type="text" id="slug" class="mono" placeholder="les-procedures" autocomplete="off">
+      <p class="aide">Minuscules, chiffres et tirets uniquement. Donnera <span class="mono">getbidray.com/reperes/…</span></p>
+    </div>
+
+    <div class="champ">
+      <label for="angle">Angle particulier, facultatif</label>
+      <textarea id="angle" placeholder="Ex. : insister sur ce qui change concrètement pour une PME de 30 salariés"></textarea>
+    </div>
+
+    <button class="btn" id="go" type="button" onclick="lancer()">Rédiger l'article</button>
+  </div>
+
+  <div class="etat" id="etat"></div>
+
+  <p class="note">La rédaction prend une à trois minutes, le temps que l'agent effectue ses recherches. Ne fermez pas cette page.</p>
+
+</div>
+
+<script>
+document.getElementById('preset').addEventListener('change', function(){
+  if(!this.value) return;
+  const [sujet, slug] = this.value.split('|');
+  document.getElementById('sujet').value = sujet;
+  document.getElementById('slug').value = slug;
+});
+
+function afficher(classe, titre, html){
+  const e = document.getElementById('etat');
+  e.className = 'etat on ' + classe;
+  e.innerHTML = '<h3>' + titre + '</h3>' + html;
+  e.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+async function lancer(){
+  const secret = document.getElementById('secret').value.trim();
+  const sujet  = document.getElementById('sujet').value.trim();
+  const slug   = document.getElementById('slug').value.trim();
+  const angle  = document.getElementById('angle').value.trim();
+  const btn    = document.getElementById('go');
+
+  if(!secret) return afficher('ko','Secret manquant','<p>Renseignez le secret de l\'agent.</p>');
+  if(!sujet)  return afficher('ko','Sujet manquant','<p>Indiquez le sujet de l\'article.</p>');
+  if(!/^[a-z0-9-]+$/.test(slug)) return afficher('ko','Adresse invalide','<p>Uniquement des minuscules, des chiffres et des tirets.</p>');
+
+  btn.disabled = true;
+  btn.textContent = 'Rédaction en cours…';
+  afficher('att','Recherche et rédaction en cours','<p>L\'agent vérifie ses sources avant d\'écrire. Comptez une à trois minutes.</p>');
+
+  try{
+    const r = await fetch('/api/redacteur', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ secret, sujet, slug, angle: angle || undefined })
+    });
+    const d = await r.json().catch(function(){ return {}; });
+
+    if(r.ok && d.ok){
+      afficher('ok','Article rédigé et proposé',
+        '<p>« ' + d.titre + ' »</p>' +
+        '<p style="margin-top:10px">Recherches web effectuées : ' + d.recherches + '</p>' +
+        '<p style="margin-top:12px"><a href="' + d.pull_request + '" target="_blank" rel="noopener">Relire et fusionner la pull request</a></p>' +
+        '<p style="margin-top:8px;color:var(--mid)">Une fois fusionnée, la page sera en ligne sur ' + d.url + ' après le déploiement.</p>');
+    } else if(r.status === 422){
+      afficher('ko','Article refusé par les contrôles',
+        '<p>L\'agent a écrit l\'article mais il ne respecte pas les règles. Rien n\'a été publié.</p>' +
+        '<ul>' + (d.erreurs || []).map(function(x){ return '<li>' + x + '</li>'; }).join('') + '</ul>' +
+        '<p style="margin-top:12px;color:var(--mid)">Relancez : le résultat varie d\'une exécution à l\'autre.</p>');
+    } else if(r.status === 401){
+      afficher('ko','Secret refusé','<p>Le secret ne correspond pas à la variable AGENT_SECRET définie dans Vercel.</p>');
+    } else {
+      afficher('ko','Erreur', '<p>' + (d.error || 'Erreur inconnue, code ' + r.status) + '</p>' +
+        (d.detail ? '<div class="det">' + String(d.detail).slice(0,900) + '</div>' : ''));
+    }
+  } catch(err){
+    afficher('ko','Connexion interrompue','<p>' + err.message + '</p>');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Rédiger l\'article';
+}
+</script>
+</body>
+</html>
