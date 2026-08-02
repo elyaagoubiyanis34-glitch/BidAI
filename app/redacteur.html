@@ -163,8 +163,12 @@ async function lancer(){
     } else if(r.status === 401){
       afficher('ko','Secret refusé','<p>Le secret ne correspond pas à la variable AGENT_SECRET définie dans Vercel.</p>');
     } else {
-      afficher('ko','Erreur', '<p>' + (d.error || 'Erreur inconnue, code ' + r.status) + '</p>' +
-        (d.detail ? '<div class="det">' + String(d.detail).slice(0,900) + '</div>' : ''));
+      var sup = '';
+      if(d.conseil)  sup += '<p style="margin-top:8px;color:var(--mid)">' + d.conseil + '</p>';
+      if(d.recherches !== undefined) sup += '<p style="margin-top:8px;color:var(--mid)">Recherches web : ' + d.recherches + '</p>';
+      var brut = d.apercu || d.detail || '';
+      if(brut) sup += '<div class="det">' + String(brut).slice(0,1200).replace(/</g,'&lt;') + '</div>';
+      afficher('ko','Erreur', '<p>' + (d.error || 'Erreur inconnue, code ' + r.status) + '</p>' + sup);
     }
   } catch(err){
     afficher('ko','Connexion interrompue','<p>' + err.message + '</p>');
