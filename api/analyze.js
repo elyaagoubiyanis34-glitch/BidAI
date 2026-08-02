@@ -1,48 +1,23 @@
-const { createClient } = require('@supabase/supabase-js');
-
-const sb = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-
-const ipCache = new Map();
-
-function isRateLimited(ip) {
-  const now = Date.now();
-  const windowMs = 60 * 60 * 1000;
-  const maxRequests = 10;
-  if (!ipCache.has(ip)) { ipCache.set(ip, { count: 1, start: now }); return false; }
-  const data = ipCache.get(ip);
-  if (now - data.start > windowMs) { ipCache.set(ip, { count: 1, start: now }); return false; }
-  if (data.count >= maxRequests) return true;
-  data.count++;
-  return false;
-}
-
-setInterval(() => {
-  const now = Date.now();
-  for (const [ip, data] of ipCache.entries()) {
-    if (now - data.start > 60 * 60 * 1000) ipCache.delete(ip);
-  }
-}, 60 * 60 * 1000);
+const { entetes, identifier, verifierQuota, consommer } = require('./_acces');
 
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  entetes(res);
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
-  if (isRateLimited(ip)) {
-    return res.status(429).json({ error: 'Trop de requêtes — réessayez dans une heure.' });
+  // Identité + organisation
+  const acces = await identifier(req);
+  if (acces.erreur) return res.status(acces.code).json({ error: acces.erreur });
+  const { membre, org } = acces;
+
+  if (membre.p_analyser === false) {
+    return res.status(403).json({ error: "Vous n'avez pas le droit de lancer une analyse." });
   }
 
-  // Authentification requise : l'analyse est réservée aux comptes inscrits
-  const token = (req.headers.authorization || '').replace('Bearer ', '');
-  if (!token) return res.status(401).json({ error: 'Connexion requise' });
-  const { data: { user }, error: authError } = await sb.auth.getUser(token);
-  if (authError || !user) return res.status(401).json({ error: 'Session expirée — reconnectez-vous.' });
+  // Quota contrôlé AVANT toute dépense
+  const sig = (req.body && req.body.dossier_sig) || null;
+  const droit = await verifierQuota(org, sig);
+  if (!droit.autorise) return res.status(droit.code).json({ error: droit.motif });
 
   const { ao, secteur, effectif, refs, entreprise } = req.body;
   if (!ao) return res.status(400).json({ error: 'AO manquant' });
@@ -154,6 +129,9 @@ RÈGLES ABSOLUES :
 
     // Score moyen pour compatibilité historique
     parsed.score = Math.round(((parsed.score_min || 50) + (parsed.score_max || 50)) / 2);
+
+    // Le quota n'est consommé qu'après un résultat exploitable
+    parsed.quota = await consommer(org, droit.nouveau);
 
     return res.status(200).json(parsed);
 
