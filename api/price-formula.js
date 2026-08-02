@@ -1,37 +1,15 @@
-const { createClient } = require('@supabase/supabase-js');
-
-const sb = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-
-const ipCache = new Map();
-function isRateLimited(ip) {
-  const now = Date.now(), windowMs = 3600000, max = 20;
-  if (!ipCache.has(ip)) { ipCache.set(ip, { count: 1, start: now }); return false; }
-  const d = ipCache.get(ip);
-  if (now - d.start > windowMs) { ipCache.set(ip, { count: 1, start: now }); return false; }
-  if (d.count >= max) return true;
-  d.count++; return false;
-}
+const { entetes, identifier } = require('./_acces');
 
 // Détection de la formule prix à partir du texte du RC
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  entetes(res);
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
-  if (isRateLimited(ip)) return res.status(429).json({ error: 'Trop de requêtes' });
-
-  // Authentification requise
-  const token = (req.headers.authorization || '').replace('Bearer ', '');
-  if (!token) return res.status(401).json({ error: 'Connexion requise' });
-  const { data: { user }, error: authError } = await sb.auth.getUser(token);
-  if (authError || !user) return res.status(401).json({ error: 'Session expirée — reconnectez-vous.' });
-
+  // Identité + organisation. Pas de consommation de quota : cette détection
+  // fait partie d'une analyse déjà comptée.
+  const acces = await identifier(req);
+  if (acces.erreur) return res.status(acces.code).json({ error: acces.erreur });
 
   const { rc } = req.body;
   if (!rc) return res.status(400).json({ error: 'RC manquant' });
@@ -55,7 +33,15 @@ RÈGLES :
 - type "inverse_proportionnelle" = note = (prix mini / prix candidat) × note_max  (la plus fréquente)
 - type "lineaire" = note = note_max × (1 - (prix candidat - prix mini)/(prix max - prix mini)) ou une variante avec un écart de référence
 - Si aucune formule n'est explicitement écrite dans le RC, mets formule_detectee=false, type_formule="inverse_proportionnelle" (hypothèse standard), et explique-le dans description.
-- N'invente jamais une pondération : si absente, mets ponderation_prix="Non précisée".`;
+- N'invente jamais une pondération. Si elle est absente, mets ponderation_prix="Non précisée".
+
+TYPOGRAPHIE, POUR LE CHAMP "description" QUI EST LU PAR LE CLIENT
+- Aucun tiret cadratin ni demi-cadratin. Utilise la virgule, le point ou la parenthèse.
+- Les deux-points servent uniquement à introduire une énumération, jamais à relier
+  deux propositions.
+- Typographie française : espace avant ; ! ? et avant les deux-points, guillemets « ».
+- Aucun formatage Markdown, ni gras, ni puces.
+- Une phrase, courte, factuelle. Aucun adjectif valorisant, aucune formule creuse.`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
