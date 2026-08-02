@@ -472,36 +472,36 @@ input[type=text],input[type=email],input[type=password],input[type=search],texta
           <p>Les cinq pièces d'un dossier de consultation, ce que chacune engage, et l'ordre dans lequel les lire.</p>
           <span class="t">8 min de lecture</span>
         </a>
-        <div class="rp-c soon">
-          <span class="k">Repère 02 · à paraître</span>
+        <a class="rp-c" href="/reperes/lire-la-ponderation-des-criteres.html">
+          <span class="k">Repère 02</span>
           <h3>Lire la pondération des critères en deux minutes</h3>
           <p>Où la trouver dans le règlement de consultation, comment la traduire en points, et pourquoi elle décide de votre stratégie de prix.</p>
           <span class="t">6 min de lecture</span>
-        </div>
-        <div class="rp-c soon">
-          <span class="k">Repère 03 · à paraître</span>
+        </a>
+        <a class="rp-c" href="/reperes/le-memoire-technique.html">
+          <span class="k">Repère 03</span>
           <h3>Le mémoire technique : ce que l'acheteur y cherche</h3>
           <p>La différence entre décrire ce que vous faites et prouver que vous saurez le faire ici.</p>
           <span class="t">10 min de lecture</span>
-        </div>
-        <div class="rp-c soon">
-          <span class="k">Repère 04 · à paraître</span>
+        </a>
+        <a class="rp-c" href="/reperes/les-pieces-de-candidature.html">
+          <span class="k">Repère 04</span>
           <h3>Les pièces de candidature, sans en oublier une</h3>
           <p>DC1, DC2, DUME, attestations : à quoi sert chaque document et lesquels périment.</p>
           <span class="t">7 min de lecture</span>
-        </div>
-        <div class="rp-c soon">
-          <span class="k">Repère 05 · à paraître</span>
+        </a>
+        <a class="rp-c" href="/reperes/les-delais.html">
+          <span class="k">Repère 05</span>
           <h3>Les délais, et ce qui n'est jamais rattrapable</h3>
           <p>Date limite des questions, heure de remise, signature électronique : la liste des irréversibles.</p>
           <span class="t">5 min de lecture</span>
-        </div>
-        <div class="rp-c soon">
-          <span class="k">Repère 06 · à paraître</span>
+        </a>
+        <a class="rp-c" href="/reperes/les-motifs-de-rejet.html">
+          <span class="k">Repère 06</span>
           <h3>Les six motifs qui font écarter un dossier</h3>
           <p>Ce qui envoie une offre à la poubelle avant même d'être notée.</p>
           <span class="t">6 min de lecture</span>
-        </div>
+        </a>
     </div>
   </div>
 </section>
@@ -638,16 +638,29 @@ document.querySelectorAll('.rv,.sec-head h2,.art h2,.art .encart').forEach(el=>i
 
 /* Chaque marqueur est observé pour lui-même : sans la classe « on »,
    un .fait reste invisible (clip-path). Aucun ne doit être oublié. */
-const iom = new IntersectionObserver(es=>es.forEach(e=>{
-  if(!e.isIntersecting) return;
-  e.target.classList.add('on');
-  iom.unobserve(e.target);
-}),{threshold:.55,rootMargin:'0px 0px -8% 0px'});
 const marqueurs = document.querySelectorAll('.fait,.promesse');
-if(matchMedia('(prefers-reduced-motion: reduce)').matches){
-  marqueurs.forEach(el=>el.classList.add('on'));
+function toutAfficher(){ marqueurs.forEach(el=>el.classList.add('on')); }
+
+/* Un marqueur non declenche n'est pas terne : il est invisible.
+   L'animation ne doit donc jamais conditionner l'existence du texte.
+   Seuil au contact minimal, plus trois filets de securite. */
+if(matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)){
+  toutAfficher();
 } else {
+  const iom = new IntersectionObserver(es=>es.forEach(e=>{
+    if(!e.isIntersecting) return;
+    e.target.classList.add('on');
+    iom.unobserve(e.target);
+  }),{threshold:.01});
   marqueurs.forEach(el=>iom.observe(el));
+
+  /* Fenetre degeneree, impression, onglet jamais peint */
+  addEventListener('load',()=>{ if(!innerHeight || !innerWidth) toutAfficher(); });
+  addEventListener('beforeprint', toutAfficher);
+  setTimeout(()=>{
+    const restants = [...marqueurs].filter(el=>!el.classList.contains('on'));
+    if(restants.length === marqueurs.length) toutAfficher();
+  }, 3000);
 }
 
 function mo(id){ document.getElementById(id).classList.add('show'); }
