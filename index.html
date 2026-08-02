@@ -10,6 +10,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#151510">
+<script>document.documentElement.className += ' anim';</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Familjen+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -378,6 +379,12 @@ input[type=text],input[type=email],input[type=password],input[type=search],texta
   html,a,button,summary,label,.btn,.fq-q,.md-x,input[type=range]{cursor:auto}
   input[type=text],input[type=email],input[type=password],input[type=search],textarea{cursor:text}
 }
+
+/* --- Sécurité : le texte d'un marqueur n'est jamais masqué par défaut ---
+   L'état masqué n'existe que si le script tourne pour le révéler. */
+.fait{clip-path:none}
+html.anim .fait{clip-path:inset(0 100% 0 0)}
+html.anim .fait.on{animation:draw .68s cubic-bezier(.3,.9,.3,1) forwards}
 </style>
 </head>
 <body>
