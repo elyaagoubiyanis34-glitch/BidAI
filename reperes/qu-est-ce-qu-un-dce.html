@@ -658,16 +658,29 @@ document.querySelectorAll('.rv,.sec-head h2,.art h2,.art .encart').forEach(el=>i
 
 /* Chaque marqueur est observé pour lui-même : sans la classe « on »,
    un .fait reste invisible (clip-path). Aucun ne doit être oublié. */
-const iom = new IntersectionObserver(es=>es.forEach(e=>{
-  if(!e.isIntersecting) return;
-  e.target.classList.add('on');
-  iom.unobserve(e.target);
-}),{threshold:.55,rootMargin:'0px 0px -8% 0px'});
 const marqueurs = document.querySelectorAll('.fait,.promesse');
-if(matchMedia('(prefers-reduced-motion: reduce)').matches){
-  marqueurs.forEach(el=>el.classList.add('on'));
+function toutAfficher(){ marqueurs.forEach(el=>el.classList.add('on')); }
+
+/* Un marqueur non declenche n'est pas terne : il est invisible.
+   L'animation ne doit donc jamais conditionner l'existence du texte.
+   Seuil au contact minimal, plus trois filets de securite. */
+if(matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)){
+  toutAfficher();
 } else {
+  const iom = new IntersectionObserver(es=>es.forEach(e=>{
+    if(!e.isIntersecting) return;
+    e.target.classList.add('on');
+    iom.unobserve(e.target);
+  }),{threshold:.01});
   marqueurs.forEach(el=>iom.observe(el));
+
+  /* Fenetre degeneree, impression, onglet jamais peint */
+  addEventListener('load',()=>{ if(!innerHeight || !innerWidth) toutAfficher(); });
+  addEventListener('beforeprint', toutAfficher);
+  setTimeout(()=>{
+    const restants = [...marqueurs].filter(el=>!el.classList.contains('on'));
+    if(restants.length === marqueurs.length) toutAfficher();
+  }, 3000);
 }
 
 function mo(id){ document.getElementById(id).classList.add('show'); }
