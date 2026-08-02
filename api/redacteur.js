@@ -17,7 +17,7 @@
        "slug": "les-procedures", "angle": "optionnel, une phrase" }
    ───────────────────────────────────────────────────────────── */
 
-const MODELE     = 'claude-sonnet-4-20250514';
+const MODELE     = 'claude-sonnet-5';
 const REFERENCE  = 'https://getbidray.com/reperes/qu-est-ce-qu-un-dce.html';
 const BASE       = 'https://getbidray.com';
 
