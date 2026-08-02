@@ -10,7 +10,7 @@
     <loc>https://getbidray.com/reperes/</loc>
     <lastmod>2026-08-02</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://getbidray.com/reperes/qu-est-ce-qu-un-dce.html</loc>
@@ -50,6 +50,36 @@
   </url>
   <url>
     <loc>https://getbidray.com/reperes/les-procedures.html</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://getbidray.com/reperes/ou-trouver-les-appels-d-offres.html</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://getbidray.com/reperes/allotissement-repondre-a-un-lot.html</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://getbidray.com/reperes/le-sourcing-avant-publication.html</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://getbidray.com/reperes/comprendre-son-proces-verbal-de-rejet.html</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://getbidray.com/reperes/les-seuils-de-la-commande-publique.html</loc>
     <lastmod>2026-08-02</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
