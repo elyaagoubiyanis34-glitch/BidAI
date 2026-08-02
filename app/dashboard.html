@@ -620,17 +620,17 @@ textarea.demo-inp{resize:vertical;min-height:140px;line-height:1.6;width:100%}
         <div class="section-header"><div class="section-title">Changer de plan</div></div>
         <div class="upgrade-grid">
           <div class="upgrade-card">
-            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Starter</div>
+            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Mensuel</div>
             <div class="upgrade-price">299 <span>€/mois</span></div>
             <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;font-weight:300">5 analyses/mois</p>
-            <button class="btn-portal" style="width:100%" onclick="window.open('https://buy.stripe.com/5kQ4gzeKobzC5aE6GYdZ600','_blank')">Choisir Starter</button>
+            <button class="btn-portal" style="width:100%" onclick="window.open('https://buy.stripe.com/dRm3cv8m06fi0Uo1mEdZ603','_blank')">S'abonner — 299 € / mois</button>
           </div>
           <div class="upgrade-card featured" style="position:relative">
             <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px;white-space:nowrap;text-transform:uppercase">Recommandé</div>
-            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Pro</div>
+            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Annuel · −17 %</div>
             <div class="upgrade-price">399 <span>€/mois</span></div>
             <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;font-weight:300">Analyses illimitées + export Word</p>
-            <button class="btn-upgrade" style="width:100%" onclick="window.open('https://buy.stripe.com/8x200j31G1Z21YsghydZ602','_blank')">Choisir Pro</button>
+            <button class="btn-upgrade" style="width:100%" onclick="window.open('https://buy.stripe.com/14AaEX45KdHK32wd5mdZ604','_blank')">S'abonner — 249 € / mois</button>
           </div>
         </div>
       </div>
@@ -884,7 +884,7 @@ function renderPlanView() {
   const features = {
     free: ['1 analyse d\'essai', 'Brief DCE complet', 'Fourchette de note par critère'],
     starter: ['5 dossiers analysés par mois', 'Ré-analyses du même dossier gratuites', 'Pilotage multi-AO & échéances', 'Coffre-fort des attestations', 'Brief DCE + audit de mémoire', 'Simulateur de note prix'],
-    pro: ['Dossiers illimités', 'Tout le plan Starter inclus', 'Analyse de vos pertes (capitalisation)', 'Brouillon de mémoire technique', 'Export Word professionnel', 'Historique complet', 'Support prioritaire'],
+    pro: ['Dossiers illimités', 'Utilisateurs illimités', 'Analyse de vos pertes (capitalisation)', 'Brouillon de mémoire technique', 'Export Word professionnel', 'Historique complet', 'Support prioritaire'],
     business: ['Analyses illimitées', 'Tout le plan Pro inclus', 'Veille AO automatique BOAMP', 'Alertes en temps réel', 'Intégration CRM', 'Support prioritaire dédié']
   };
   document.getElementById('pl-name').textContent = planLabel(p);
@@ -1048,7 +1048,7 @@ function clearFile() { clearUpload('d-ao', 'file-chip', 'file-input'); }
 function bc(s) { return s >= 65 ? 'var(--green)' : s >= 40 ? 'var(--amber)' : 'var(--red)'; }
 function bgColor(s) { return s >= 65 ? 'rgba(11,191,106,0.1)' : s >= 40 ? 'rgba(201,123,16,0.1)' : 'rgba(217,79,79,0.1)'; }
 function tcColor(s) { return s >= 65 ? 'var(--green-dark)' : s >= 40 ? 'var(--amber)' : 'var(--red)'; }
-function planLabel(p) { return { free: 'Essai gratuit', starter: 'Starter', pro: 'Pro', business: 'Business' }[p] || p; }
+function planLabel(p) { return { free: 'Essai gratuit', starter: 'BidRay', pro: 'BidRay', business: 'BidRay' }[p] || p; }
 function esc(s) { return String(s ?? '').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 function med(a, b) {
   const m = ((Number(a) || 0) + (Number(b) || 0)) / 2;
@@ -1109,7 +1109,7 @@ async function analyze() {
     const res = await fetch('/api/analyze', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
-      body: JSON.stringify({ ao, entreprise: getCompanyProfile() })
+      body: JSON.stringify({ ao, entreprise: getCompanyProfile(), dossier_sig: dossierSig(ao) })
     });
     clearInterval(t);
     const data = await res.json();
@@ -1119,10 +1119,7 @@ async function analyze() {
     const sig = dossierSig(ao);
     const newDossier = await isNewDossier(sig);
     await sb.from('analyses').insert({ org_id: org.id, user_id: currentUser.id, objet, score: data.score, decision: data.decision, result: data, ao_text: ao.slice(0, 500), dossier_sig: sig });
-    if (newDossier) {
-      await sb.from('organisations').update({ analyses_used: used + 1 }).eq('id', org.id);
-      org.analyses_used = used + 1;
-    }
+    if (data.quota) org.analyses_used = data.quota.used;
 
     statusEl.style.display = 'none';
     lastResult = data;
@@ -1307,7 +1304,7 @@ async function runAudit() {
     const res = await fetch('/api/audit', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
-      body: JSON.stringify({ memoire, rc: document.getElementById('a-rc').value.trim(), entreprise: getCompanyProfile() })
+      body: JSON.stringify({ memoire, rc: document.getElementById('a-rc').value.trim(), entreprise: getCompanyProfile(), dossier_sig: dossierSig(document.getElementById('a-rc').value.trim() || memoire) })
     });
     clearInterval(t);
     const data = await res.json();
@@ -1318,10 +1315,7 @@ async function runAudit() {
     const sig = dossierSig(rcVal || memoire);
     const newDossier = await isNewDossier(sig);
     await sb.from('analyses').insert({ org_id: org.id, user_id: currentUser.id, objet, score: data.score, decision: 'AUDIT', result: data, ao_text: memoire.slice(0, 500), dossier_sig: sig });
-    if (newDossier) {
-      await sb.from('organisations').update({ analyses_used: used + 1 }).eq('id', org.id);
-      org.analyses_used = used + 1;
-    }
+    if (data.quota) org.analyses_used = data.quota.used;
 
     statusEl.style.display = 'none';
     renderAudit(data);
