@@ -68,7 +68,7 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
 
   <span class="tag">Interne</span>
   <h1>Rédacteur de Repères</h1>
-  <p class="lede">L'agent cherche ses sources, rédige, passe treize contrôles automatiques, puis ouvre une pull request sur GitHub. Rien n'est publié tant que vous ne l'avez pas fusionnée.</p>
+  <p class="lede">L'agent cherche ses sources, rédige, et passe une trentaine de contrôles automatiques avant de publier. Deux tentatives, puis abandon. Il tourne seul le mardi et le vendredi ; ce formulaire sert à lancer un sujet hors calendrier.</p>
 
   <div class="carte">
     <div class="champ">
@@ -78,7 +78,7 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
     </div>
 
     <div class="champ">
-      <label for="sujet">Sujet de l'article</label>
+      <label for="sujet">Sujet de l'article, ou laisser vide pour prendre le suivant dans la file</label>
       <select id="preset">
         <option value="">— choisir un sujet prévu, ou écrire le vôtre —</option>
         <option value="Les procédures : MAPA, appel d'offres ouvert, appel d'offres restreint|les-procedures">Les procédures de passation</option>
@@ -134,8 +134,7 @@ async function lancer(){
   const btn    = document.getElementById('go');
 
   if(!secret) return afficher('ko','Secret manquant','<p>Renseignez le secret de l\'agent.</p>');
-  if(!sujet)  return afficher('ko','Sujet manquant','<p>Indiquez le sujet de l\'article.</p>');
-  if(!/^[a-z0-9-]+$/.test(slug)) return afficher('ko','Adresse invalide','<p>Uniquement des minuscules, des chiffres et des tirets.</p>');
+  if(sujet && !/^[a-z0-9-]+$/.test(slug)) return afficher('ko','Adresse invalide','<p>Uniquement des minuscules, des chiffres et des tirets.</p>');
 
   btn.disabled = true;
   btn.textContent = 'Rédaction en cours…';
@@ -145,16 +144,18 @@ async function lancer(){
     const r = await fetch('/api/redacteur', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ secret, sujet, slug, angle: angle || undefined })
+      body: JSON.stringify({ secret, sujet: sujet || undefined, slug: sujet ? slug : undefined, angle: angle || undefined })
     });
     const d = await r.json().catch(function(){ return {}; });
 
     if(r.ok && d.ok){
-      afficher('ok','Article rédigé et proposé',
+      afficher('ok','Article publié',
         '<p>« ' + d.titre + ' »</p>' +
-        '<p style="margin-top:10px">Recherches web effectuées : ' + d.recherches + '</p>' +
-        '<p style="margin-top:12px"><a href="' + d.pull_request + '" target="_blank" rel="noopener">Relire et fusionner la pull request</a></p>' +
-        '<p style="margin-top:8px;color:var(--mid)">Une fois fusionnée, la page sera en ligne sur ' + d.url + ' après le déploiement.</p>');
+        '<p style="margin-top:10px">Mots : ' + d.mots + ' · Recherches web : ' + d.recherches + ' · Carte ajoutée : ' + (d.carte ? 'oui' : 'non') + '</p>' +
+        '<p style="margin-top:12px"><a href="' + d.url + '" target="_blank" rel="noopener">Lire l\'article en ligne</a></p>' +
+        '<p style="margin-top:8px;color:var(--mid)">Comptez une à deux minutes de déploiement. Relisez les chiffres et les références d\'articles.</p>');
+    } else if(r.ok && !d.ok){
+      afficher('att','Rien à publier','<p>' + (d.motif || '') + '</p>');
     } else if(r.status === 422){
       afficher('ko','Article refusé par les contrôles',
         '<p>L\'agent a écrit l\'article mais il ne respecte pas les règles. Rien n\'a été publié.</p>' +
