@@ -13,6 +13,7 @@
 <meta property="og:locale" content="fr_FR">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<script>document.documentElement.className += ' anim';</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -428,6 +429,14 @@ input[type=text],input[type=email],input[type=password],input[type=search],texta
 .art-fin p{color:rgba(253,251,245,.72);font-size:14.5px;line-height:1.65;margin-bottom:1.2rem}
 .art-suite{max-width:660px;margin:2.4rem auto 0}
 .art-suite .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:.8rem}
+
+/* ─── Sécurité : le texte d'un marqueur n'est jamais masqué par défaut ───
+   L'état masqué n'existe que si le script tourne pour le révéler ensuite.
+   Sans cette règle, un .fait dont l'animation ne se déclenche pas disparaît
+   purement et simplement du paragraphe. */
+.fait{clip-path:none}
+html.anim .fait{clip-path:inset(0 100% 0 0)}
+html.anim .fait.on{animation:draw .68s cubic-bezier(.3,.9,.3,1) forwards}
 </style>
 <script type="application/ld+json">
 {
@@ -531,7 +540,6 @@ input[type=text],input[type=email],input[type=password],input[type=search],texta
       <a href="/#secteurs">Pour qui</a>
       <a href="/#tarifs">Tarifs</a>
       <a href="/reperes/" class="cur">Repères</a>
-      <a href="/reperes/">Repères</a>
       <a href="/#faq">FAQ</a>
       <a href="/app/login.html" class="btn btn-nav">S'identifier</a>
     </div>
