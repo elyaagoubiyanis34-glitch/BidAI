@@ -1,4 +1,71 @@
-const { entetes, identifier, verifierQuota, consommer } = require('./_acces');
+const { sb, entetes, identifier, verifierQuota, consommer } = require('./_acces');
+
+/* ─── Statistiques anonymes ───────────────────────────────────────
+   Aucune donnée identifiante : ni organisation, ni utilisateur, ni
+   acheteur, ni objet du marché, ni contenu du dossier. Uniquement
+   des caractéristiques structurelles, destinées à une publication
+   agrégée. L'échec de l'enregistrement n'interrompt jamais l'analyse. */
+
+function trancheEffectif(n) {
+  const e = parseInt(n, 10);
+  if (!e || isNaN(e)) return null;
+  if (e < 10) return '1-9';
+  if (e < 50) return '10-49';
+  if (e < 200) return '50-199';
+  return '200+';
+}
+
+function pourcentage(txt) {
+  const m = String(txt || '').match(/(\d{1,3})\s*%/);
+  if (!m) return null;
+  const v = parseInt(m[1], 10);
+  return v >= 0 && v <= 100 ? v : null;
+}
+
+function statistiques(parsed, ao, secteur, effectif) {
+  const criteres = Array.isArray(parsed.criteres) ? parsed.criteres : [];
+  const clauses  = Array.isArray(parsed.clauses_vigilance) ? parsed.clauses_vigilance : [];
+
+  const estPrix = c => /prix|financ|co[uû]t|montant/i.test(c.nom || '');
+  let pPrix = null, pTech = null;
+  criteres.forEach(c => {
+    const p = pourcentage(c.ponderation);
+    if (p === null) return;
+    if (estPrix(c)) pPrix = (pPrix || 0) + p;
+    else pTech = (pTech || 0) + p;
+  });
+
+  let dominant = 'inconnu';
+  if (pPrix !== null || pTech !== null) {
+    const a = pPrix || 0, b = pTech || 0;
+    dominant = a > b ? 'prix' : (b > a ? 'technique' : 'autre');
+  }
+
+  const nonPrecise = v => !v || /non pr[ée]cis/i.test(String(v));
+  const resume = parsed.resume || {};
+  const longueur = (ao || '').length;
+
+  return {
+    secteur: secteur || null,
+    effectif_tranche: trancheEffectif(effectif),
+    ao_caracteres: longueur,
+    pages_estimees: longueur ? Math.max(1, Math.round(longueur / 2500)) : null,
+    nb_criteres: criteres.length,
+    ponderation_prix: pPrix,
+    ponderation_technique: pTech,
+    critere_dominant: dominant,
+    type_marche: resume.type || null,
+    budget_precise: !nonPrecise(resume.budget),
+    duree_precisee: !nonPrecise(resume.duree),
+    nb_clauses_vigilance: clauses.length,
+    nb_clauses_gravite_haute: clauses.filter(c => /haute/i.test(c.gravite || '')).length,
+    nb_pieces_checklist: Array.isArray(parsed.checklist_pieces) ? parsed.checklist_pieces.length : null,
+    nb_questions_acheteur: Array.isArray(parsed.questions_acheteur) ? parsed.questions_acheteur.length : null,
+    decision: parsed.decision || null,
+    score_min: parsed.score_min ?? null,
+    score_max: parsed.score_max ?? null
+  };
+}
 
 module.exports = async function handler(req, res) {
   entetes(res);
@@ -157,6 +224,13 @@ I. Dans les brouillons de mémoire, écris en paragraphes rédigés à la premi�
 
     // Le quota n'est consommé qu'après un résultat exploitable
     parsed.quota = await consommer(org, droit.nouveau);
+
+    // Statistiques anonymes. Aucune interruption possible de l'analyse.
+    try {
+      await sb.from('stats_analyses').insert(statistiques(parsed, ao, secteur, effectif));
+    } catch (e) {
+      console.error('Statistiques non enregistrées:', e.message);
+    }
 
     return res.status(200).json(parsed);
 
