@@ -383,6 +383,12 @@ input[type=text],input[type=email],input[type=password],input[type=search],texta
   input[type=text],input[type=email],input[type=password],input[type=search],textarea{cursor:text}
 }
 
+/* --- Sécurité : le texte d'un marqueur n'est jamais masqué par défaut ---
+   L'état masqué n'existe que si le script tourne pour le révéler. */
+.fait{clip-path:none}
+html.anim .fait{clip-path:inset(0 100% 0 0)}
+html.anim .fait.on{animation:draw .68s cubic-bezier(.3,.9,.3,1) forwards}
+
 /* ─── Repères : index de section ──────────────────────────── */
 .nav-l a.cur{color:var(--ink);font-weight:600}
 .rp-hero{padding:5.4rem 0 2.2rem}
@@ -436,7 +442,7 @@ input[type=text],input[type=email],input[type=password],input[type=search],texta
    purement et simplement du paragraphe. */
 .fait{clip-path:none}
 html.anim .fait{clip-path:inset(0 100% 0 0)}
-html.anim .fait.on{animation:draw .68s cubic-bezier(.3,.9,.3,1) forwards}
+html.anim .fait.on{clip-path:none;animation:draw .68s cubic-bezier(.3,.9,.3,1) forwards}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Article",
@@ -631,28 +637,6 @@ html.anim .fait.on{animation:draw .68s cubic-bezier(.3,.9,.3,1) forwards}
   </div>
 </footer>
 
-<div class="mb" id="m-cgu" onclick="if(event.target===this)mc('m-cgu')"><div class="md"><button class="md-x" onclick="mc('m-cgu')">×</button>
-  <h2>Conditions Générales d'Utilisation</h2>
-  <h3>1. Objet</h3><p>Les présentes CGU régissent l'utilisation du service BidRay, outil d'aide à la gestion et à l'analyse des appels d'offres par intelligence artificielle.</p>
-  <h3>2. Description du service</h3><p>BidRay est un outil d'aide à la décision. Les résultats fournis sont indicatifs et ne constituent pas un conseil juridique, commercial ou stratégique.</p>
-  <h3>3. Propriété intellectuelle</h3><p>L'utilisateur conserve la propriété des données qu'il soumet. BidRay et ses composants sont protégés par le droit de la propriété intellectuelle.</p>
-  <h3>4. Données personnelles</h3><p>BidRay traite les données conformément au RGPD. Les documents soumis lors des analyses ne sont pas conservés au-delà de la session en cours.</p>
-  <h3>5. Limitation de responsabilité</h3><p>BidRay ne saurait être tenu responsable des décisions prises sur la base des analyses générées.</p>
-</div></div>
-<div class="mb" id="m-conf" onclick="if(event.target===this)mc('m-conf')"><div class="md"><button class="md-x" onclick="mc('m-conf')">×</button>
-  <h2>Politique de confidentialité</h2>
-  <h3>1. Données collectées</h3><ul><li>Compte : nom, email, entreprise</li><li>Facturation : traitée par Stripe, non stockée par BidRay</li><li>Utilisation : nombre d'analyses, dossiers, attestations</li></ul>
-  <h3>2. Utilisation</h3><p>Les données servent uniquement au fonctionnement du service, à la facturation et au support. Aucune revente à des tiers.</p>
-  <h3>3. Documents d'appel d'offres</h3><p>Les textes et fichiers soumis à l'analyse ne sont pas conservés au-delà de la session et ne servent jamais à entraîner des modèles. L'extraction des fichiers est réalisée localement dans votre navigateur.</p>
-  <h3>4. Vos droits</h3><p>Conformément au RGPD : droit d'accès, de rectification, d'effacement et de portabilité. Contact : contact@getbidray.com</p>
-</div></div>
-<div class="mb" id="m-ml" onclick="if(event.target===this)mc('m-ml')"><div class="md"><button class="md-x" onclick="mc('m-ml')">×</button>
-  <h2>Mentions légales</h2>
-  <p><strong>Éditeur :</strong> BidRay<br><strong>Email :</strong> contact@getbidray.com</p>
-  <p><strong>Hébergement :</strong> Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA</p>
-  <p>BidRay est un outil d'aide à la décision. Les analyses générées ne constituent pas des conseils juridiques ou commerciaux.</p>
-</div></div>
-
 
 <script>
 const io = new IntersectionObserver(es=>es.forEach(e=>{
@@ -669,26 +653,35 @@ document.querySelectorAll('.rv,.sec-head h2,.art h2,.art .encart').forEach(el=>i
 const marqueurs = document.querySelectorAll('.fait,.promesse');
 function toutAfficher(){ marqueurs.forEach(el=>el.classList.add('on')); }
 
-/* Un marqueur non declenche n'est pas terne : il est invisible.
-   L'animation ne doit donc jamais conditionner l'existence du texte.
-   Seuil au contact minimal, plus trois filets de securite. */
+/* On observe le bloc PARENT, jamais le marqueur lui-meme.
+   Un .fait est decoupe a zero pixel de large par son clip-path, et
+   l'observateur d'intersection calcule la zone visible APRES decoupage :
+   il ne le verrait donc jamais apparaitre. */
 if(matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)){
   toutAfficher();
 } else {
+  const parents = new Map();
+  marqueurs.forEach(el=>{
+    const bloc = el.closest('p,li,h1,h2,h3,h4,div,td') || el.parentElement;
+    if(!parents.has(bloc)) parents.set(bloc, []);
+    parents.get(bloc).push(el);
+  });
+
   const iom = new IntersectionObserver(es=>es.forEach(e=>{
     if(!e.isIntersecting) return;
-    e.target.classList.add('on');
+    (parents.get(e.target) || []).forEach((el,i)=>setTimeout(()=>el.classList.add('on'), i*140));
     iom.unobserve(e.target);
-  }),{threshold:.01});
-  marqueurs.forEach(el=>iom.observe(el));
+  }),{threshold:.15,rootMargin:'0px 0px -6% 0px'});
 
-  /* Fenetre degeneree, impression, onglet jamais peint */
+  parents.forEach((_,bloc)=>iom.observe(bloc));
+
+  /* Filets : fenetre non peinte, impression, ou observateur muet */
   addEventListener('load',()=>{ if(!innerHeight || !innerWidth) toutAfficher(); });
   addEventListener('beforeprint', toutAfficher);
   setTimeout(()=>{
     const restants = [...marqueurs].filter(el=>!el.classList.contains('on'));
     if(restants.length === marqueurs.length) toutAfficher();
-  }, 3000);
+  }, 4000);
 }
 
 function mo(id){ document.getElementById(id).classList.add('show'); }
