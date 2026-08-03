@@ -13,6 +13,7 @@
 <meta property="og:locale" content="fr_FR">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<script>document.documentElement.className += ' anim';</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -428,6 +429,14 @@ input[type=text],input[type=email],input[type=password],input[type=search],texta
 .art-fin p{color:rgba(253,251,245,.72);font-size:14.5px;line-height:1.65;margin-bottom:1.2rem}
 .art-suite{max-width:660px;margin:2.4rem auto 0}
 .art-suite .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:.8rem}
+
+/* ─── Sécurité : le texte d'un marqueur n'est jamais masqué par défaut ───
+   L'état masqué n'existe que si le script tourne pour le révéler ensuite.
+   Sans cette règle, un .fait dont l'animation ne se déclenche pas disparaît
+   purement et simplement du paragraphe. */
+.fait{clip-path:none}
+html.anim .fait{clip-path:inset(0 100% 0 0)}
+html.anim .fait.on{animation:draw .68s cubic-bezier(.3,.9,.3,1) forwards}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Article",
@@ -451,7 +460,6 @@ input[type=text],input[type=email],input[type=password],input[type=search],texta
       <a href="/#secteurs">Pour qui</a>
       <a href="/#tarifs">Tarifs</a>
       <a href="/reperes/" class="cur">Repères</a>
-      <a href="/reperes/">Repères</a>
       <a href="/#faq">FAQ</a>
       <a href="/app/login.html" class="btn btn-nav">S'identifier</a>
     </div>
@@ -469,7 +477,7 @@ input[type=text],input[type=email],input[type=password],input[type=search],texta
 
     <h2>Le tri se fait avant la notation</h2>
 
-    <p>Avant de comparer les offres, l'acheteur écarte celles qui ne peuvent pas entrer dans la comparaison. Le code est explicite : l'acheteur écarte les offres irrégulières, inacceptables ou inappropriées.</p>
+    <p>Avant de comparer les offres, l'acheteur écarte celles qui ne peuvent pas entrer dans la comparaison. Le code est explicite. L'acheteur écarte les offres irrégulières, inacceptables ou inappropriées.</p>
 
     <p>Ces trois mots ont un sens précis, et il vaut la peine de les connaître, parce que les conséquences ne sont pas les mêmes.</p>
 
@@ -489,7 +497,7 @@ input[type=text],input[type=email],input[type=password],input[type=search],texta
 
     <h3>2. La pièce manquante</h3>
 
-    <p>Un document exigé par le règlement de consultation et absent rend l'offre incomplète, donc irrégulière. Peu importe qu'il soit anodin : c'est le règlement qui décide de ce qui est exigé, pas vous.</p>
+    <p>Un document exigé par le règlement de consultation et absent rend l'offre incomplète, donc irrégulière. Peu importe qu'il soit anodin. C'est le règlement qui décide de ce qui est exigé, pas vous.</p>
 
     <h3>3. Le format non respecté</h3>
 
@@ -525,7 +533,7 @@ input[type=text],input[type=email],input[type=password],input[type=search],texta
     <ul>
       <li>C'est une faculté, jamais un droit. Le règlement de consultation peut l'écarter, et l'acheteur n'a alors pas à vous solliciter.</li>
       <li>La correction ne doit pas modifier les caractéristiques substantielles de l'offre.</li>
-      <li>Elle ne couvre pas le prix : une demande de précisions ne permet pas de régulariser une offre financière après la date limite.</li>
+      <li>Elle ne couvre pas le prix, et une demande de précisions ne permet pas de régulariser une offre financière après la date limite.</li>
     </ul>
 
     <h2>L'audit de dix minutes qui évite tout ça</h2>
