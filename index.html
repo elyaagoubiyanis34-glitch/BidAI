@@ -63,6 +63,11 @@ nav{position:sticky;top:0;z-index:300;padding:.7rem 1.6rem .5rem;background:line
 .nav-l{display:flex;gap:1.05rem;align-items:center}
 .nav-l a:not(.btn){font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);text-decoration:none;transition:color .18s;white-space:nowrap}
 .nav-l a:not(.btn):hover{color:var(--ink)}
+/* --- Repères : onglet éditorial, marqué au surligneur --- */
+.nav-l a.nav-rep{position:relative;color:var(--ink);font-weight:700;padding:.24em .4em .2em;z-index:0;isolation:isolate}
+.nav-l a.nav-rep::before{content:'';position:absolute;left:-.04em;right:-.04em;top:.06em;bottom:.04em;background:var(--jau);border-radius:3px 9px 4px 8px;transform:rotate(-1.6deg);z-index:-1;transition:transform .24s cubic-bezier(.25,.9,.3,1)}
+.nav-l a.nav-rep:hover::before{transform:rotate(-1.6deg) scale(1.07)}
+.nav-sep{width:1px;height:14px;background:var(--ln2);display:inline-block;flex:none}
 .btn{font-family:var(--disp);font-weight:600;text-decoration:none;display:inline-block;cursor:pointer;border:none;border-radius:6px;transition:transform .16s cubic-bezier(.2,.8,.2,1),background .18s,box-shadow .18s,border-color .18s}
 .btn:active{transform:translateY(1px)}
 .btn-line{border:1.5px solid var(--ln2);color:var(--ink);padding:.48rem 1rem;font-size:13.5px;background:transparent}
@@ -76,7 +81,8 @@ nav{position:sticky;top:0;z-index:300;padding:.7rem 1.6rem .5rem;background:line
 .btn-lg{padding:.85rem 1.55rem;font-size:15px}
 @media(max-width:1080px){.nav-l a[href="#pilotage"],.nav-l a[href="#fonctions"]{display:none}}
 @media(max-width:880px){.nav-l a[href="#secteurs"],.nav-l a[href="#faq"]{display:none}}
-@media(max-width:700px){.nav-l a:not(.btn){display:none}}
+@media(max-width:700px){.nav-l a:not(.btn):not(.nav-rep){display:none}.nav-sep{display:none}}
+@media(max-width:430px){.nav-l{gap:.7rem}.nav-l a.nav-rep{font-size:11px;letter-spacing:.05em}.btn-nav{font-size:12px;padding:.5rem .85rem}}
 
 .chrono{position:fixed;left:50%;top:58px;z-index:250;transform:translateX(-50%) translateY(-160%);
   background:var(--ink);color:var(--pap);border-radius:8px;padding:.5rem .9rem;display:flex;align-items:center;gap:.8rem;
@@ -281,6 +287,21 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;bac
 .wc h3{font-size:17px;font-weight:600;letter-spacing:-.028em;margin-bottom:.4rem}
 .wc p{font-size:13px;color:var(--mid);line-height:1.55}
 
+/* --- Bandeau Repères : les fiches de fond, en accès libre --- */
+.rep-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.rep-c{display:block;background:var(--card);border:1.5px solid var(--ink);border-radius:10px;padding:1.35rem 1.25rem;box-shadow:var(--sh-hard);text-decoration:none;color:var(--ink);transition:transform .22s cubic-bezier(.2,.8,.2,1)}
+.rep-c:hover{transform:translateY(-3px)}
+.rep-k{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;color:var(--faint);text-transform:uppercase;display:block;padding-bottom:.65rem;border-bottom:1px solid var(--ln);margin-bottom:.8rem}
+.rep-c h3{font-size:17px;font-weight:600;letter-spacing:-.028em;margin-bottom:.45rem}
+.rep-c p{font-size:13.5px;color:var(--mid);line-height:1.6}
+.rep-go{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--vt-d);display:inline-block;margin-top:.9rem}
+.rep-c:hover .rep-go{text-decoration:underline}
+.rep-all{margin-top:1.6rem}
+.rep-all a{font-family:var(--mono);font-size:12px;letter-spacing:.05em;color:var(--ink);text-decoration:none;border-bottom:1.5px solid var(--jau);padding-bottom:2px;transition:border-color .18s}
+.rep-all a:hover{border-color:var(--ink)}
+@media(max-width:900px){.rep-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.rep-grid{grid-template-columns:1fr}}
+
 
 .offre{display:grid;grid-template-columns:1.12fr .88fr;gap:1.1rem;max-width:980px;margin:2.2rem auto 0;align-items:start}
 @media(max-width:860px){.offre{grid-template-columns:1fr;max-width:520px}}
@@ -398,8 +419,9 @@ html.anim .fait.on{animation:draw .68s cubic-bezier(.3,.9,.3,1) forwards}
       <a href="#fonctions">Fonctions</a>
       <a href="#secteurs">Pour qui</a>
       <a href="#tarifs">Tarifs</a>
-      <a href="/reperes/">Repères</a>
       <a href="#faq">FAQ</a>
+      <span class="nav-sep" aria-hidden="true"></span>
+      <a href="/reperes/" class="nav-rep">Repères</a>
       <a href="/app/login.html" class="btn btn-nav">S'identifier</a>
     </div>
   </div>
@@ -878,6 +900,37 @@ html.anim .fait.on{animation:draw .68s cubic-bezier(.3,.9,.3,1) forwards}
   </div>
 </section>
 
+<section class="sec" id="reperes-band" style="padding:3.8rem 0 3.4rem;background:var(--pap2);border-bottom:1px solid var(--ln)">
+  <div class="wrap">
+    <div class="sec-head rv" style="margin-bottom:1.8rem">
+      <span class="tag">Repères</span>
+      <h2>Le fond du sujet, <span class="promesse">en accès libre</span>.</h2>
+      <p class="lede">Des fiches de référence sur la commande publique, vérifiées sur le Code de la commande publique et les fiches de la DAJ, avec la date du dernier contrôle. Sans compte, sans formulaire.</p>
+    </div>
+    <div class="rep-grid rv d1">
+      <a class="rep-c" href="/reperes/lire-la-ponderation-des-criteres.html">
+        <span class="rep-k">Critères</span>
+        <h3>Lire la pondération des critères</h3>
+        <p>Où se joue réellement la note, et pourquoi le meilleur prix ne suffit pas toujours à passer devant.</p>
+        <span class="rep-go">Lire le repère →</span>
+      </a>
+      <a class="rep-c" href="/reperes/les-motifs-de-rejet.html">
+        <span class="rep-k">Rejet</span>
+        <h3>Les motifs de rejet</h3>
+        <p>Ce qui écarte un dossier avant même qu'il soit jugé sur le fond, et comment l'éliminer avant le dépôt.</p>
+        <span class="rep-go">Lire le repère →</span>
+      </a>
+      <a class="rep-c" href="/reperes/le-memoire-technique.html">
+        <span class="rep-k">Mémoire</span>
+        <h3>Le mémoire technique</h3>
+        <p>Ce que l'acheteur attend vraiment dans le mémoire, et ce qui n'y a pas sa place.</p>
+        <span class="rep-go">Lire le repère →</span>
+      </a>
+    </div>
+    <div class="rep-all rv d1"><a href="/reperes/">Voir tous les repères →</a></div>
+  </div>
+</section>
+
 <section class="sec" id="faq">
   <div class="wrap">
     <div class="sec-head rv">
@@ -927,8 +980,12 @@ html.anim .fait.on{animation:draw .68s cubic-bezier(.3,.9,.3,1) forwards}
       </div>
       <div class="fcol">
         <div class="ft">Comprendre</div>
-        <a href="/reperes/">Repères</a>
+        <a href="/reperes/">Tous les repères</a>
         <a href="/reperes/qu-est-ce-qu-un-dce.html">Qu'est-ce qu'un DCE</a>
+        <a href="/reperes/lire-la-ponderation-des-criteres.html">La pondération des critères</a>
+        <a href="/reperes/le-memoire-technique.html">Le mémoire technique</a>
+        <a href="/reperes/les-motifs-de-rejet.html">Les motifs de rejet</a>
+        <a href="/reperes/les-delais.html">Les délais</a>
       </div>
       <div class="fcol">
         <div class="ft">Compte</div>
